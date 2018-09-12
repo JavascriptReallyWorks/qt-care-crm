@@ -7,4 +7,5 @@ module.exports = app => {
     require('./router/pubsubExampleRouter')(app);
     require('./router/driverRouter')(app);
     require('./router/externalRouter')(app);
+    require('./router/wechatRouter')(app);
 };

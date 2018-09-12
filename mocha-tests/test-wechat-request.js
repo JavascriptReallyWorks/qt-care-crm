@@ -3,8 +3,12 @@ var request = require('request');
 var WXBizMsgCrypt = require('wechat-crypto');
 var crypto = require('crypto');
 var parser = require("xml2json");
+process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
 
 const mock = require('egg-mock');
+
+// 肿瘤知道
+/*
 var config = {
     token: 'zlzhidaotest',
     appid: 'wx064c32c2931490aa',
@@ -30,7 +34,39 @@ var config = {
     showQrcode: 'https://mp.weixin.qq.com/cgi-bin/showqrcode', //展示二维码
     cache_duration: 1000 * 60 * 60 * 24,
     checkSignature: false
-};;
+};
+*/
+
+// 小肿瘤知道
+
+var config = {
+    token: 'zlzhidaotest',
+    appid: 'wx68451915b0affd17',
+    mch_id: '1446561402',
+    encodingAESKey: 'EbJG23WzxpCfCq8lpTUIxXAXeS4GHRwYyZVA8oDsFih',
+    payApiKey: 'JCJSBQSXK44HF6B8XP2XQ7AHQ36H6T7G',
+    appSecret: 'ef502e162c19307b69a6f10b3a4ffdcb',
+    grant_type: 'client_credential',
+    accessTokenUrl: 'https://api.weixin.qq.com/cgi-bin/token', //获取token
+    oauth2AccessTokenUrl: 'https://api.weixin.qq.com/sns/oauth2/access_token', //获取token
+    accessTagsUrl: 'https://api.weixin.qq.com/cgi-bin/tags/get', //获取tags列表
+    ticketUrl: 'https://api.weixin.qq.com/cgi-bin/ticket/getticket', //获取jsapi_ticket
+    batchtaggingUrl: 'https://api.weixin.qq.com/cgi-bin/tags/members/batchtagging', //给用户批量打标签
+    createTagUrl: 'https://api.weixin.qq.com/cgi-bin/tags/create', //给用户打标签
+    batchget_material: 'https://api.weixin.qq.com/cgi-bin/material/batchget_material', //获取永久素材
+    add_news: 'https://api.weixin.qq.com/cgi-bin/material/add_news', //新增永久素材
+    update_news: 'https://api.weixin.qq.com/cgi-bin/material/update_news', //修改永久素材
+    getUserInfoUrl: 'https://api.weixin.qq.com/cgi-bin/user/info', //根据openid获取用户信息url
+    downloadUrl: 'http://file.api.weixin.qq.com/cgi-bin/media/get', //下载
+    unifiedorderUrl: 'https://api.mch.weixin.qq.com/pay/unifiedorder', //统一下单
+    orderqueryUrl: 'https://api.mch.weixin.qq.com/pay/orderquery', //查询订单
+    createQrcode: 'https://api.weixin.qq.com/cgi-bin/qrcode/create', //生成二维码ticket
+    showQrcode: 'https://mp.weixin.qq.com/cgi-bin/showqrcode', //展示二维码
+    cache_duration: 1000 * 60 * 60 * 24,
+    checkSignature: false
+};
+
+
 
 function getSignature(timestamp, nonce, encrypt) {
     var shasum = crypto.createHash('sha1');
@@ -64,8 +100,8 @@ var cryptor = new WXBizMsgCrypt(config.token, config.encodingAESKey, config.appi
 
 //发送消息事件
 function getMsgXML() {
-    var openid = 'test_openid_' + Date.now().toString().substr(-4);
-    var text = '客户消息：' + Date.now().toString().substr(-2);
+    var openid = 'ojUvl5RVgau8DQfPfZ6rlp8Q-Uy8';
+    var text = 'hello at：' + new Date().toISOString().split('T')[0];
     var msg = '<xml><ToUserName><![CDATA[gh_02c7b9ffe0de]]></ToUserName>\n<FromUserName><![CDATA[' + openid + ']]></FromUserName>\n<CreateTime>1471836867</CreateTime>\n<MsgType><![CDATA[text]]></MsgType>\n<Content><![CDATA[ ' + text + ']]></Content>\n<MsgId>6321491209218392426</MsgId>\n</xml>';
     return msg;
 }
@@ -104,7 +140,8 @@ function getPostMsg() {
 
 
     var signature = cryptor.getSignature("1471836867", "315820554", encrypt);
-    textUrl = '/api/wechat?signature=' + signature + '&timestamp=1471836867&nonce=315820554&openid=ow-p8wL8rO3jj0Q2YMngZIfSpM98&encrypt_type=aes&msg_signature=' + msg_sign;
+    // textUrl = '/api/wechat?signature=' + signature + '&timestamp=1471836867&nonce=315820554&openid=ojUvl5RVgau8DQfPfZ6rlp8Q-Uy8&encrypt_type=aes&msg_signature=' + msg_sign;
+    textUrl = '/api/wechat?signature=' + signature + '&timestamp=1471836867&nonce=315820554&openid=123&encrypt_type=aes&msg_signature=' + msg_sign;
     return {
         url: textUrl,
         encrypt: encrypt,
@@ -205,7 +242,7 @@ function sendText() {
 
     var postParameter = getPostMsg();
 
-    var url = "http://127.0.0.1:7072" + postParameter.url;
+    var url = "https://127.0.0.1:7073" + postParameter.url;
 
     request({
             url: url,
@@ -218,6 +255,7 @@ function sendText() {
             // console.log(error);
             // console.log(response);
             // console.log(body);
+            console.log(body);
             if (!error && response.statusCode == 200) {
                 console.log(body)
             }
