@@ -1,0 +1,130 @@
+doctype html
+html
+    head
+        base(href='/')
+        title QTC-PRM - Login
+        meta(charset='utf8')
+        meta(name='keywords', content='PRM')
+        meta(name='description', content='PRM')
+        meta(name='viewport', content='width=device-width,initial-scale=1,user-scalable=no,maximum-scale=1')
+        script(src='https://cdn.bootcss.com/jquery/2.1.4/jquery.min.js')
+
+        style.
+            html,body{
+                padding:0;
+                margin:0;
+            }
+            .login-html {
+                width:400px;
+                margin:15% auto;
+            }
+            @media (max-width: 500px) {
+                .login-html{
+                    width:280px;
+                }
+            }
+            .login-form .group .button {
+                text-transform: uppercase;
+            }
+            .login-form .group {
+                margin-bottom: 15px;
+            }
+            .login-form .group .input,
+            .login-form .group .button {
+                width: calc(94% - 2px);
+                color: #fff;
+                display: block;
+            }
+            .login-form .group .input{
+                background: rgba(255, 255, 255, .1);
+                padding: 0 3%;
+                color: #444;
+                border: 1px solid #ccc;
+                height:40px;
+                line-height:40px;
+            }
+            .login-form .group .button {
+                border: none;
+                width:100%;
+                padding:10px;
+                font-size:16px;
+            }
+            .login-form .group input[data-type="password"] {
+                text-security: circle;
+                -webkit-text-security: circle;
+            }
+            .login-form .group .button {
+                background: #1ab394;
+            }
+            .login-form .group .check:checked + label {
+                color: #fff;
+            }
+            .logo-name {
+                color: #1ab394;
+                font-size: 40px;
+                font-weight: 800;
+                letter-spacing: -4px;
+                margin-bottom: 0;
+                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            }
+            .sign-in-htm{
+                display: block;
+                float: left;
+                width:100%;
+                padding-top:40px;
+            }
+            .captcha{
+                position: relative;
+            }
+            #getCaptcha{
+                position: absolute;
+                top:1px;
+                right:1px;
+                width:140px;
+                height:40px;
+            }
+            .message{
+                height:30PX;
+                font-size:12px;
+                color: #ed5565;
+                padding: 10px 0 0 0;
+            }
+            .login-form{
+                height:300px;
+                overflow: hidden;
+            }
+    body
+        .container
+            .login-html
+                h1.logo-name PRM
+                .login-form
+                    .sign-in-htm
+                        form( name="loginForm", action='/login', method='POST')
+                            if message
+                                .group.message
+                                    span=message
+                            .group
+                                input#luser.input(name="username" required type='text' placeholder="请输入用户名/邮箱")
+                            .group
+                                input#lpass.input(name="password" required type='password', data-type='password' placeholder="请输入密码")
+                            .group.captcha
+                                input#lcaptcha.input(name='captcha' type="text", required placeholder="请输入验证码")
+                                #captcha0.md-padding
+                                    img(src="" id='getCaptcha'  onclick="changeCaptcha();" )
+
+                            .group
+                                input.button(type='submit', value='登录')
+
+    script.
+        changeCaptcha();
+        function changeCaptcha() {
+            $.get( "/getCaptcha?" + Math.random(),function(data){
+                document.getElementById("getCaptcha").src = data;
+            });
+        }
+
+        $('form').submit(function () {
+
+            console.log('hhh')
+
+        });

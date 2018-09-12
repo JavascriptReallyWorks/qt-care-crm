@@ -1,0 +1,392 @@
+
+div(ng-controller="answerChatCtrl",ng-init="initAnswerChat()" layout="column" flex="" class="_md layout-column flex")
+    md-content(layout="column" flex="" class="_md layout-column flex")
+
+        .ui#answer_chat(layout="column" flex="" class="_md layout-column flex" )
+            //提问的用户列表
+            md-sidenav.md-sidenav-left.site-sidenav.left-menu(md-component-id='left', md-is-locked-open="$mdMedia('gt-xs')" md-whiteframe='4')
+                form.search(action='#')
+                    input(placeholder='用户名', type='search', name='', id='' ng-model="clientName")
+                //ng-nicescroll 是一个滚动条插件
+                //ul.list-friends
+                menu.list-friends(class="my-scroll-area" ng-nicescroll nice-option="{cursorcolor: '#696c75',cursorwidth: '4px',cursorborder:'none'}")
+                    li(ng-repeat="conv in convs | orderBy: ['-replierId','-updatedAt'] track by conv._id " ng-click="joinChat(conv._id)" ng-class="{selected:conv._id === selectedId}")
+                        .info
+                            .user {{($index+1).toString() + '. '}}{{showConvTitle(conv)}}
+                            //off：红点 on：绿点
+                            .status(ng-class="conv.replierId  ?  'on' : 'off'")
+                            //用户最新的一条信息
+                            .new_message {{delHtmlTag(conv.lastMessage)}}
+
+                    br
+                    br
+                p.msg-tools(ng-if="loadMoreConvCtrl" style='color:white')
+                    | -
+                    a(href="javascript:void(0)" ng-click="getConversations()" style='color:white') 加载更多
+                    | -
+
+            //md-content(md-scroll-y="" layout="column" flex="" class="_md layout-column flex")
+                md-toolbar.site-content-toolbar
+                    .md-toolbar-tools
+                        button.navbar-toggle(type='button', data-toggle='collapse' ng-if="!$mdMedia('gt-xs')",ng-click='toggleLeft()')
+                            span.icon-bar
+                            span.icon-bar
+                            span.icon-bar
+
+                            h2
+                                span {{title}}
+
+            //对话view
+            .chat
+                div(layout='row')
+                    //button.btn.btn-primary(type='button', data-toggle='collapse' ng-if="!$mdMedia('gt-xs')",ng-click='toggleLeft()') 对话
+                    button.navbar-toggle(type='button', data-toggle='collapse' ng-if="!$mdMedia('gt-xs')",ng-click='toggleLeft()')
+                        span.icon-bar
+                        span.icon-bar
+                        span.icon-bar
+                    .top
+                        .info
+                            .name {{curConv ? showConvTitle(curConv) : ''}}
+                        //.count 104 消息
+                .nav-tabs-custom-chat.tabs-container(ng-show="curConv")
+                    ul.nav.nav-tabs(ng-if="$mdMedia('gt-xs')")
+                        li.active
+                            a(href='#chat_view', data-toggle='tab') 对话框
+                        li
+                            a(href='#md_doc', data-toggle='tab') 病历文档
+                        li
+                                a#dLabel(role="button", data-toggle="dropdown", data-target="#", href="javascript:void(0)")
+                                    | 操作
+                                    span.caret
+                                ul.dropdown-menu.dropdown-menu-right.multi-level(role="menu", aria-labelledby="dropdownMenu")
+                                    //li.divider
+                                    li.dropdown-submenu.dropdown-menu-right(ng-repeat="role in crmUserMap")
+                                        a(tabindex="-1", href="javascript:void(0)") {{roleNameMap[role._id]}}
+                                        ul.dropdown-menu
+                                            li(ng-repeat="u in role.users" ng-if="user._id !== u.userid")
+                                                a(href="javascript:void(0)" ng-click='moveToOtherUser(role._id, u.userid,(u.nickname || u.name))') {{ u.nickname || u.name}}
+
+                    .tab-content(layout="column" flex="" class="_md layout-column flex")
+                        #chat_view.active.tab-pane
+                            .chat_view
+                                div.messages()
+                                    audio(controls='controls',id="audio",style="display:none;")
+                                    p.msg-tools-2(ng-if="loadMoreCtrl")
+                                        | -
+                                        a(href="javascript:void(0)" ng-click="curConv && getMessages()") 加载更多
+                                        | -
+                                    ul
+                                        //friend-with-a-SVAGina 提问用户的显示样式
+                                        //i 自己的显示样式
+                                        li(ng-repeat="message in curMessages track by $index" ng-class="(message.fromUserId != curConv.clientId) ? 'i' : 'friend-with-a-SVAGina'")
+                                            .head(ng-if="(message.fromUserId === user._id)")
+                                                span.time {{message.createdAt | date: 'MM-dd HH:mm'}}
+                                                span.name {{(message.fromUserName)}}
+                                            .head(ng-if="(message.fromUserId !== user._id)")
+                                                span.name {{(message.fromUserName)}}
+                                                span.time {{message.createdAt | date: 'MM-dd HH:mm'}}
+                                            .message(ng-if="message.text" ng-bind-html="message.text | unsafe" draggable-text)
+                                            .message(ng-if="message.msgType.toUpperCase() === 'TEXT'" ng-bind-html="convertContent(message.content) | unsafe" draggable-text)
+                                            .message(ng-if="message.msgType.toUpperCase() === 'OPERATION'") [转入人工]
+                                            .message(ng-if="message.msgType.toUpperCase() === 'BTNS'" ng-bind-html="convertContent(message.content) | unsafe" draggable-text)
+                                            .message(ng-if="message.msgType.toUpperCase() === 'ES'" ng-bind-html="convertTextFromEsTpl(message) | unsafe" draggable-text)
+                                            .message(ng-if="message.msgType.toUpperCase() === 'EVENT'" ng-bind="'事件' + '-'+(message.event || '')+ '-'+(message.eventKey || '')+ '-'+(message.content|| '')" draggable-text)
+                                            img(ng-if="message.msgType.toUpperCase() === 'IMAGE'" ng-src="/cs/picture/picture_name?url={{message.picUrl}}" ng-click="openModalImage(message.picUrl)" style="width:160px;" draggable-image)
+                                            .message(ng-if="message.msgType.toUpperCase() === 'VOICE'" title="{{message.recognition}}" ng-click="playAudio('/cs/audio/audio_name?url=' + message.voiceUrl,$event)")
+                                                .play-voice-row
+                                                    .play-voice.v_player_pause
+                                                        span
+
+
+
+                                .conv_control
+                                    //消息输入
+                                    .write-form
+                                        //- div.msg_content(text-angular ng-model='msg_content' style="height:200px;background:#fff;")
+                                        <textarea class="msg_content" ng-model="msg_content" froala="froalaOptions" placeholder="Ctrl + Enter or ⌘ Cmd + Enter 发送"></textarea>
+                                        //textarea.msg_content(ng-model="msg_content" placeholder="Ctrl + Enter or ⌘ Cmd + Enter 发送")
+                                        //div.control
+                                            span.send(ng-click="sendMsg()") Ctrl + Enter or ⌘ Cmd + Enter 发送
+                                    div.pull-right(layout='row')
+                                        #end_btn.md-button.md-raised.md-default.btn-green-1(type='button', ng-click='endChat()')
+                                            | 结束对话
+                                        #send_btn.md-button.md-raised.md-default.btn-green-1(type='button', ng-click='sendMsg()')
+                                            | 发送
+
+
+
+                        #md_doc.tab-pane
+                            .md_doc-content
+                                div(ng-if="medicalRecords" ng-repeat="medicalRecord in medicalRecords")
+                                    h1 {{medicalRecord['patientName'].value}}
+                                    h2 Dicom
+                                        //button.btn.btn-primary(ng-click="refreshDicom()" style="margin-left: 15px; ") 刷新
+                                        //button.btn.btn-default(ng-click="uploadDicom()") 上传
+                                    //h3 Dicom上传Case Number: {{curConv.clientId}}
+
+                                    .row(ng-if="medicalRecord && medicalRecord.dicomFiles.value")
+                                        .col-sm-4(ng-repeat="dicom in medicalRecord.dicomFiles.value")
+                                            a(href="javascript:void(0);" ng-click="getDicomLink(dicom.accessionNumber)") {{dicom.accessionNumber}}
+                                            br
+                                            span {{dicom.documentType}}
+                                            br
+                                            span {{dicom.visitDate ? dicom.visitDate.split('T')[0] : ''}}
+                                    br
+
+                                    h2 Report
+                                    .row(ng-if="medicalRecord && medicalRecord.documents.value")
+                                        .col-sm-4(ng-repeat="info in medicalRecord.documents.value")
+                                            img(ng-if="isImage(info.documentName)" ng-src="/cs/picture/picture_name?url={{info.ossFileKey || info.url}}" style="max-width:100%;" ng-click="openModalImage(info.ossFileKey || info.url)")
+                                            br
+                                            a(href="javascript:void(0);" ng-click="downloadFile(info.ossFileKey || info.url)") {{info.documentName}}
+                                            br
+                                            span {{info.documentType}}
+                                            br
+                                            span {{info.visitDate ? info.visitDate.split('T')[0] : ''}}
+
+                                    br
+                                    br
+                                    br
+
+
+
+            .chat-tools(ng-if="$mdMedia('gt-xs')")
+                .nav-tabs-custom.tabs-container(style="height:100%;")
+                    ul.nav.nav-tabs
+                        li.active
+                            a(href='#activity', data-toggle='tab') 用户
+                        li
+                            a(href='#search', data-toggle='tab') 搜索知识库
+                        li
+                            a(href='#commons', data-toggle='tab') 常用语
+                        //li
+                            a(href='#services', data-toggle='tab' ng-click="queryProducts()") 服务介绍
+
+                    .tab-content(md-scroll-y="" layout="column" flex="" class="_md layout-column flex")
+                        #activity.active.tab-pane
+                            .box.plane-box
+                                .box-header.with-border
+                                    button.btn.btn-box-tool(type='button', data-widget='collapse', data-toggle='tooltip', title='Collapse')
+                                        i.fa.fa-minus
+                                    h3.box-title 订单
+
+                                    .box-tools.pull-right
+                                        ul.pagination.pagination-sm.inline
+                                            div(ng-if="cases.total")
+                                                paging(page='querycase.casePage',ul-class="pagination pagination-sm" page-size='querycase.casePageSize', total='cases.total', paging-action="DoCtrlPagingAct(querycase.casePage, querycase.casePageSize, cases.total)")
+
+
+                                .box-body
+                                    .row
+                                        .col-sm-12
+                                            md-radio-group.inline-radio-group(ng-model="querycase.openid")
+                                                md-radio-button(type="radio",value="{{clientId}}",name="openid" ) 当前用户
+                                                md-radio-button(type="radio",value="all",name="openid") 所有
+                                            | &nbsp;
+                                            span(editable-text='querycase.order_id',e-name="order_id",e-placeholder="订单编号") {{ querycase.order_id ? querycase.order_id :  '请输入订单编号' }}
+
+                                        .col-sm-12
+                                            section.case(ng-repeat="c in cases.rows")
+                                                .row
+
+                                                    .col-sm-9
+                                                        .label.label-warning {{statusName(c.status) || "无"}}
+                                                        .label.text-success {{getDriverStatus(c.driver_status)}}
+                                                        | &nbsp;
+                                                        small {{c.order_id}}
+                                                        
+                                                         
+
+                                                    .col-sm-3.text-right
+                                                        small {{c.create_time | date: 'yyyy-MM-dd HH:mm' }}
+                                                    //.col-sm-1
+
+                                                br
+                                                .row
+
+                                                    .col-sm-5
+                                                        a(href="javascript:void(0)" title="联系用户" ng-click="contactClient($index)")
+                                                            i.fa.fa-fw.fa-comments(style="font-size:22px;")
+
+                                                        | &nbsp;
+                                                        | &nbsp;
+                                                        small {{c.userName}} / {{c.patientMobile}} /
+                                                        a(href="javascript:void(0)" ng-click="loadCurMr(c.medical_record_id)"  title="查看{{c.patientName}}的病历")
+                                                                | {{c.patientName}}
+                                                        br
+                                                    .col-sm-5
+                                                        a(ng-click="loadCurMr(c.medical_record_id)")
+                                                            small {{c.product.product_name}}
+                                                    .col-sm-2
+                                                        .btn-group
+                                                            button.btn.btn-box-tool.dropdown-toggle(type='button', data-toggle='dropdown')
+                                                                | 操作
+                                                                i.fa.fa-navicon
+                                                            ul.dropdown-menu.dropdown-menu-right.large-dropdown-menu-right(role='menu')
+                                                                li
+                                                                    a(href='javascript:void(0)' ng-click="newTicket(c)") 新建工单
+
+                                                                li.divider(role='separator')
+                                                                span
+                                                                    li
+                                                                        a(ng-if="canConfirm(c.status)" href='javascript:void(0)' ng-click="confirmCase(c._id)") 确认订单
+                                                                    li
+                                                                        a(ng-if="canCancel(c.status)" href='javascript:void(0)' ng-click="cancelCase(c._id)") 取消订单
+
+                                                                //span.li(ng-repeat="(key,value) in CASE_STATUS")
+                                                                    a(href='javascript:void(0)' ng-click="changeCaseStatus(c._id, key)") {{value}}
+
+
+                                                .row(ng-if="c.newTicketView")
+                                                    .col-sm-12
+                                                        .box(style="border-top: 1px solid #d2d6de;")
+                                                            .box-header.with-border
+                                                                h5.box-title(style="font-size:12px;") 工单
+                                                                .box-tools.pull-right
+                                                                    button.btn.btn-default.btn-sm(type='button' ng-click="cancelTicket(c)") 取消
+                                                                    button.btn.btn-default.btn-sm(type='button' ng-click="saveTicket(c.ticket,c._id)") 保存
+
+                                                            .box-body.box-profile
+                                                                .row
+                                                                    .col-sm-12
+                                                                        .form-group
+                                                                            label 标题
+                                                                            input.form-control( type='text',ng-model="c.ticket.title")
+                                                                        .form-group
+                                                                            label 内容
+                                                                            textarea.form-control( type='text',ng-model="c.ticket.content")
+                                                                        .form-group
+                                                                            label 反馈
+                                                                            textarea.form-control( type='textarea',ng-model="c.ticket.feedback")
+                                                                        .form-group
+                                                                            label 反馈
+                                                                            md-select(ng-model='c.ticket.status' )
+                                                                                md-option(ng-repeat='option in ["待处理","已处理"]', ng-value='option')
+                                                                                    | {{option}}
+
+                                                .row(ng-if="c.tickets && c.tickets[0]")
+                                                    .col-sm-12
+                                                        div.text-info.callout-info-sm
+                                                            small(ng-click="showTickets(c)")
+                                                                i.fa.fa-ticket
+                                                                | &nbsp;{{c.tickets[c.tickets.length-1].title}} - {{c.tickets[c.tickets.length-1].status}}
+                                                .row(ng-if="c.tickets && c.tickets[0] && c.ticketshow")
+                                                    .col-md-12
+                                                        ul.timeline.timeline-inverse.case-log
+                                                            .timeline.timeline-inverse(ng-repeat="t in c.tickets | orderBy:'t.create_time':true")
+                                                                li
+                                                                    i.fa.fa-file-text.bg-blue
+                                                                    .timeline-item
+                                                                        span.time
+                                                                            a.fa.fa-edit(href="javascript:void(0)" ng-click="editTicket(t,c)")
+                                                                            |   {{t.create_time | date: 'yyyy-MM-dd HH:mm'}}
+                                                                        .timeline-header
+                                                                            |  {{t.title}} - {{t.status}}
+                                                                        .timeline-body
+                                                                            | {{t.content}}
+                                                                            p 反馈：{{t.feedback}}
+
+                                                .row(ng-if="c.logs && c.logs[0]")
+                                                    .col-sm-12
+                                                        div.text-info.callout-info-sm
+                                                            small(ng-click="showLogs(c)")
+                                                                i.fa.fa-volume-down
+                                                                | &nbsp;{{c.logs[c.logs.length-1].title}}
+                                                .row(ng-if="c.logs && c.logs[0] && c.logshow")
+                                                    .col-md-12
+                                                        ul.timeline.timeline-inverse.case-log
+                                                            .timeline.timeline-inverse(ng-repeat="log in c.logs | orderBy:'log.create_time':true")
+                                                                li
+                                                                    i.fa.fa-envelope.bg-blue
+                                                                    .timeline-item
+                                                                        span.time
+                                                                            i.fa.fa-clock-o
+                                                                            |   {{log.create_time | date: 'yyyy-MM-dd HH:mm'}}
+                                                                        .timeline-header
+                                                                            span.text-light-blue {{log.create_user}}
+                                                                            |  {{log.title}}
+                                                                        .timeline-body(ng-if="log.content")
+                                                                            | {{log.content}}
+
+
+
+
+
+                            div(ui-view="medical_record")
+
+
+
+                        #search.tab-pane
+                            div(ui-view="chat_qa_helper")
+                            //.search_tab(ng-init="initTagsCategory()")
+                                div(layout='row')
+                                    .md-block(ng-repeat="options in tags_arr" flex-gt-sm='')
+                                        md-select(ng-model='select_tags[$index]', md-on-close='clearSearchTerm()', ng-change="changeTagSelect(select_tags[$index],$index)", data-md-container-class='selectdemoSelectHeader')
+                                            md-select-header.demo-select-header
+                                                input.demo-header-searchbox.md-text(ng-model='searchTerm', type='search', placeholder='Search' ng-keydown="onSearchChange($event)")
+                                            md-optgroup
+                                                md-option(ng-value='tag.options_tags',ng-repeat="tag in options | filter:searchTerm",ng-selected="select_tags[$parent.$index] == tag.options_tags") {{tag.options_tags}}
+
+                                div(droppable-text etext="tags[0]")
+                                    tags-input(ng-model='tags', placeholder='添加关键字', replace-spaces-with-dashes='false' on-tag-added="tagChanged()"
+                                    on-tag-removed="tagChanged()")
+                                        auto-complete(source='loadTags($query)', min-length='0', load-on-focus='false', load-on-empty='false', max-results-to-show='32',select-first-match="false")
+
+                                    //div.related-qas(ng-if="option === 'search'" class="my-scroll-area" ng-nicescroll nice-option="{cursorcolor: '#cdd2d6',cursorwidth: '4px',cursorborder:'none'}" scroll-to-top-when="items_changed")
+                                ul.search_result
+                                    li(ng-repeat="qa in qaHits.hits")
+                                        a(href="javascript:void(0)"  data-toggle="tooltip" data-placement="left" title="发送链接和摘要" ng-click="getQaContent(qa._id,'link')") {{qa._source.title}}
+                                        a(href="javascript:void(0)" title="{{qa._source.digest}}" + "..." ng-click="getQaContent(qa._id,'text')")
+                                            i.fa.fa-file-text-o
+                        #commons.tab-pane
+                            //div.related-qas(class="my-scroll-area" ng-nicescroll nice-option="{cursorcolor: '#cdd2d6',cursorwidth: '4px',cursorborder:'none'}" scroll-to-top-when="items_changed")
+                                li(ng-repeat="common in commons")
+                                    a(href="javascript:void(0)" ng-click="setMsgContent(common)" data-toggle="tooltip" data-placement="left" title="{{common}}" + "...") {{common}}
+                            ul
+                                li(ng-repeat="(k,v) in commons")
+                                    a(href="javascript:void(0)" ng-click="CM.showHideCommonCategory(k)" style="font-size:20px;") {{k}}
+                                    a(href="javascript:void(0)" ng-click="CM.deleteCategory(k)" style="margin-left:20px")
+                                        i.fa.fa-trash-o
+                                    ul(ng-show="commonCategoryOnShow[k]" style="margin-left:40px;")
+                                        li(ng-repeat="word in v")
+                                            a(href="javascript:void(0)" ng-click="setMsgContent(word)") {{word}}
+                                            a(href="javascript:void(0)" ng-click="CM.deleteCommon(k,$index)" style="margin-left:20px")
+                                                i.fa.fa-trash-o
+
+                                        form(ng-submit='CM.submitNewCommon(k)')
+                                            md-input-container.md-block(flex-gt-sm='' style="margin:0" md-no-float='')
+                                                input( ng-model="newCommon[k]" placeholder='新增常用语')
+
+                                li
+                                    form(ng-submit='CM.newCommonCategory()')
+                                        md-input-container.md-block(flex-gt-sm='' style="margin:0" md-no-float='')
+                                            input( ng-model="newCategory" placeholder='新增常用语分类')
+                        //#services.tab-pane
+                            .box
+                                .box-body
+                                    #example1_wrapper.dataTables_wrapper.form-inline.dt-bootstrap
+                                        .row
+                                            .col-sm-12
+                                                table#example1.table.table-bordered.table-striped.dataTable(role='grid', aria-describedby='example1_info')
+                                                    thead
+                                                        tr(role='row')
+                                                            th 产品名
+                                                            th 单价
+                                                            th 简介
+                                                    tbody
+                                                        tr(ng-repeat="t in products.rows")
+                                                            td
+                                                                a(href="javascript:void(0)"  target="_blank" ng-click="getProductContent('<a href=\"https://www.zlzhidao.com/qab/redirect?auth_after_url=https%3a%2f%2fwww.zlzhidao.com%2fqab%2f%23%2fproduct_view%3fid%3d'+t._id+'\">'+t.product_name+'</a></br>'+t.intro)")  {{ t.product_name || '无' }}
+                                                            td
+                                                                span {{t.unit_price}}
+                                                            td
+                                                                a(href="javascript:void(0)" ng-click="getProductContent(t.intro)") {{ t.intro }}
+
+                                        .row
+                                            .col-sm-5
+                                                #example1_info.dataTables_info(role='status', aria-live='polite') Showing {{productPage}} to {{productPageSize}} of {{products.total}} entries
+                                            .col-sm-7
+                                                #example1_paginate.dataTables_paginate.paging_simple_numbers
+                                                    ul.pagination
+                                                        paging(page='productPage', page-size='productPageSize', total='products.total', paging-action="DoCtrlPagingAct(productPage, productPageSize, total)")
+

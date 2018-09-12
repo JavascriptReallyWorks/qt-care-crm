@@ -1,0 +1,155 @@
+doctype html
+head
+    base(href='/')
+    title ZL客服后台
+    meta(charset='utf8')
+    meta(name='keyword', content='肿瘤,咨询,新药,治疗,肺癌,乳腺癌,胃癌,肝癌,黑色素瘤,白血病,结直肠癌,淋巴瘤,Cyramza,Opdivo,Keytruda,Opdivo,Tecentriq,Keytruda,AZD9291,Cyramza,Ibrutinib,Ibrance')
+    meta(name='description', content='最新最权威的肿瘤咨询')
+    meta(name='viewport', content='width=device-width,initial-scale=1,user-scalable=no,maximum-scale=1')
+
+    link(rel='stylesheet', href='/bower_components/bootstrap/dist/css/bootstrap.min.css')
+    link(rel='stylesheet', href='/bower_components/angular-bootstrap/ui-bootstrap-csp.css')
+    link(rel="stylesheet", href="/bower_components/angular-material/angular-material.min.css")
+    link(rel='stylesheet', href="/bower_components/angular-xeditable/dist/css/xeditable.css")
+    link(rel='stylesheet', href="/bower_components/angular-ui-select/dist/select.min.css")
+    link(rel='stylesheet', href='/inspinia/css/inspinia.css')
+    link(rel='stylesheet', href="/bower_components/admin-lte/dist/css/AdminLTE.min.css")
+    <link rel="stylesheet" href="/bower_components/admin-lte/dist/css/skins/_all-skins.min.css">
+    link(rel='stylesheet', href='https://cdn.bootcss.com/bootstrap-daterangepicker/2.1.25/daterangepicker.min.css')
+    link(rel='stylesheet', href='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.css')
+
+    link(rel='stylesheet', href='/manager.css')
+    link(rel='stylesheet', href='/chat.css')
+
+
+    <!-- Include Font Awesome. -->
+    <link href="../bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- Include Froala Editor styles -->
+    <link rel="stylesheet" href="../bower_components/froala-wysiwyg-editor/css/froala_editor.min.css" />
+    <link rel="stylesheet" href="../bower_components/froala-wysiwyg-editor/css/froala_style.min.css" />
+
+    <!-- Include Froala Editor Plugins styles -->
+    <link rel="stylesheet" href="../bower_components/froala-wysiwyg-editor/css/plugins/char_counter.css">
+    <link rel="stylesheet" href="../bower_components/froala-wysiwyg-editor/css/plugins/code_view.css">
+    <link rel="stylesheet" href="../bower_components/froala-wysiwyg-editor/css/plugins/colors.css">
+    <link rel="stylesheet" href="../bower_components/froala-wysiwyg-editor/css/plugins/emoticons.css">
+    <link rel="stylesheet" href="../bower_components/froala-wysiwyg-editor/css/plugins/file.css">
+    <link rel="stylesheet" href="../bower_components/froala-wysiwyg-editor/css/plugins/fullscreen.css">
+    <link rel="stylesheet" href="../bower_components/froala-wysiwyg-editor/css/plugins/image_manager.css">
+    <link rel="stylesheet" href="../bower_components/froala-wysiwyg-editor/css/plugins/image.css">
+    <link rel="stylesheet" href="../bower_components/froala-wysiwyg-editor/css/plugins/line_breaker.css">
+    <link rel="stylesheet" href="../bower_components/froala-wysiwyg-editor/css/plugins/table.css">
+    <link rel="stylesheet" href="../bower_components/froala-wysiwyg-editor/css/plugins/video.css">
+
+    script(src='/bower_components/jquery/dist/jquery.min.js')
+    script(src='/bower_components/bootstrap/dist/js/bootstrap.min.js')
+    script(src='/bower_components/bootstrap/js/tooltip.js')
+    script(src='/bower_components/jquery.nicescroll/dist/jquery.nicescroll.min.js')
+    <script src="/bower_components/admin-lte/dist/js/app.min.js"></script>
+
+
+    <script src="../bower_components/froala-wysiwyg-editor/js/froala_editor.min.js"></script>
+
+    <!-- Include Froala Editor Plugins -->
+    <script src="../bower_components/froala-wysiwyg-editor/js/plugins/align.min.js"></script>
+    <script src="../bower_components/froala-wysiwyg-editor/js/plugins/char_counter.min.js"></script>
+    <script src="../bower_components/froala-wysiwyg-editor/js/plugins/code_beautifier.min.js"></script>
+    <script src="../bower_components/froala-wysiwyg-editor/js/plugins/code_view.min.js"></script>
+    <script src="../bower_components/froala-wysiwyg-editor/js/plugins/colors.min.js"></script>
+    <script src="../bower_components/froala-wysiwyg-editor/js/plugins/emoticons.min.js"></script>
+    <script src="../bower_components/froala-wysiwyg-editor/js/plugins/entities.min.js"></script>
+    <script src="../bower_components/froala-wysiwyg-editor/js/plugins/file.min.js"></script>
+    <script src="../bower_components/froala-wysiwyg-editor/js/plugins/font_family.min.js"></script>
+    <script src="../bower_components/froala-wysiwyg-editor/js/plugins/font_size.min.js"></script>
+    <script src="../bower_components/froala-wysiwyg-editor/js/plugins/fullscreen.min.js"></script>
+    <script src="../bower_components/froala-wysiwyg-editor/js/plugins/image.min.js"></script>
+    <script src="../bower_components/froala-wysiwyg-editor/js/plugins/image_manager.min.js"></script>
+    <script src="../bower_components/froala-wysiwyg-editor/js/plugins/inline_style.min.js"></script>
+    <script src="../bower_components/froala-wysiwyg-editor/js/plugins/line_breaker.min.js"></script>
+    <script src="../bower_components/froala-wysiwyg-editor/js/plugins/link.min.js"></script>
+    <script src="../bower_components/froala-wysiwyg-editor/js/plugins/lists.min.js"></script>
+    <script src="../bower_components/froala-wysiwyg-editor/js/plugins/paragraph_format.min.js"></script>
+    <script src="../bower_components/froala-wysiwyg-editor/js/plugins/paragraph_style.min.js"></script>
+    <script src="../bower_components/froala-wysiwyg-editor/js/plugins/quote.min.js"></script>
+    <script src="../bower_components/froala-wysiwyg-editor/js/plugins/save.min.js"></script>
+    <script src="../bower_components/froala-wysiwyg-editor/js/plugins/table.min.js"></script>
+    <script src="../bower_components/froala-wysiwyg-editor/js/plugins/video.min.js"></script>
+    <script src="../bower_components/froala-wysiwyg-editor/js/languages/zh_cn.js"></script>
+    <!-- End Froala -->
+
+
+
+
+    script(src='/bower_components/angular/angular.min.js')
+    <script src="/bower_components/angular-froala/src/angular-froala.js"></script>
+
+    script(src='/bower_components/ng-file-upload/ng-file-upload-shim.min.js')
+    script(src='/bower_components/ng-file-upload/ng-file-upload.min.js')
+
+    script(src='/bower_components/angular-xeditable/dist/js/xeditable.min.js')
+    script(src='/bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js')
+    script(src='/bower_components/angular-ui-select/dist/select.min.js')
+    script(src='/bower_components/checklist-model/checklist-model.js')
+    script(src='/bower_components/angular-aria/angular-aria.js')
+    script(src='/bower_components/angular-material/angular-material.min.js')
+    script(src='/bower_components/angular-sanitize/angular-sanitize.min.js')
+    script(src='/bower_components/angular-cookies/angular-cookies.min.js')
+    script(src='/bower_components/angular-messages/angular-messages.min.js')
+    script(src='/bower_components/angular-animate/angular-animate.min.js')
+    script(src='/bower_components/angular-paging/dist/paging.min.js')
+    script(src='/bower_components/angular-ui-router/release/angular-ui-router.min.js')
+    script(src='/bower_components/angular-nicescroll/angular-nicescroll.js')
+    script(src='/bower_components/ng-tags-input/ng-tags-input.min.js')
+    script(src='/bower_components/jsdiff/diff.js')
+    script(src='/bower_components/socket.io-client/dist/socket.io.js')
+
+    //script(src='/build/main.js')
+    script(src='/crm_test/cs.js')
+    script(src='/crm_test/socket_pubsub.js')
+    script(src='/crm_test/cs_convert_count/cs_convert_count.js')
+
+    script(src='/crm_test/ngapp_constant/medical_record_pattern.js')
+    script(src='/crm_test/ngapp_constant/medical_record_pattern_en.js')
+    script(src='/crm_test/ngapp_constant/report_pattern.js')
+    script(src='/crm_test/ngapp_constant/cs_constant.js')
+
+    script(src='/crm_test/ngapp_service/zlCsService.js')
+
+    script(src='/crm_test/ngapp_controller/case_report_list_controller.js')
+
+    script(src='/crm_test/ngapp_module/answer_chat_view.js')
+    script(src='/crm_test/ngapp_module/answer_chat_manager.js')
+    script(src='/crm_test/ngapp_module/case_manager.js')
+    script(src='/crm_test/ngapp_module/case_report_edit_module.js')
+    script(src='/crm_test/ngapp_module/case_report_manager.js')
+    script(src='/crm_test/ngapp_module/chat_qa_helper_template_module.js')
+    script(src='/crm_test/ngapp_module/medical_record_edit.js')
+    script(src='/crm_test/ngapp_module/medical_record_manager.js')
+    script(src='/crm_test/ngapp_module/medical_record_template_module.js')
+    script(src='/crm_test/ngapp_module/product_service.js')
+    script(src='/crm_test/ngapp_module/product_service_edit.js')
+    script(src='/crm_test/ngapp_module/profile.js')
+    script(src='/crm_test/ngapp_module/report_check_manager.js')
+    script(src='/crm_test/ngapp_module/translate_report_module.js')
+    script(src='/crm_test/ngapp_module/user_manager.js')
+    script(src='/crm_test/ngapp_module/case_edit.js')
+
+
+    script(src='/crm_test/components/trust_html/trust_html-filter.js')
+    script(src='/crm_test/components/drag_drop/drag-drop-directive.js')
+    script(src='/crm_test/components/md_tpl_table//md_tpl_table_directive.js')
+
+
+    script(src='https://cdn.bootcss.com/moment.js/2.18.1/moment.min.js')
+    script(src='https://cdn.bootcss.com/moment.js/2.18.1/locale/zh-cn.js')
+    script(src='https://cdn.bootcss.com/bootstrap-daterangepicker/2.1.25/daterangepicker.min.js')
+    script(src='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.js')
+
+
+
+    script(type='text/javascript').
+        var user = !{JSON.stringify(user)};
+html(ng-app="ZLCsApp", lang="en", class="no-js",class="ng-scope")
+    body(class="docs-body layout-row" layout="row")
+        div(layout="column" tabindex="-1" role="main" flex="" class="layout-column flex",ui-view='')

@@ -1,0 +1,27 @@
+<table class="table table-bordered">
+    <tr>
+        <th ng-repeat="header in pattern.headers" ng-style="header==='来源' &amp;&amp; {'background-color':'#eff2f6'}">{{header}}</th>
+    </tr>
+    <tr style="border-top-style:hidden;">
+        <td ng-repeat="kk in pattern.properties" ng-style="kk==='source' &amp;&amp; {'background-color':'#eff2f6'}">
+            <input ng-if="pattern.filter[kk] === 'text'" type="text" ng-model="pattern.value[kk]" droppable-text="droppable-text" etext="pattern.value[kk]" placeholder="{{pattern.placeholders[kk]}}" class="form-control"/>
+            <input ng-if="pattern.filter[kk] === 'number'" type="number" ng-model="pattern.value[kk]" placeholder="{{pattern.placeholders[kk]}}" class="form-control"/>
+            <textarea ng-if="pattern.filter[kk] === 'textarea'" type="text" ng-model="pattern.value[kk]" droppable-text="droppable-text" etext="pattern.value[kk]" placeholder="{{pattern.placeholders[kk]}}" class="form-control"></textarea>
+            <md-select ng-if="pattern.filter[kk] === 'dropdown'" ng-model="pattern.value[kk]" placeholder="{{pattern.placeholders[kk]}}">
+                <md-option ng-repeat="option in pattern.subOptions[kk]" ng-value="option">{{option}}</md-option>
+            </md-select>
+            <md-select ng-if="pattern.filter[kk] === 'dropdownHash'" ng-model="pattern.value[kk]" placeholder="{{pattern.placeholders[kk]}}">
+                <md-option ng-repeat="option in pattern.subOptions[kk]" ng-value="option.value">{{option.display}}</md-option>
+            </md-select>
+            <md-select ng-if="pattern.filter[kk] === 'dropdownMulti'" ng-model="pattern.value[kk]" multiple="" placeholder="{{pattern.placeholders[kk]}}">
+                <md-optgroup label="{{pattern.value[kk].toString()}}">
+                    <md-option ng-repeat="option in pattern.subOptions[kk]" ng-value="option">{{option}}</md-option>
+                </md-optgroup>
+            </md-select>
+            <md-select ng-if="pattern.filter[kk] === 'dropdownFile'" ng-model="pattern.value[kk]" placeholder="{{pattern.placeholders[kk]}}">
+                <md-option ng-repeat="option in getFileNameList(mdrIndex) track by $index" ng-value="option">{{option}}</md-option>
+            </md-select>
+            <md-datepicker md-hide-icons="calendar" ng-if="pattern.filter[kk] === 'date'" ng-model="pattern.value[kk]" md-placeholder="选择日期" md-open-on-focus=""></md-datepicker>
+        </td>
+    </tr>
+</table>

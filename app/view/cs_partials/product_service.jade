@@ -1,0 +1,45 @@
+div(ng-cloak='' ,ng-controller="productQueryCtrl",ng-init="initProductQuery()")
+    section.content
+        .box
+            .box-body
+                #example1_wrapper.dataTables_wrapper.form-inline.dt-bootstrap
+                    .row
+                        .col-sm-9.md-padding
+                            #example1_filter.dataTables_filter
+                                span(editable-text='cond.params.product_name',e-name="cond.params.product_name",e-placeholder="请输入产品名称") {{ cond.params.product_name || '请输入产品名称' }}
+                        .col-sm-3.md-padding
+                            .dataTables_ctrl
+                                button.btn.bg-primary.btn-flat(type='button' ui-sref="cs.product_service_edit") 新增产品
+                    .row
+                        .col-sm-12
+                            table#example1.table.table-bordered.table-striped.dataTable(role='grid', aria-describedby='example1_info')
+                                thead
+                                    tr(role='row')
+                                        th 产品类型
+                                        th 产品名
+                                        th 单价
+                                        th 简介
+                                        th 操作
+                                tbody
+                                    tr(ng-repeat="t in list.rows")
+                                        td  {{ t.product_type }}
+                                        td
+                                            a(href="{{t.url}}"  target="_blank")  {{ t.product_name || '无' }}
+                                        td {{t.unit_price}}
+                                        td {{ t.intro }}
+                                        td
+                                            a(ui-sref="cs.product_service_edit({id:t._id})")
+                                                i.fa.fa-edit
+                                                |  编辑
+                                            |&nbsp;
+                                            a(href="javascript:void(0)" ng-click="removeProduct(t._id)")
+                                                i.fa.fa-edit
+                                                |  删除
+
+                    .row
+                        .col-sm-5
+                            #example1_info.dataTables_info(role='status', aria-live='polite') Showing {{cond.page}} to {{cond.pageSize}} of {{list.total}} entries
+                        .col-sm-7
+                            #example1_paginate.dataTables_paginate.paging_simple_numbers
+                                ul.pagination
+                                    paging(page='cond.page', page-size='cond.pageSize', total='list.total', paging-action="DoCtrlPagingAct(page, pageSize, total)")

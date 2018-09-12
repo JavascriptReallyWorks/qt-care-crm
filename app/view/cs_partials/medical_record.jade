@@ -1,0 +1,32 @@
+div(ng-cloak='' ,ng-controller="caseManagerCtrl",ng-init="initCaseManager()")
+    md-content.md-padding
+        div(layout-gt-sm='row')
+            span.md-padding
+                span.type 姓名：
+                span(editable-text='cond.params.username',e-name="cond.params.username",e-placeholder="请输入姓名") {{ cond.params.trial || '姓名' }}
+        md-content
+            table(class="table table-striped")
+                thead
+                    tr
+                        th 姓名
+                        th 疾病
+                        th 操作
+
+                tbody
+                    tr(ng-repeat="t in list.rows")
+                        td
+                            a 张三
+                        td
+                            span 肺癌
+
+                        td
+                            a(ui-sref="manager.medical_record_edit({id:t._id})")
+                                i.fa.fa-edit
+                                |  编辑
+
+
+            nav(ng-if="list.total")
+                .pagination
+                    span.total 共{{list.total}}条记录
+                    paging(page='cond.page', page-size='cond.pageSize', total='list.total', paging-action="DoCtrlPagingAct(page, pageSize, total)")
+

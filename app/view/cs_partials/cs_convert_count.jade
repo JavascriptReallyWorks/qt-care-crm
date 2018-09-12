@@ -1,0 +1,21 @@
+div(ng-cloak='' ,ng-controller="convertCountCtrl",ng-init="initConvertCount()")
+    md-content.md-padding
+        div(layout-gt-sm='row')
+            span.md-padding
+                    input.pull-right(type='text', name='dataRange', value="{{startDate + ' - '+ endDate}}" style="width:400px;")
+        md-content
+                table.table
+                    tbody
+                        tr
+                            td 日期
+                            td 对话数量（人次）
+                            td 病历创建数量
+                            td 下单数量
+                        tr(ng-repeat="date in dateList")
+                            td {{date}}
+                            td
+                                span(ng-repeat="n in convCount" ng-if="n.day == date") {{n.count}}
+                            td
+                                span(ng-repeat="n in mdCount" ng-if="n.day == date") {{n.count}}
+                            td
+                                span(ng-repeat="n in caseCount" ng-if="n.day == date") {{n.count}}

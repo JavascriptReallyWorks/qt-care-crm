@@ -1,0 +1,39 @@
+section(layout='row', flex='',ng-controller="CsCtrl",ng-init="initCs();")
+    section(layout='row', flex='')
+        md-sidenav.md-sidenav-left.site-sidenav(ng-show="!menuFold" md-component-id='left', md-is-locked-open="$mdMedia('gt-xs')", md-whiteframe='4')
+            header.nav-header
+                h1.md-toolbar-tools
+                    a(href="javascript:void(0)" class="docs-logo")
+                        img(src="https://www.zlzhidao.com/img/logo@2x.png")
+
+                div.right-icons-menu
+                    | {{user.name}}
+                div.right-icons-menu
+                    
+                    a(title="{{user.name}}" href="cs#!/cs/profile?name=个人信息")
+                        span.glyphicon.glyphicon-user(aria-hidden='true')
+                  
+                    a(title="退出" href="/logout")
+                        span.glyphicon.glyphicon-log-out(aria-hidden='true')
+
+
+            div.list-menu(md-scroll-y="" layout="column" flex="" class="_md layout-column flex")
+                md-md-list
+                    md-list-item(ng-repeat="m in user.role.menu")
+                        //a.md-block(flex-gt-sm='',ui-sref="{{m.url}}({name:m.name})")
+                        a.md-block(flex-gt-sm='' ng-click="goToState(m.url,m.name)")
+                            span {{m.name}}
+
+
+        md-content(md-scroll-y="" layout="column" flex="" class="_md layout-column flex")
+            md-toolbar.site-content-toolbar
+                .md-toolbar-tools
+                    button.navbar-toggle(type='button', data-toggle='collapse' ng-if="!$mdMedia('gt-xs')",ng-click='toggleLeft()')
+                        span.icon-bar
+                        span.icon-bar
+                        span.icon-bar
+
+                    h2
+                        span {{title}}
+                        span.glyphicon.glyphicon-question-sign(ng-if="help_content" data-toggle="tooltip" data-placement="bottom" title="{{help_content}}")
+            div.container-right(ui-view='main',md-scroll-y="" layout="column" flex="" class="_md layout-column flex")

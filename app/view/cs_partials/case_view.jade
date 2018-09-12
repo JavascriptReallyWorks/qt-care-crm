@@ -1,0 +1,299 @@
+
+style.
+    .md-datepicker-button {
+        display: none;
+    }
+
+
+div(ng-cloak='' ,ng-controller="caseViewtrl",ng-init="initCaseView()")
+    section.invoice
+        // title row
+        .row
+            .col-xs-12
+                h2.page-header
+                    small.pull-left 订单号：ZLZD59012431836
+                    | &nbsp;
+                    small.pull-right 日期: 2017-06-19 10:40:35
+            // /.col
+        // info row
+        .row.invoice-info
+            .col-sm-6.invoice-col
+                strong 客服
+                address
+                    | 长颈鹿
+                    br
+                    |             Email: info@almasaeedstudio.com
+            .col-sm-6.invoice-col
+                strong 客户
+                address
+                    | 张三
+                    br
+                    |             电话: 18899990000
+
+        .row
+            .col-xs-6
+                p.lead 服务内容
+                table.table
+                    tbody
+                        tr
+                            td
+                                a 美国第二诊疗意见咨询
+
+                            td ￥800000
+                        tr
+                            td
+                                a 治疗方案分析报告
+                            td ￥90000
+            .col-xs-6
+                p.lead 已付款
+                .table-responsive
+                    table.table
+                        tbody
+                            tr
+                                th(style='width:50%') 总额:
+                                th 优惠
+                                th 实收
+                            tr
+                                td ￥890000
+                                td 无
+                                td ￥890000
+            // /.col
+        // /.row
+        // this row will not appear when printing
+        .row.no-print
+            .col-xs-12
+                a.btn.btn-default(href='invoice-print.html', target='_blank')
+                    i.fa.fa-print
+                    |  Print
+                button.btn.btn-danger.pull-right(type='button', style='margin-right: 5px;')
+                    i.fa.fa-cancel
+                    |  取消订单
+    //.row
+            // 病例
+            div(ng-class="report_gen ? 'col-sm-6' : '' ")
+                ul(style="list-style: none; height: 640px; overflow:auto;" ng-style= "report_gen ? {'padding-left':'5px'} : {}")
+                    li(ng-repeat="(k,v) in pattern")
+                        div(layout='row')
+                            label(ng-style="v.type === 'category' ? {'font-size': '30px'} : {'font-size': '14px'};") {{v.title}}
+
+                        // date picker
+                        div(ng-if="v.type === 'date'" )
+                            md-datepicker(ng-model='v.value', md-placeholder='选择日期', md-open-on-focus='' style="margin-left: -12px")
+
+
+                        // 单行文字
+                        div(ng-if="v.type === 'text'" droppable-text etext="v.value")
+                            .span(editable-text='v.value' e-name="v.value" style="margin-right: 40px;") {{ v.value || '无' }}
+
+                        // 多行文字输入
+                        div(ng-if="v.type === 'textArea'" droppable-text etext="v.value" style="margin-right: 40px;")
+                            .textarea(editable-textarea='v.value' e-name="v.value" e-rows="7" e-cols="40") {{ v.value || '无' }}
+
+                        // 单选
+                        div(ng-if="v.type === 'select'" )
+                            md-radio-group(ng-model='v.value' ng-class= "v.horizon ? 'inline-radio-group' : '' " )
+                                md-radio-button(ng-repeat='option in v.options', ng-value='option.value' ng-style= "v.horizon ? {} : {'margin-bottom':'10px'}  ") {{ option.display }}
+
+                        // 单选 & 其他输入
+                        div(ng-if="v.type === 'selectInput'" )
+                            md-radio-group(ng-model='v.value' ng-class= "v.horizon ? 'inline-radio-group' : '' " )
+                                md-radio-button(ng-repeat='option in v.options', ng-value='option.value' ng-style= "v.horizon ? {} : {'margin-bottom':'10px'}  ") {{ option.display }}
+                            md-input-container.md-block(ng-if="v.value === v.options[v.options.length -1].value" style="margin-left: 25px; margin-right: 40px;" flex-gt-sm='')
+                                input(ng-model="pattern[k+'_other'].value" name="other", placeholder='请填写' required )
+
+                        // 多选
+                        div(ng-if="v.type === 'multiCheck'")
+                            div(ng-repeat='option in v.options')
+                                md-checkbox(ng-checked='exists(option, v.value)', ng-click='toggle(option, v.value)') {{option}}
+
+                        // angular-xeditable, editable row
+                        div(ng-if="v.type == 'mnform'")
+                            form(editable-form='', name='tableform', onaftersave='saveTable()', oncancel='cancel()')
+                                table.table.table-bordered.table-hover.table-condensed
+                                    tr
+                                        td(ng-repeat="header in v.headers") {{header}}
+                                        td
+                                            span(ng-show='tableform.$visible') 编辑
+                                    tr(ng-repeat='item in v.value')
+                                        td(ng-repeat="(kk,vv) in item" droppable-text etext="item[kk]")
+                                            span(ng-if="v.filter[kk] === 'text'" editable-text='item[kk]', e-name='item.'+'{{kk}}', e-form='tableform')
+                                                | {{ item[kk] || '无' }}
+                                            span(ng-if="v.filter[kk] === 'textarea'" editable-textarea='item[kk]', e-name='item.' + '{{kk}}', e-form='tableform')
+                                                | {{ item[kk] || '无' }}
+                                            md-input-container(ng-if="v.filter[kk] === 'dropdown'" style="margin-top: -5px;")
+                                                md-select(ng-model='item[kk]' placeholder='请选择')
+                                                    md-option(ng-repeat='option in v.subOptions[kk]', ng-value='option')
+                                                        | {{option}}
+                                            md-datepicker(ng-if="v.filter[kk] === 'date'" ng-model='item[kk]', md-placeholder='选择日期', md-open-on-focus='' style="margin-left: -12px")
+                                        td
+                                            button.btn.btn-danger.pull-right(type='button', ng-show='tableform.$visible', ng-click='deleteItem(k,$index)') 删除
+
+                                .btn-edit
+                                    button.btn.btn-default(type='button', ng-show='!tableform.$visible', ng-click='tableform.$show()' style="padding:4px 6px; margin-top:-10px;")
+                                        | 编辑
+                                .btn-form(ng-show='tableform.$visible')
+                                    button.btn.btn-default.pull-right(type='button', ng-disabled='tableform.$waiting', ng-click='addItem(k)') 添加
+                                    button.btn.btn-primary(type='submit', ng-disabled='tableform.$waiting') 保存
+                                    button.btn.btn-default(type='button', ng-disabled='tableform.$waiting', ng-click='tableform.$cancel()') 取消
+                            br
+
+                        // file: image,voice...
+                        div(ng-if="v.type === 'image_file'")
+                            ul
+                                //li(style="list-style: none; margin-left:-40px;")
+                                    div(style="border: 1px dashed blue; height:100px; width:160px;" fileinfo="v" droppable-image)
+                                li(ng-repeat="file in v.value track by $index" style="list-style: none; padding-top:20px; margin-left:-40px;")
+                                    div(layout='row')
+                                        img(ng-src="{{file.src}}" ng-click="openModalImage(file.src)" style="height:100px; width:160px;")
+                                        div(style="margin-left: 20px;")
+                                            .span 文件名称
+                                            div(droppable-text etext="file.name")
+                                                .span(editable-text='file.name' e-name="file.name") {{ file.name || '无' }}
+                                            .span(style="margin-top: 10px;") 文件日期
+                                            md-datepicker(ng-model='file.date', md-placeholder='选择日期', md-open-on-focus='', style="margin-left: -12px")
+                                            .span 备注
+                                            div(droppable-text etext="file.description")
+                                                .span(editable-text='file.description' e-name="file.description") {{ file.description || '无' }}
+
+                         br
+
+                    li
+                        br
+                        br
+                        br
+                        div.md-padding(layout='row' layout-align="center center")
+                            button.btn.btn-primary(type='button', ng-click='generate_report()') 修改订单
+                            button.btn.btn-primary(type='button', ng-click='generate_report()') 生成报告
+
+
+
+            // 报告
+            .col-sm-6(ng-if="report_gen" style="margin-top: 20px;")
+                div
+                    ul(style="list-style: none; padding-left:20px; height: 640px; overflow:auto; padding-left:5px; ")
+                        li(ng-repeat="(k,v) in report")
+                            div(layout='row')
+                                label(ng-style="v.type === 'category' ? {'font-size': '30px'} : {'font-size': '14px'};") {{v.title}}
+
+                            // date picker
+                            div(ng-if="v.type === 'date'" )
+                                md-datepicker(ng-model='v.value', md-placeholder='选择日期', md-open-on-focus='' style="margin-left: -12px")
+
+
+                            div(ng-if="v.type === 'text'" droppable-text etext="v.value")
+                                .span(editable-text='v.value' e-name="v.value" style="margin-right: 40px;") {{ v.value || '无' }}
+
+                            // 多行文字输入
+                            div(ng-if="v.type === 'textArea'" droppable-text etext="v.value" style="margin-right: 40px;")
+                                .textarea(editable-textarea='v.value' e-name="v.value" e-rows="7" e-cols="50") {{ v.value || '无' }}
+
+                            // 单选
+                            div(ng-if="v.type === 'select'" )
+                                md-radio-group(ng-model='v.value' ng-class= "v.horizon ? 'inline-radio-group' : '' " )
+                                    md-radio-button(ng-repeat='option in v.options', ng-value='option' ng-style= "v.horizon ? {} : {'margin-bottom':'10px'}  ") {{ option }}
+                                md-input-container.md-block(ng-if="v.lastInput && v.options.indexOf(v.value) === (v.options.length -1)" style="margin-left: 25px; margin-right: 40px;" flex-gt-sm='')
+                                    input(name="other", placeholder="{{v.inputPlaceholder}}" required )
+                            br
+
+                            // 下拉选择
+                            div(ng-if="v.type === 'dropdown'")
+                                md-input-container(style="margin-top: -20px;")
+                                    md-select(ng-model='v.value' placeholder='请选择')
+                                        md-option(ng-repeat='option in v.options', ng-value='option')
+                                            | {{option}}
+
+                            // 下拉选择
+                            div(ng-if="v.type === 'dropdown_obj'")
+                                md-input-container(style="margin-top: -20px;")
+                                    md-select(ng-model='v.value' placeholder='请选择')
+                                        md-option(ng-repeat='option in v.options', ng-value='option.value')
+                                            | {{option.display}}
+
+
+                            // 多选
+                            div(ng-if="v.type === 'multiCheck'")
+                                div(ng-repeat='option in v.options')
+                                    md-checkbox(ng-checked='exists(option, v.value)', ng-click='toggle(option, v.value)') {{option}}
+
+                            // fixed m*n table editable table
+                            div(ng-if="v.type == 'mntable'")
+                                form(editable-form='', name='tableform', onaftersave='saveTable()', oncancel='cancel()')
+                                    table.table.table-bordered.table-hover.table-condensed(style="margin-top: -20px;")
+                                        tr
+                                            td(ng-repeat="header in v.headers") {{header}}
+                                        tr(ng-repeat='item in v.value')
+                                            td(style="width:30%")
+                                                // 第一列标题
+                                                span {{v.columns[$index]}}
+                                            td(ng-repeat="(kk,vv) in item")
+                                                span(ng-if="v.filter[kk] === 'text'" editable-text='item[kk]', e-name='item.' + '{{kk}}', e-form='rowform')
+                                                    | {{ item[kk]}}
+                                                span(ng-if="v.filter[kk] === 'textarea'" editable-textarea='item[kk]', e-name='item.' + '{{kk}}', e-form='rowform')
+                                                    | {{ item[kk]}}
+                                                md-datepicker(ng-if="v.filter[kk] === 'date'" ng-model='item[kk]', md-placeholder='选择日期', md-open-on-focus='' style="margin-left: -12px")
+                                    .btn-edit
+                                        button.btn.btn-default(type='button', ng-show='!tableform.$visible', ng-click='tableform.$show()')
+                                            | 编辑
+                                    .btn-form(ng-show='tableform.$visible')
+                                        button.btn.btn-primary(type='submit', ng-disabled='tableform.$waiting') 保存
+                                        button.btn.btn-default(type='button', ng-disabled='tableform.$waiting', ng-click='tableform.$cancel()') 取消
+                                br
+
+                            // fixed table for single obj
+                            div(ng-if="v.type == 'table_obj'")
+                                form(editable-form='', name='tableform', onaftersave='saveTable()', oncancel='cancel()')
+                                    table.table.table-bordered.table-hover.table-condensed(style="margin-top: -20px;")
+                                        tr(ng-repeat="(kk,vv) in v.value")
+                                            td(style="width:30%")
+                                                // 第一列标题
+                                                span {{v.columns[$index]}}
+                                            td
+                                                span(ng-if="v.filter[kk] === 'text'" editable-text='vv', e-name='v.value.' + '{{kk}}', e-form='rowform')
+                                                    | {{ vv}}
+                                                span(ng-if="v.filter[kk] === 'textarea'" editable-textarea='vv', e-name='v.value.' + '{{kk}}', e-form='rowform')
+                                                    | {{ vv}}
+                                                md-datepicker(ng-if="v.filter[kk] === 'date'" ng-model='vv', md-placeholder='选择日期', md-open-on-focus='' style="margin-left: -12px")
+
+                                    .btn-edit
+                                        button.btn.btn-default(type='button', ng-show='!tableform.$visible', ng-click='tableform.$show()')
+                                            | 编辑
+                                    .btn-form(ng-show='tableform.$visible')
+                                        button.btn.btn-primary(type='submit', ng-disabled='tableform.$waiting') 保存
+                                        button.btn.btn-default(type='button', ng-disabled='tableform.$waiting', ng-click='tableform.$cancel()') 取消
+                                br
+
+
+                            // fixed table for single obj, different #(col) in different row
+                            div(ng-if="v.type == 'table_diff'")
+                                form(editable-form='', name='tableform', onaftersave='saveTable()', oncancel='cancel()')
+                                    table.table.table-bordered.table-hover.table-condensed(style="margin-top: -20px;")
+                                        tr(ng-repeat="(kk,vv) in v.value")
+                                            td(style="width:30%")
+                                                // 第一列标题
+                                                span {{v.columns[$index]}}
+                                            td(ng-if="isString(vv)" colspan="{{v.colspan[kk]}}")
+                                                span(ng-if="v.filter[kk] === 'text'" editable-text='vv', e-name='v.value.' + '{{kk}}', e-form='rowform')
+                                                    | {{ vv}}
+                                                span(ng-if="v.filter[kk] === 'textarea'" editable-textarea='vv', e-name='v.value.' + '{{kk}}', e-form='rowform')
+                                                    | {{ vv}}
+                                                md-datepicker(ng-if="v.filter[kk] === 'date'" ng-model='vv', md-placeholder='选择日期', md-open-on-focus='' style="margin-left: -12px")
+
+                                            td(ng-if="isObject(vv)" ng-repeat="(kkk,vvv) in vv" colspan="{{v.colspan[kk]}}")
+                                                span(ng-if="v.filter[kk] === 'text'" editable-text='vvv', e-name='v.value.' + '{{kkk}}', e-form='rowform')
+                                                    | {{ vvv}}
+                                                span(ng-if="v.filter[kk] === 'textarea'" editable-textarea='vvv', e-name='v.value.' + '{{kkk}}', e-form='rowform')
+                                                    | {{ vvv}}
+                                                md-datepicker(ng-if="v.filter[kk] === 'date'" ng-model='vvv', md-placeholder='选择日期', md-open-on-focus='' style="margin-left: -12px")
+
+                                    .btn-edit
+                                        button.btn.btn-default(type='button', ng-show='!tableform.$visible', ng-click='tableform.$show()')
+                                            | 编辑
+                                    .btn-form(ng-show='tableform.$visible')
+                                        button.btn.btn-primary(type='submit', ng-disabled='tableform.$waiting') 保存
+                                        button.btn.btn-default(type='button', ng-disabled='tableform.$waiting', ng-click='tableform.$cancel()') 取消
+                                br
+
+
+
+
+

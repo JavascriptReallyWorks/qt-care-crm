@@ -1,0 +1,41 @@
+<ul>
+    <li ng-repeat="file in pattern.value track by $index" style="list-style: none; padding-top:20px; margin-left: -15px; ">
+        <div layout="row">
+            <div class="col-sm-6">
+                <h3>Document{{$index+1}}
+                    <button ng-click="downloadFile(file.ossFileKey || file.url)" style="margin-left: 15px; " class="btn btn-default">Download</button>
+                </h3><br/>
+                <label>Document Name</label>
+                <p>{{file.documentName}}</p>
+                <!--<input type="text" ng-model="file.documentName" droppable-text="droppable-text" etext="file.documentName" class="form-control"/><br/>-->
+                <label>Document ID</label>
+                <input type="text" ng-model="file.documentId" droppable-text="droppable-text" etext="file.documentId" class="form-control"/><br/>
+                <label>Institution</label>
+                <input type="text" ng-model="file.institution" droppable-text="droppable-text" etext="file.institution" class="form-control"/><br/>
+                <label>Provider Name</label>
+                <input type="text" ng-model="file.providerName" droppable-text="droppable-text" etext="file.providerName" class="form-control"/><br/>
+                <label>Comments</label>
+                <textarea type="text" ng-model="file.comments" droppable-text="droppable-text" etext="file.comments" class="form-control"></textarea><br/>
+                <label>Visit Date</label><br/>
+                <md-datepicker md-hide-icons="calendar" ng-model="file.visitDate" md-placeholder="Choose Date" md-open-on-focus=""></md-datepicker><br/><br/>
+                <div class="form-group">
+                    <label>Document Type</label>
+                    <md-select ng-model="file.documentType" class="form-block">
+                        <md-option ng-repeat="option in pattern.documentTypeOptionsEn" ng-value="option">{{option}}</md-option>
+                    </md-select><br/>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div style="margin-top:60px;">
+                    <label>Document Translations</label><br/>
+                    <p>Please drag local files into the rectangle to upload</p>
+                    <div style="border: 1px dashed blue; height:100px; width:160px;" fileinfo="file.translationFiles" droppable-image="droppable-image" upload="uploadFile" translation="translation"></div><br/><br/>
+                    <label>Translation Links</label>
+                    <ul>
+                        <li ng-repeat="tFile in file.translationFiles"><a href="javascript:void(0);" ng-click="downloadFile(tFile.ossFileKey || tFile.url)">{{tFile.documentName}}</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </li>
+</ul>

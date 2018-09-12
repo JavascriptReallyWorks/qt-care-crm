@@ -1,0 +1,123 @@
+div(ng-cloak='' ,ng-controller="caseManagerCtrl",ng-init="initCaseManager()")
+    section.content
+        .box
+            .box-header.with-border
+                form(role='form')
+                    .form-group
+                    .row
+                        .col-xs-3
+                            label 患者姓名
+                            input.form-control(type='text',ng-model="cond.patientName", placeholder='患者姓名')
+                        .col-xs-3
+                            label 编号
+                            input.form-control(type='text',ng-model="cond.sid", placeholder='编号')
+                        .col-xs-3
+                            label 来源
+                            select.form-control(ng-options="status.value as status.display for status in CASE_FROM_OPTIONS" ng-model="cond.from")
+                        .col-xs-3
+                            label 状态
+                            select.form-control(ng-options="status.value as status.display for status in CASE_STATUS_OPTIONS" ng-model="cond.status")
+
+                    .row
+                        .md-padding
+                            button.btn.btn-primary(ui-sref="cs.case_edit()") 新建
+
+                //span.md-padding
+                    span.type 患者姓名：
+                    span(editable-text='cond.patientName',e-name="cond.patientName",e-placeholder="请输入(部分)患者姓名") {{ cond.patientName || '患者姓名' }}
+                //span.md-padding
+                    span.type 编号：
+                    span(editable-text='cond.sid',e-name="cond.sid",e-placeholder="编号") {{ cond.sid || '编号' }}
+
+            .box-body
+                table.table
+                    thead
+                        tr
+                            th 编号
+                            th 状态
+                            th 当前状态
+                            th 来源
+                            th 联系人/电话/患者
+                            th 疾病/分期
+                            th 服务
+                            th 病历
+                            th 医生
+
+                    tbody(ng-repeat="c in list.rows")
+                        tr
+                            td(width = '5%')
+                                a(ui-sref="cs.case_edit({_id:c._id})" ng-if="c.from === 'CRM' ") {{c.sid}}
+                                p(ng-if="c.from === 'WECHAT' ") {{c.sid}}
+
+                            td(width = '5%')
+                                .btn-group
+
+                                    button.btn.btn-box-tool.dropdown-toggle(type='button', data-toggle='dropdown')
+                                        i.fa.fa-navicon
+                                    ul.dropdown-menu(role='menu')
+                                        span.li(ng-repeat="(key,value) in CaseStatusMap")
+                                            a(href='javascript:void(0)' ng-click="changeCaseStatus(c._id, c.sid, key)") {{value}}
+
+                            td(width = '5%')
+                                small.label.label-warning(style="font-size: 14px;") {{statusName(c.status) || "无"}}
+
+
+                            td(width = '5%')
+                                | {{c.from === 'CRM' ? '客服':'微信'}}
+
+                            td(width = '20%' ng-if="c.from === 'CRM'")
+                                p
+                                    small {{c.userName}} / {{c.patientMobile}} /
+                                    a(href="/cs/previewReport/{{c.medical_record_id}}", target='_blank' ) {{c.patientName}}
+
+                            td(width = '20%' ng-if="c.from === 'WECHAT'")
+                                p
+                                    small {{c.user_name}} / {{c.patient_mobile}} /
+                                    a(href="/cs/previewReport/{{c.medical_record_id}}", target='_blank' ) {{c.medical_record_patient_name}}
+
+                            td(width = '15%')
+                                p
+                                    small {{c.cancerType}} / {{c.stage}}
+
+                            td(width = '15%' ng-if="c.from === 'CRM'")
+                                span {{c.product.product_name}}
+
+                            td(width = '15%' ng-if="c.from === 'WECHAT'")
+                                table.table_full
+                                    tbody
+                                        tr(ng-repeat="p in c.products")
+                                            td {{p.product_name}}
+
+                            td(width = '5%')
+                                //i.fa.fa-check(ng-if="c.medical_record_id" ng-click="alert('hhh')")
+                                a(ng-if="c.medical_record_id" ui-sref="cs.medical_record_edit({id:c.medical_record_id})")
+                                    i.fa.fa-edit
+
+                            td(width = '15%')
+                                span(ng-if="c.doctor") {{c.doctor.firstName + ', ' + c.doctor.lastName}}
+
+                            //td(width = '5%')
+                                button.btn.btn-default(ng-if="c.from === 'CRM'" ui-sref="cs.case_edit({_id:c._id})") 编辑
+
+                        //tr(ng-show="dataModel.rowShow[$index]")
+                            td
+                            td(colspan=2)
+                                input.form-control(type='text',ng-model='dataModel.xcxUser' uib-typeahead="item as item.nickname for item in  queryXcxUsers($viewValue)" placeholder='医生')
+
+                            td(colspan=2)
+                                input.form-control(placeholder='Zoom Link')
+
+                        //tr(ng-show="dataModel.rowShow[$index]")
+                            td
+                            td(colspan=4)
+                                textarea.form-control(type='text',ng-model="dataModel.rowReply[$index]" placeholder="备注")
+
+
+
+
+
+
+                .pagination(ng-if="list.total")
+                    span.total 共{{list.total}}条记录
+                    paging(page='cond.page', page-size='cond.pageSize', total='list.total', paging-action="DoCtrlPagingAct(page, pageSize, total)")
+

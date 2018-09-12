@@ -1,0 +1,126 @@
+doctype html
+head
+    base(href='/')
+    meta(charset='utf8')
+    meta(name="robots" content="noindex,nofollow")
+    meta(name='viewport', content='width=device-width,initial-scale=1,user-scalable=no,maximum-scale=1')
+
+    link(rel='stylesheet', href='/library/bower_components/angular-bootstrap/ui-bootstrap-csp.css')
+    link(rel='stylesheet', href='/library/bower_components/bootstrap/dist/css/bootstrap.min.css')
+    link(rel="stylesheet", href="/library/bower_components/angular-material/angular-material.min.css")
+
+    script(src='/library/bower_components/jquery/dist/jquery.min.js')
+    script(src='/library/bower_components/bootstrap/dist/js/bootstrap.min.js')
+    script(src='/library/bower_components/bootstrap/js/tooltip.js')
+    script(src='/library/bower_components/angular/angular.min.js')
+    script(src='/library/bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js')
+    script(src='/library/bower_components/angular-ui-router/release/angular-ui-router.min.js')
+    script(src='/library/bower_components/angular-animate/angular-animate.min.js')
+    script(src='/library/bower_components/angular-aria/angular-aria.js')
+    script(src='/library/bower_components/angular-material/angular-material.min.js')
+    script(src='/library/bower_components/angular-messages/angular-messages.min.js')
+    script(src='/library/bower_components/socket.io-client/dist/socket.io.js')
+    script(src='/library/file-saver/FileSaver.js')
+
+    script(src='/library/crm/socket_pubsub.js')
+    script(src='/library/pubsub_example/module/single_chat_module.js')
+
+    style.
+        .left-space {
+            padding-left: 10px;
+        }
+
+
+    //script(type='text/javascript').
+    //    var user = !{JSON.stringify(user)};
+
+html(ng-app="SingleChat", ng-controller='SingleChatCtrl', ng-init='initSingleChatCtrl()', lang="en", class="no-js",class="ng-scope")
+    h3.left-space Check response of each request in console
+    div.md-padding
+        button.btn.btn-primary(ng-click="doctorLogin()") doctor login
+        xmp $http.post('/doctor_login',{
+            |     username:'cat@ucsf.edu',  // must be username or email , both under the proeperty 'username' in request body,
+            |     password:'123321'
+            | });
+            | Error: errorCode:10, message:'Username or email does not exist' || errorCode:20, message:'Password is not valid'
+
+
+
+    div.md-padding
+        button.btn.btn-primary(ng-click="queryCases()") query cases
+        xmp $http.get('/doc/api/cases?per_page=10&page=1');
+
+    div.md-padding
+        button.btn.btn-primary(ng-click="queryOneCase()") query one case
+        xmp
+            | $http.get(`/doc/api/cases/${caseId}`);
+
+    div.md-padding
+        button.btn.btn-primary(ng-click="queryOneMedicalRecord()") query medical record of case
+        xmp $http.get(`/doc/api/cases/${caseId}/medicalRecords/${medicalRecordId}`);
+
+    div.md-padding
+        button.btn.btn-primary(ng-click="queryCaseTickets()") query case tickets
+        xmp $http.get(`/doc/api/cases/${caseId}/caseTickets?per_page=10&page=1`);
+
+    div.md-padding
+        button.btn.btn-primary(ng-click="updateCaseTicket()") update one case ticket
+        xmp $http.put(`/doc/api/cases/${caseId}/caseTickets/${caseTicketId}`,{
+            |   comment:'hello world',
+            | })
+
+    div.md-padding
+        div(layout="row")
+            button.btn.btn-primary(ng-click="queryMedicalRecordQuestions()") query medical record  questions
+            label.left-space No Pagination
+        xmp $http.get(`/doc/api/medicalRecords/${$scope.medicalRecordId}/questions`)
+
+    div.md-padding
+        button.btn.btn-primary(ng-click="updateMedicalRecordAnswer()") update medical record question's answer
+        xmp $http.put(`/doc/api/medicalRecords/${medicalRecordId}/questions/${questionId}`,{
+            |   answer:`hello world`
+            |})
+
+    div.md-padding
+        button.btn.btn-primary(ng-click="doctorRegister()") doctor register
+        xmp $http.post('/doctor_register', {
+            |     username: 'alee',             // required; unique,otherwise errorCode:10, message:'Username or email already exists'
+            |     email:'alee@ucsf.edu',        // required; unique,otherwise errorCode:10, message:'Username or email already exists'
+            |     password: '123321',           // required
+            |     firstName:'Ann'               // required
+            |     lastName:'Lee',               // required
+            |     invitationCode: 'qtclinics',  // required; doctor will receive code before register, must match, otherwise errorCode:20, message:'Invatation code does not match'
+            |     hospital:'UCSF',              // optional
+            |     specialty:'Coughing',         // optional
+            | })
+
+
+
+    div.md-padding
+        button.btn.btn-primary(ng-click="forgetPassword()") forget password
+        xmp $http.put(`/forget_password`,{
+            |   username: 'cat@ucsf.edu',   // in email format, username must exist , otherwise errorCode:10, message: 'User does not exist'
+            | })
+
+
+    div.md-padding
+        button.btn.btn-primary(ng-click="readCaseTicket()") read one case ticket
+        xmp $http.put(`/doc/api/cases/${caseId}/caseTickets/${caseTicketId}`,{
+            |   read:true,
+            | })
+
+
+    div.md-padding
+        button.btn.btn-primary(ng-click="getDicomLink()") get dicom link
+        xmp $http.get(`/doc/api/dicoms/${accessionNumber}`)
+
+
+    div.md-padding
+        a(ng-href="/external/doctor/medicalSummaryEn?medicalRecordId={{medicalRecordId}}") pdf
+        //button.btn.btn-primary(ng-click="getMdPDF()") get pdf
+
+
+
+    //div.md-padding
+        button.btn.btn-primary(ng-click="createCaseTicket()") create case ticket
+

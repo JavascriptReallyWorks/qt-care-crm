@@ -1,0 +1,104 @@
+div(ng-cloak='' ,ng-controller="medicalRecordManagerCtrl",ng-init="init()")
+    style.
+        .dropdown-menu{
+            box-shadow: 1px 1px 13px #333;
+        }
+    section.content
+        .box
+            .box-header.with-border
+                form(role='form')
+                    .form-group
+                    .row
+                        .col-xs-3
+                            input.form-control(type='text',ng-model="cond.patient_name", placeholder='姓名')
+
+                        .col-xs-3
+                            input.form-control(type='text',ng-model="cond.patient_disease", placeholder='疾病')
+
+                        .col-xs-6
+                            button.btn.btn-primary.pull-right(ui-sref="cs.medical_record_edit({newMD:true})") 新建
+
+
+            .box-body
+                table.table
+                    thead
+                        tr
+                            th 患者姓名
+                            th 出生日期
+                            th 疾病
+                            th 翻译
+                            th 订单
+                            th 报告
+                            
+                            th(width="20%") 操作
+
+                    tbody
+                                
+                            tr(ng-repeat="md in list.rows")
+                                td(width = '15%')
+                                    span {{ md.patientName}}
+                                   
+                                td(width = '15%')
+                                    span {{md.patientBirthday | date: 'yyyy-MM-dd' }}
+
+                                td(width = '15%')
+                                    p  {{md.presentDiagnosis.cancerType}} / {{md.presentDiagnosis.stage}}
+
+
+                                td(width = '10%')
+                                    i.fa.fa-check(ng-if="md.translated")
+
+                                td(width = '10%')
+                                    //div(ng-repeat="case in md.cases")
+                                    //span(ng-repeat="case in md.cases") {{case.sid}}
+                                    a(ng-repeat="case in md.cases" ui-sref="cs.case_edit({_id:case._id})")
+                                            | {{case.sid + " "}}
+
+                                td(width = '15%')
+                                    div(ng-if="md.summaryCnOssKey")
+                                        a(ng-click="getOssFileWithKey(md.summaryCnOssKey)") 中文
+                                    div(ng-if="md.summaryEnOssKey")
+                                        a(ng-click="getOssFileWithKey(md.summaryEnOssKey)") 英文
+
+                                td(width = '20%')
+                                    .btn-group
+                                        button.btn.btn-default.dropdown-toggle(data-toggle='dropdown', aria-expanded='false')
+                                            | 病历 
+                                            span.caret
+                                        ul.dropdown-menu(role='menu')
+                                            li
+                                                a(href="/cs/previewReport/{{md._id}}/cn", target='_blank')
+                                                    i.fa.fa-file-o
+                                                    |  预览CN
+
+                                            li(ng-if="md.translated")
+                                                a(href="/cs/previewReport/{{md._id}}/en", target='_blank')
+                                                    i.fa.fa-file-o
+                                                    |  预览EN
+
+                                            li
+                                                a(ng-click="generateMedicalRecordSummary(md._id,'cn')")
+                                                    |  {{md.summaryCnOssKey ? "重新生成中文报告":"生成中文报告"}}
+
+                                            li(ng-if="md.translated")
+                                                a(ng-click="generateMedicalRecordSummary(md._id,'en')" )
+                                                    |  {{md.summaryEnOssKey ? "重新生成英文报告":"生成英文报告"}}
+
+                                    .btn-group
+                                        button.btn.btn-primary.dropdown-toggle(data-toggle='dropdown', aria-expanded='false')
+                                            | 操作
+                                            span.caret
+                                        ul.dropdown-menu(role='menu')
+                                            li
+                                                a(ui-sref="cs.medical_record_edit({id:md._id})")
+                                                    |  编辑
+                                            li
+                                                a(ui-sref="cs.medical_record_edit({id:md._id,tran:true})")
+                                                    |  翻译
+                                            li
+                                                a(ng-click="deleteOne(md._id)")
+                                                    |  删除
+
+                .pagination(ng-if="list.total")
+                    span.total 共{{list.total}}条记录
+                    paging(page='cond.page', page-size='cond.pageSize', total='list.total', paging-action="DoCtrlPagingAct(page, pageSize, total)")

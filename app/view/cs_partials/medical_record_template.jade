@@ -1,0 +1,459 @@
+div(ng-controller='MedicalRecordTemplateController', flex='',ng-init="initMedicalRecordTemplateCtrl()")
+    .box.collapsed-box.s-line(ng-if="medicalRecords" ng-repeat="medicalRecord in medicalRecords track by $index" ng-init="mindex = $index")
+        .box-header.with-border
+            .row
+                .col-sm-6
+                    button.btn.btn-box-tool(type='button', data-widget='collapse', data-toggle='tooltip', title='Collapse')
+                        i.fa.fa-plus
+                    h3.box-title {{medicalRecord['patientName'].value}}的病历
+                .col-sm-6(ng-if="tran")
+                    h3.box-title {{medicalRecord.en['patientName'].value}}'s Medical Record Summary
+            .box-tools.pull-right
+                    //非新建的md & 非翻译页面
+                    button.btn.btn-box-tool.dropdown-toggle(ng-if="medicalRecord._id && !tran " type='button', data-toggle='dropdown' style="margin-right:40px")
+                        | 创建订单
+                        i.fa.fa-navicon
+                    ul.dropdown-menu.dropdown-menu-right.large-dropdown-menu-right(role='menu')
+                        span.li(ng-repeat="product in products")
+                            a(href='javascript:void(0)' ng-click="createCaseFromMD(mindex, product._id)") {{product.product_name}}
+                    #save_btn.button.btn.btn-primary.btn-sm.btn-green-1(type='button' ng-click="updateMedicalRecord(mindex,medicalRecord._id)") 保存病历
+
+        .box-body.box-profile
+
+            //病历
+            div(ng-class="tran ? 'col-sm-6' : 'col-sm-12'")
+                .row(ng-class="editControl")
+                    .col-sm-6(ng-repeat="key in menu.basic | filter: nonForm(mindex)")
+                        .form-group
+                            label(href="javascript:void(0);" ng-click="setMsgContent(medicalRecord[key].question)") {{medicalRecord[key].title}}
+                            input.form-control(ng-if="medicalRecord[key].type === 'text'" type='text',ng-model="medicalRecord[key].value",droppable-text etext="medicalRecord[key].value" placeholder='{{medicalRecord[key].placeholder}}')
+                            // number input
+                            input.form-control(ng-if="medicalRecord[key].type === 'number'" type='number',ng-model="medicalRecord[key].value",droppable-text etext="medicalRecord[key].value" placeholder='{{medicalRecord[key].placeholder}}')
+
+                            // date picker
+                            .form-block(ng-if="medicalRecord[key].type === 'date'")
+                                md-datepicker(md-hide-icons="calendar"  ng-model='medicalRecord[key].value', md-placeholder='选择日期', md-open-on-focus='')
+
+                            // 单选
+                            md-select(ng-if="medicalRecord[key].type === 'select'" ng-model='medicalRecord[key].value' placeholder='{{medicalRecord[key].placeholder}}')
+                                md-option(ng-repeat='option in medicalRecord[key].options', ng-value='option')
+                                    | {{option}}
+
+                    .col-sm-12
+                        .form-group
+                            tags-input(ng-model="medicalRecord['patientTags'].value", placeholder="患者标签", replace-spaces-with-dashes='false')
+
+                    .col-sm-12(ng-repeat="key in menu.basic | filter: isForm(mindex)")
+                        .form-group
+                            label(href="javascript:void(0);" ng-click="setMsgContent(medicalRecord[key].question)") {{medicalRecord[key].title}}
+
+                            // mnform
+                            div(ng-if="medicalRecord[key].type == 'mnform'"
+                                mnform
+                                key="key"
+                                mdr-index="mindex"
+                                pattern="medicalRecord[key]"
+
+                                add-item='addItem'
+                                delete-item='deleteItem'
+                                new-line-source="newLineSource"
+                                get-file-name-list="getFileNameList")
+
+                            // m1form
+                            div(ng-if="medicalRecord[key].type == 'm1form'" m1form pattern="medicalRecord[key]" get-file-name-list="getFileNameList" mdr-index="mindex")
+
+
+                br
+                .nav-tabs-custom.tabs-container
+                    ul.nav.nav-tabs(ng-click="openTab($event)")
+                        li.active
+                            a(href='#process{{$index}}', data-toggle='tab') 诊疗经过
+                        li
+                            a(href='#medicalHistory{{$index}}', data-toggle='tab') 医疗史
+                        li
+                            a(href='#diagnostic{{$index}}', data-toggle='tab') 当前诊断
+                        li
+                            a(href='#treatment{{$index}}', data-toggle='tab') 治疗信息
+                        li
+                            a(href='#md_question{{$index}}', data-toggle='tab') 患者提问
+                        li
+                            a(href='#files{{$index}}', data-toggle='tab') 病历文件
+                        li
+                            a(href='#dicoms{{$index}}', data-toggle='tab') Dicom
+                        li
+                            a(href='#logs{{$index}}', data-toggle='tab') 记录
+
+
+                    .tab-content
+                        //诊疗经过
+                        .active.tab-pane(id="process{{$index}}" ng-class="editControl")
+                            .form-group(ng-repeat="key in menu.process")
+                                label(href="javascript:void(0);" ng-click="setMsgContent(medicalRecord[key].question)") {{medicalRecord[key].title}}
+
+                                // mnform
+                                div(ng-if="medicalRecord[key].type == 'mnform'"
+                                    mnform
+                                    key="key"
+                                    mdr-index="mindex"
+                                    pattern="medicalRecord[key]"
+
+                                    add-item='addItem'
+                                    delete-item='deleteItem'
+                                    new-line-source="newLineSource"
+                                    get-file-name-list="getFileNameList")
+
+
+                        // 医疗史
+                        .tab-pane(id="medicalHistory{{$index}}" ng-class="editControl")
+                            .form-group(ng-repeat="key in menu.medicalHistory | filter:femaleFilter(medicalRecord)")
+                                label(href="javascript:void(0);" ng-click="setMsgContent(medicalRecord[key].question)") {{medicalRecord[key].title}}
+
+                                // mnform
+                                div(ng-if="medicalRecord[key].type == 'mnform'"
+                                    mnform
+                                    key="key"
+                                    mdr-index="mindex"
+                                    pattern="medicalRecord[key]"
+
+                                    add-item='addItem'
+                                    delete-item='deleteItem'
+                                    new-line-source="newLineSource"
+                                    get-file-name-list="getFileNameList")
+
+                                // m1form
+                                div(ng-if="medicalRecord[key].type == 'm1form'" m1form pattern="medicalRecord[key]" get-file-name-list="getFileNameList" mdr-index="mindex")
+
+
+
+
+                        //当前诊断
+                        .tab-pane(id="diagnostic{{$index}}" ng-class="editControl")
+                            .form-group(ng-repeat="key in menu.diagnostic")
+                                label(href="javascript:void(0);" ng-click="setMsgContent(medicalRecord[key].question)") {{medicalRecord[key].title}}
+
+                                // mnform
+                                div(ng-if="medicalRecord[key].type == 'mnform'"
+                                    mnform
+                                    key="key"
+                                    mdr-index="mindex"
+                                    pattern="medicalRecord[key]"
+
+                                    add-item='addItem'
+                                    delete-item='deleteItem'
+                                    new-line-source="newLineSource"
+                                    get-file-name-list="getFileNameList")
+
+                                // m1form
+                                div(ng-if="medicalRecord[key].type == 'm1form'" m1form pattern="medicalRecord[key]" get-file-name-list="getFileNameList" mdr-index="mindex")
+
+
+
+                        //治疗信息
+                        .tab-pane(id="treatment{{$index}}" ng-class="editControl")
+                            .form-group(ng-repeat="key in menu.treatment")
+                                label(href="javascript:void(0);" ng-click="setMsgContent(medicalRecord[key].question)") {{medicalRecord[key].title}}
+
+                                // mnform
+                                div(ng-if="medicalRecord[key].type == 'mnform'"
+                                    mnform
+                                    key="key"
+                                    mdr-index="mindex"
+                                    pattern="medicalRecord[key]"
+
+                                    add-item='addItem'
+                                    delete-item='deleteItem'
+                                    new-line-source="newLineSource"
+                                    get-file-name-list="getFileNameList")
+
+                                // m1form
+                                div(ng-if="medicalRecord[key].type == 'm1form'" m1form pattern="medicalRecord[key]" get-file-name-list="getFileNameList" mdr-index="mindex")
+
+
+                        // 患者提问
+                        .tab-pane(id="md_question{{$index}}" ng-class="editControl")
+                            .form-group(ng-repeat="key in menu.md_question")
+                                label(href="javascript:void(0);" ng-click="setMsgContent(medicalRecord[key].question)") {{medicalRecord[key].title}}
+
+                                // mnform
+                                div(ng-if="medicalRecord[key].type == 'mnform'"
+                                    mnform
+                                    key="key"
+                                    mdr-index="mindex"
+                                    pattern="medicalRecord[key]"
+
+                                    add-item='addItem'
+                                    delete-item='deleteItem'
+                                    new-line-source="newLineSource"
+                                    get-file-name-list="getFileNameList")
+
+
+                        //病历文件
+                        .tab-pane(id="files{{$index}}" ng-class="editControl")
+                            label(ng-if="!tran" href="javascript:void(0);" ng-click="setMsgContent(medicalRecord.documents.question)") {{medicalRecord.documents.title}} (请将对话中一个文件，或者本地文件夹中的一个或多个文件拖入)
+                            div(document-list
+                                mdr-index="mindex"
+                                pattern="medicalRecord.documents"
+                                tran="tran"
+
+                                add-item='addItem'
+                                delete-item='deleteItem'
+                                get-file-name-list="getFileNameList"
+                                upload-file="uploadFile"
+                                download-file="downloadFile"
+                                open-modal-image='openModalImage'
+                                is-image='isImage')
+
+
+                        // Dicom
+                        .tab-pane(id="dicoms{{$index}}" ng-class="editControl")
+                            .form-group(ng-if="medicalRecord.dicomCaseNumber")
+                                button.btn.btn-default(ng-click="uploadDicom()") 上传
+                                button.btn.btn-primary(ng-click="refreshDicom(medicalRecord.dicomCaseNumber)" style="margin-left: 15px; ") 刷新
+                            label {{"Case Number: " +  medicalRecord.dicomCaseNumber}}
+
+                            div(dicom-list
+                                pattern="medicalRecord.dicomFiles"
+                                get-dicom-link="getDicomLink")
+
+
+                        // 记录
+                        .tab-pane(id="logs{{$index}}" ng-class="editControl")
+                            .form-group(ng-repeat="key in menu.logs")
+                                label(href="javascript:void(0);" ng-click="setMsgContent(medicalRecord[key].question)") {{medicalRecord[key].title}}
+
+                                // mnform
+                                div(ng-if="medicalRecord[key].type == 'mnform'"
+                                    mnform
+                                    key="key"
+                                    mdr-index="mindex"
+                                    pattern="medicalRecord[key]"
+
+                                    add-item='addItem'
+                                    delete-item='deleteItem'
+                                    new-line-source="newLineSource"
+                                    get-file-name-list="getFileNameList")
+
+
+
+
+
+            //英文病历
+            div.col-sm-6.tran_left_split(ng-if="tran")
+
+                .row(ng-class="editControl")
+                    .col-sm-6(ng-repeat="key in menu.basic | filter: nonForm(mindex)")
+                        .form-group
+                            label(href="javascript:void(0);" ng-click="setMsgContent(medicalRecord.en[key].question)") {{medicalRecord.en[key].titleEn}}
+                            input.form-control(ng-if="medicalRecord.en[key].type === 'text'" type='text',ng-model="medicalRecord.en[key].value",droppable-text etext="medicalRecord.en[key].value" )
+                            // number input
+                            input.form-control(ng-if="medicalRecord.en[key].type === 'number'" type='number',ng-model="medicalRecord.en[key].value",droppable-text etext="medicalRecord.en[key].value" )
+
+                            // date picker
+                            .form-block(ng-if="medicalRecord.en[key].type === 'date'")
+                                md-datepicker(md-hide-icons="calendar"  ng-model='medicalRecord.en[key].value', md-placeholder='Choose Date', md-open-on-focus='')
+
+                            // 单选
+                            md-select(ng-if="medicalRecord.en[key].type === 'select'" ng-model='medicalRecord.en[key].value' placeholder='{{medicalRecord.en[key].placeholder}}')
+                                md-option(ng-repeat='option in medicalRecord.en[key].optionsEn', ng-value='option')
+                                    | {{option}}
+
+                    .col-sm-12
+                        .form-group
+                            tags-input(ng-model="medicalRecord.en['patientTags'].value", placeholder="Patient Tags", replace-spaces-with-dashes='false')
+
+                    .col-sm-12(ng-repeat="key in menu.basic | filter: isForm(mindex)")
+                        .form-group
+                            label(href="javascript:void(0);" ng-click="setMsgContent(medicalRecord.en[key].question)") {{medicalRecord.en[key].titleEn}}
+
+                            // mnform
+                            div(ng-if="medicalRecord.en[key].type == 'mnform'"
+                                mnform-en
+                                key="key"
+                                mdr-index="mindex"
+                                pattern="medicalRecord.en[key]"
+
+                                add-item='addItemEn'
+                                delete-item='deleteItemEn'
+                                new-line-source="newLineSource"
+                                get-file-name-list="getFileNameListEn")
+
+                            // m1form
+                            div(ng-if="medicalRecord.en[key].type == 'm1form'" m1form-en pattern="medicalRecord.en[key]" get-file-name-list="getFileNameListEn" mdr-index="mindex")
+
+
+                br
+                .nav-tabs-custom.tabs-container
+                    ul.nav.nav-tabs(ng-click="openTab($event)")
+                        li.active
+                            a(href='#process{{$index}}', data-toggle='tab') Process
+                        li
+                            a(href='#medicalHistory{{$index}}', data-toggle='tab') Medical History
+                        li
+                            a(href='#diagnostic{{$index}}', data-toggle='tab') Present Diagnosis
+                        li
+                            a(href='#treatment{{$index}}', data-toggle='tab') Treatment
+                        li
+                            a(href='#md_question{{$index}}', data-toggle='tab') Patient Question
+                        li
+                            a(href='#files{{$index}}', data-toggle='tab') Medical Document
+                        li
+                            a(href='#dicoms{{$index}}', data-toggle='tab') Dicom
+                        li
+                            a(href='#logs{{$index}}', data-toggle='tab') Notes
+
+
+                    .tab-content
+                        //诊疗经过
+                        .active.tab-pane(id="process{{$index}}" ng-class="editControl")
+                             .form-group(ng-repeat="key in menu.process")
+                                 label(href="javascript:void(0);" ng-click="setMsgContent(medicalRecord.en[key].question)") {{medicalRecord.en[key].titleEn}}
+
+                                 // mnform
+                                 div(ng-if="medicalRecord.en[key].type == 'mnform'"
+                                     mnform-en
+                                     key="key"
+                                     mdr-index="mindex"
+                                     pattern="medicalRecord.en[key]"
+
+                                     add-item='addItemEn'
+                                     delete-item='deleteItemEn'
+                                     new-line-source="newLineSource"
+                                     get-file-name-list="getFileNameListEn")
+
+
+                        // 医疗史
+                        .tab-pane(id="medicalHistory{{$index}}" ng-class="editControl")
+                            .form-group(ng-repeat="key in menu.medicalHistory | filter:femaleFilterEn(medicalRecord.en)")
+                                label(href="javascript:void(0);" ng-click="setMsgContent(medicalRecord.en[key].question)") {{medicalRecord.en[key].titleEn}}
+
+                                // mnform
+                                div(ng-if="medicalRecord.en[key].type == 'mnform'"
+                                    mnform-en
+                                    key="key"
+                                    mdr-index="mindex"
+                                    pattern="medicalRecord.en[key]"
+
+                                    add-item='addItemEn'
+                                    delete-item='deleteItemEn'
+                                    new-line-source="newLineSource"
+                                    get-file-name-list="getFileNameListEn")
+
+                                // m1form
+                                div(ng-if="medicalRecord.en[key].type == 'm1form'" m1form-en pattern="medicalRecord.en[key]" get-file-name-list="getFileNameListEn" mdr-index="mindex")
+
+
+                        //当前诊断
+                        .tab-pane(id="diagnostic{{$index}}" ng-class="editControl")
+                            .form-group(ng-repeat="key in menu.diagnostic")
+                                label(href="javascript:void(0);" ng-click="setMsgContent(medicalRecord.en[key].question)") {{medicalRecord.en[key].titleEn}}
+
+                                // mnform
+                                div(ng-if="medicalRecord.en[key].type == 'mnform'"
+                                    mnform-en
+                                    key="key"
+                                    mdr-index="mindex"
+                                    pattern="medicalRecord.en[key]"
+
+                                    add-item='addItemEn'
+                                    delete-item='deleteItemEn'
+                                    new-line-source="newLineSource"
+                                    get-file-name-list="getFileNameListEn")
+
+                                // m1form
+                                div(ng-if="medicalRecord.en[key].type == 'm1form'" m1form-en pattern="medicalRecord.en[key]" get-file-name-list="getFileNameListEn" mdr-index="mindex")
+
+
+                        //治疗信息
+                        .tab-pane(id="treatment{{$index}}" ng-class="editControl")
+                            .form-group(ng-repeat="key in menu.treatment")
+                                label(href="javascript:void(0);" ng-click="setMsgContent(medicalRecord.en[key].question)") {{medicalRecord.en[key].titleEn}}
+
+                                // mnform
+                                div(ng-if="medicalRecord.en[key].type == 'mnform'"
+                                    mnform-en
+                                    key="key"
+                                    mdr-index="mindex"
+                                    pattern="medicalRecord.en[key]"
+
+                                    add-item='addItemEn'
+                                    delete-item='deleteItemEn'
+                                    new-line-source="newLineSource"
+                                    get-file-name-list="getFileNameListEn")
+
+                                // m1form
+                                div(ng-if="medicalRecord.en[key].type == 'm1form'" m1form-en pattern="medicalRecord.en[key]" get-file-name-list="getFileNameListEn" mdr-index="mindex")
+
+
+                        // 患者提问
+                        .tab-pane(id="md_question{{$index}}" ng-class="editControl")
+                            .form-group(ng-repeat="key in menu.md_question")
+                                label(href="javascript:void(0);" ng-click="setMsgContent(medicalRecord.en[key].question)") {{medicalRecord.en[key].titleEn}}
+
+                                // mnform
+                                div(ng-if="medicalRecord.en[key].type == 'mnform'"
+                                    mnform-en
+                                    key="key"
+                                    mdr-index="mindex"
+                                    pattern="medicalRecord.en[key]"
+
+                                    add-item='addItemEn'
+                                    delete-item='deleteItemEn'
+                                    new-line-source="newLineSource"
+                                    get-file-name-list="getFileNameListEn")
+
+
+                        //病历文件
+                        .tab-pane(id="files{{$index}}" ng-class="editControl")
+                            div(document-list-en
+                                mdr-index="mindex"
+                                pattern="medicalRecord.en.documents"
+                                tran="tran"
+
+                                add-item='addItem'
+                                delete-item='deleteItem'
+                                get-file-name-list="getFileNameList"
+                                upload-file="uploadFile"
+                                download-file="downloadFile"
+                                open-modal-image='openModalImage'
+                                is-image='isImage')
+
+
+                        // Dicom
+                        .tab-pane(id="dicoms{{$index}}" ng-class="editControl")
+                            div(dicom-list-en
+                                pattern="medicalRecord.en.dicomFiles"
+                                get-dicom-link="getDicomLink")
+
+
+                        // 记录
+                        .tab-pane(id="logs{{$index}}" ng-class="editControl")
+                            .form-group(ng-repeat="key in menu.logs")
+                                label(href="javascript:void(0);" ng-click="setMsgContent(medicalRecord.en[key].question)") {{medicalRecord.en[key].titleEn}}
+
+                                // mnform
+                                div(ng-if="medicalRecord.en[key].type == 'mnform'"
+                                    mnform-en
+                                    key="key"
+                                    mdr-index="mindex"
+                                    pattern="medicalRecord.en[key]"
+
+                                    add-item='addItemEn'
+                                    delete-item='deleteItemEn'
+                                    new-line-source="newLineSource"
+                                    get-file-name-list="getFileNameListEn")
+
+
+
+    div(ng-if="source === 'answer_chat'")
+        div.md-padding(layout='row' layout-align="center center")
+            div
+                #new_md.btn.btn-primary(type='button', ng-click='createNewMedicalRecord()')
+                    | 新增病历
+                .btn.btn-warning(type='button', ng-click='mdConnectControl()')
+                    | {{showmdConnectSection ? '取消关联':'关联病历'}}
+        div.md-padding(layout='row' layout-align="center center" ng-show="showmdConnectSection")
+            input.form-control(type='text',ng-model='dataModel.mdToConnect' uib-typeahead="item as (item.patientName + '__DOB:' +item.patientBirthday.split('T')[0]) for item in  queryMdPatients($viewValue)" placeholder="病人姓名" style="width:300px")
+            button.btn.btn-primary(ng-click="connectMD()" style="margin-left:20px") 关联病历
+
+
+

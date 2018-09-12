@@ -1,0 +1,656 @@
+doctype html
+html(lang='en')
+    head
+        meta(charset='UTF-8')
+        title #{reportData ? "Trial" : "Medical Record Summary"}
+        meta(name='viewport', ,='', content='width=device-width,initial-scale=1,user-scalable=no,maximum-scale=1')
+        link(rel='stylesheet', href='https://cdn.bootcss.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css')
+        link(rel='stylesheet', href='https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css')
+        //- link(src="https://cdn.bootcss.com/circliful/1.2.0/css/jquery.circliful.min.css")
+        //- <link rel="stylesheet" href="https://driver.qtclinics.com/report_print.css">
+        <link rel="stylesheet" href="/report_print.css">
+        <link rel="stylesheet" href="./public/build/report_print.css">
+
+        style.
+            #pageHeader-1,
+            #pageHeader-2,
+            #pageHeader-3,
+            #pageHeader {
+            }
+
+
+            #pageFooter {
+                height: 16mm;
+            }
+
+            #pageHeader-3, #pageHeader-2 {
+                height: 20mm;
+                position: relative;
+            }
+
+            .pageHeader-top-head {
+                background: #60bbc2;
+                width: 120%;
+                margin-left: -10%;
+                height: 14mm;
+                padding-top: 10px;
+                border-radius: 0 0 99% 99%;
+                border: 0;
+                text-align: center;
+                color: #fff;
+                top: 0;
+                position: absolute;
+                left: 0;
+                right: 0;
+            }
+
+            .pageHeader-default {
+                width: 100%;
+                height: 20mm;
+                border-radius: 0 0 99% 99%;
+                text-align: center;
+                color: #fff;
+            }
+
+            .pageNum {
+                float: left;
+                font-size: 6pt;
+                text-align: center;
+                border-radius: 15px;
+                color: rgb(166, 212, 152);
+            }
+
+            .pageFooter-default {
+                height: 16mm;
+                position: relative;
+            }
+
+            .footer {
+                position: absolute;
+                bottom: 0;
+                width: 100%;
+                color: rgba(0, 0, 0, 0.5);
+                height: 40px;
+                font-size: 7px;
+                padding: 0 10mm;
+            }
+
+            .footer-inner {
+                position: relative;
+                line-height: 10px;
+                padding: 6px 0;
+                color: #6b6b6b;
+            }
+
+            .footer-inner:before {
+                content: "";
+                position: absolute;
+                top: -50%;
+                bottom: -50%;
+                left: -50%;
+                right: -50%;
+                -webkit-transform: scale(0.5);
+                transform: scale(0.5);
+                border-top: 1px solid #9f9f9f;
+            }
+
+            .f-right {
+                float: right;
+                font-size: 6pt;
+            }
+
+            .page-tabs {
+                display: -webkit-flex;
+                display: flex;
+                width: 100%;
+                -webkit-flex-wrap: nowrap;
+                flex-wrap: nowrap;
+                -webkit-justify-content: space-between;
+                justify-content: space-between;
+
+            }
+
+            .page-tabs .page-tab {
+                height: 32px;
+                line-height: 32px;
+                flex-grow: 1;
+                -webkit-flex-grow: 1;
+                font-size: 10px;
+                -webkit-flex-direction: row;
+                flex-direction: row;
+                width: 100%;
+            }
+
+            .t0 {
+                background: #60bbc2;
+            }
+
+            .t20 {
+                background: #f7dd6e;
+            }
+
+            .t30 {
+                background: #d9534f;
+            }
+
+            .t40 {
+                background: #f6a460;
+            }
+
+            .t50 {
+                background: #7da6d3;
+            }
+
+            .t60 {
+                background: #d14095;
+            }
+
+            .t70 {
+                background: #eb9184;
+            }
+
+            .t80 {
+                background: #6cba78;
+            }
+
+            .t90 {
+                background: #2c65c6;
+            }
+
+            .t100 {
+                background: #8990c6;
+            }
+            .t170 {
+                background: #5169b8;
+            }
+
+            #pageFooter-last {
+                background: #6ebcc6;
+            }
+
+            .footer-last {
+                background: #6ebcc6;
+                height: 16mm;
+                width: 100%;
+                text-align: center;
+            }
+    
+    body
+        div(style="display:none;")
+            //- #pageHeader-1  
+            //- #pageHeader-2
+            //-     .pageHeader-top-head
+            //-         <img style="width:100px;height: 30px;zoom:1;" src="data:image/png;base64,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">
+            //- #pageHeader-3
+            //-     .pageHeader-top-head
+            //-         <img style="width:100px;height: 30px;zoom:1;" src="data:image/png;base64,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">
+            #pageHeader
+                div.pageHeader-default
+                    .page-tabs
+                        .page-tab.t0 Basic Information
+                        .page-tab.t20 Treatment History
+                        .page-tab.t60 Medical Document
+                        .page-tab.t70 Patient Question
+                        .page-tab.t170 Other Information
+
+                        if(reportData)
+                            .page-tab.t80 Trial Group
+                       
+
+            //- #pageHeader-last &nbsp;  
+            //- #pageFooter-1
+            //- #pageFooter-2
+            //- #pageFooter-last
+                .footer-last &nbsp;
+
+            #pageFooter
+                .footer
+                    .footer-inner(style="color:#666;")
+                        .pageNum {{page}}/{{pages}}
+                        .f-right
+                            <span>©2017 | Shanghai xxx | 400-xxx-xxx</span>
+        //| #{JSON.stringify(medicalRecord)}
+           
+        -function getLocalDate(timestamp) {
+        -if(!timestamp){
+        -return ""
+        -}
+        -var date = new Date(timestamp);
+        -var dateKey = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate()
+        -return dateKey
+        -}
+
+        -function showDate(date) {
+        -   var newDate = new Date(date);
+        -  return (newDate.getMonth() + 1).toString() + '/' + newDate.getDate() + '/' + newDate.getFullYear();
+        -};
+
+        -function getAge(dateString){
+            -var today = new Date();
+            -var birthDate = new Date(dateString);
+            -var age = today.getFullYear() - birthDate.getFullYear();
+            -var m = today.getMonth() - birthDate.getMonth();
+            -if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) 
+            -{
+                -age--;
+            -}
+            -return age + 1;
+        -}
+        
+        -function getFileIndex(mdDocuments,fileName){
+            -return ''
+            //-if(!mdDocuments){
+            //    -return ''
+            //-}
+            //-if(souce_index){
+            //    -return souce_index;
+            //-}
+            //-if(fileName.match('患者报告')){
+            //    -return 'SR';
+            //-}
+            //-for(var i =0;i<mdDocuments.length;i++){
+            //    -var doc = mdDocuments[i];
+            //    -var fdate = showDate(doc.visitDate);
+            //    -var name = (doc.documentType ?  doc.documentType + '_' : '') + (doc.visitDate ? fdate : '');
+            //    -if(doc && name && fileName && fileName.match(name)){
+            //        -return i+1;
+            //        -break;
+            //    -}
+            //-}
+            //-return 'SR'
+        -}
+        
+
+    
+        .pages
+            .print-pages
+                section.page.s0
+                    br
+                    br
+                    .border
+                        .row
+                            .col-5
+                                table.user_table
+                                    if(medicalRecord.patientName)
+                                        tr
+                                            td(align='right') Patient's name：
+                                            td(align='left')=medicalRecord.patientName
+                                    tr
+                                        td(align='right') Patient's gender：
+                                        td(align='left') #{medicalRecord.patientGender}
+                                         
+                                    tr
+                                        td(align='right') Patient's birthday：
+                                        td(align='left') #{getLocalDate(medicalRecord.patientBirthday)}
+                                    if(medicalRecord.patientMobile)
+                                        tr
+                                            td(align='right') Patient's phone number：
+                                            td(align='left') #{medicalRecord.patientMobile}
+                                    if(medicalRecord.patientAddress)
+                                        tr
+                                            td(align='right') Patient's address：
+                                            td(align='left') #{medicalRecord.patientAddress}
+                           
+                            .col-7
+                                .list-col-title
+                                    span Basic Information &nbsp;&nbsp;
+                                    i.fa.fa-user-md
+                                .list-col
+                                    if(medicalRecord.presentDiagnosis && medicalRecord.presentDiagnosis.cancerType )
+                                        .list-col-row
+                                            .list-col-row-head
+                                                | Present Diagnosis
+                                            .list-col-row-body
+                                                if(medicalRecord.presentDiagnosis)
+                                                    p=medicalRecord.presentDiagnosis.cancerType 
+                                                    //p=medicalRecord.presentDiagnosis.source
+                                                        if(medicalRecord.presentDiagnosis.source)
+                                                            a.sup(href="#file_link_#{medicalRecord.presentDiagnosis.source}")  [#{(medicalRecord.presentDiagnosis.source_index) || getFileIndex(medicalRecord.documents,medicalRecord.presentDiagnosis.source)}]
+                                    if(medicalRecord.presentDiagnosis && medicalRecord.presentDiagnosis.stage)
+                                        .list-col-row
+                                            .list-col-row-head
+                                                | Stage
+                                            .list-col-row-body
+                                                if(medicalRecord.presentDiagnosis)
+                                                    p=medicalRecord.presentDiagnosis.stage
+                                    if(medicalRecord.presentDiagnosis && medicalRecord.presentDiagnosis.diagnosisDate)
+                                        .list-col-row
+                                            .list-col-row-head
+                                                | Diagnosis Date
+                                            .list-col-row-body
+                                                if(medicalRecord.presentDiagnosis)
+                                                    p #{getLocalDate(medicalRecord.presentDiagnosis.diagnosisDate)}
+                                    if(medicalRecord.patientWeight && medicalRecord.patientWeight[0])
+                                        .list-col-row
+                                            .list-col-row-head
+                                                | Patient's weight
+                                            .list-col-row-body
+                                                if(medicalRecord.patientWeight)
+                                                    table
+                                                        each h in medicalRecord.patientWeight
+                                                            tr
+                                                                td(valign='top')=h.value
+                                                                td(valign='top') #{getLocalDate(h.date)}
+                                    if(medicalRecord.patientHeight && medicalRecord.patientHeight.value)
+                                        .list-col-row
+                                            .list-col-row-head
+                                                | Patient's height
+                                            .list-col-row-body
+                                                if(medicalRecord.patientHeight)
+                                                    p=medicalRecord.patientHeight.value
+                                                        //if(medicalRecord.patientHeight.source)
+                                                            a.sup(href="#file_link_#{medicalRecord.patientHeight.source}")  [#{(medicalRecord.patientHeight.source_index) || getFileIndex(medicalRecord.documents,medicalRecord.patientHeight.source)}]
+                                    if(medicalRecord.proteinExpression && medicalRecord.proteinExpression.description)
+                                        .list-col-row
+                                            .list-col-row-head
+                                                | Protein Expression
+                                            .list-col-row-body
+                                                if(medicalRecord.proteinExpression)
+                                                    p=medicalRecord.proteinExpression.description
+                                                        //if(medicalRecord.proteinExpression.source)
+                                                            a.sup(href="#file_link_#{medicalRecord.proteinExpression.source}")  [#{(medicalRecord.proteinExpression.source_index) || getFileIndex(medicalRecord.documents,medicalRecord.proteinExpression.source)}]
+                                    if(medicalRecord.diseaseLocation && medicalRecord.diseaseLocation.description)
+                                        .list-col-row
+                                            .list-col-row-head
+                                                | Disease Location
+                                            .list-col-row-body
+                                                if(medicalRecord.diseaseLocation)
+                                                    p=medicalRecord.diseaseLocation.description
+                                                        //if(medicalRecord.diseaseLocation.source)
+                                                            a.sup(href="#file_link_#{medicalRecord.diseaseLocation.source}") [#{(medicalRecord.diseaseLocation.source_index) || getFileIndex(medicalRecord.documents,medicalRecord.diseaseLocation.source)}]
+
+                                    // medicalRecord.metastases.description[0].length 判断因为angular multiselect 的 bug， 不选时可能为[""]
+                                    if(medicalRecord.metastases && medicalRecord.metastases.description && medicalRecord.metastases.description.length && medicalRecord.metastases.description[0].length)
+                                        .list-col-row
+                                            .list-col-row-head
+                                                | Metastases
+                                            .list-col-row-body
+                                                if(medicalRecord.metastases)
+                                                    p=medicalRecord.metastases.description
+                                                        //if(medicalRecord.metastases.source)
+                                                            a.sup(href="#file_link_#{medicalRecord.metastases.source}")  [#{(medicalRecord.metastases.source_index) || getFileIndex(medicalRecord.documents,medicalRecord.metastases.source)}]
+                                    if(medicalRecord.ecog && medicalRecord.ecog.description)
+                                        .list-col-row
+                                            .list-col-row-head
+                                                | ECOG Score
+                                            .list-col-row-body
+                                                if(medicalRecord.ecog)
+                                                    p=medicalRecord.ecog.description
+                                                        //if(medicalRecord.ecog.source)
+                                                            a.sup(href="#file_link_#{medicalRecord.ecog.source}") [#{(medicalRecord.ecog.source_index) || getFileIndex(medicalRecord.documents,medicalRecord.ecog.source)}]
+                                    if(medicalRecord.kps && medicalRecord.kps.description)
+                                        .list-col-row
+                                            .list-col-row-head
+                                                | KPS Score
+                                            .list-col-row-body
+                                                if(medicalRecord.kps)
+                                                    p=medicalRecord.kps.description
+                                                        //if(medicalRecord.kps.source)
+                                                            a.sup(href="#file_link_#{medicalRecord.kps.source}")  [#{(medicalRecord.kps.source_index) || getFileIndex(medicalRecord.documents,medicalRecord.kps.source)}]
+                                    if(medicalRecord.currentCondition && medicalRecord.currentCondition.description)
+                                        .list-col-row
+                                            .list-col-row-head
+                                                | Current Condition
+                                            .list-col-row-body
+                                                if(medicalRecord.currentCondition)
+                                                    p=medicalRecord.currentCondition.description
+                                                    p=medicalRecord.currentCondition.date
+                                                        //if(medicalRecord.currentCondition.source)
+                                                            a.sup(href="#file_link_#{medicalRecord.currentCondition.source}") [#{(medicalRecord.currentCondition.source_index) || getFileIndex(medicalRecord.documents,medicalRecord.currentCondition.source)}]
+
+                if(medicalRecord.treatmentHistory && medicalRecord.treatmentHistory.length > 0)
+                    section.page.s20(style="page-break-after:always")
+                        div
+                            span.head
+                                | Treatment History &nbsp;&nbsp;
+                                i.fa.fa-list-alt
+                        .border
+                            //.sub-head
+                                | 简述	事件	日期	来源
+
+                            table.table
+                                tr
+                                    th Date
+                                    th Event
+                                    th Description
+                                    th Source
+
+                                each info in medicalRecord.treatmentHistory
+                                    tr
+                                        td #{getLocalDate(info.date)}
+                                        td=info.event
+                                        td=info.description
+                                        td=info.source
+                                            //if(info.source)
+                                                a.sup(href="#file_link_#{info.source}") [#{(info.source_index) || getFileIndex(medicalRecord.documents, info.source)}]
+
+
+                      
+                if(medicalRecord.documents && medicalRecord.documents.length > 0)
+                    section.page.s60
+                        div
+                            span.head
+                                | Medical Document &nbsp;&nbsp;
+                                i.fa.fa-files-o
+                        .border
+
+                            table.table
+                                tr
+                                    th No.
+                                    th Document Type
+                                    //- th Document Name
+                                    th Report Date
+                                    th Institution
+                                    th Document ID
+
+                                each info,index in medicalRecord.documents
+                                    tr(id="file_link_#{(info.documentType ?  info.documentType + '_' : '') + (info.visitDate ? showDate(info.visitDate) : '')}")
+                                      
+                                        td(valign='top')=index+1
+                                        td(valign='top' onclick="window.open('#{info.url}','_blank');")=info.documentType
+                                        //- td(valign='top')
+                                            span(onclick="window.open('#{info.url}','_blank');")=info.documentName
+                                        td(valign='top') #{getLocalDate(info.visitDate)}
+                                        td(valign='top')=info.comments
+                                        td(valign='top')=info.documentId
+
+                if(medicalRecord.patientQuestions && medicalRecord.patientQuestions.length > 0)
+                    section.page.s70
+                        div
+                            span.head
+                                | Patient Question &nbsp;&nbsp;
+                                i.fa.fa-vcard-o
+                        .border
+                            table.table
+                               
+                                each info in medicalRecord.patientQuestions
+                                    tr
+                                        td=info.question
+
+
+
+                section.page.s170(style="page-break-after:always")
+                    div
+                        span.head
+                            | Other Info &nbsp;&nbsp;
+                            i.fa.fa-list-alt
+                    .border
+                        if(medicalRecord.majorDisease && medicalRecord.majorDisease[0])
+                            .sub-head Major Disease
+                            table.table
+                                tr
+                                    th Disease
+                                    th Description
+                                    th Start Date
+                                    th End Date
+                                    th Treatment
+                                    th Edit
+                                each info in medicalRecord.majorDisease
+                                    tr
+                                        td=info.disease
+                                        td=info.description
+                                        //td #{getLocalDate(info.startDate)}
+                                        td #{getLocalDate(info.endDate)}
+                                        td=info.treatment
+                                        td=info.source
+                                            //if(info.source)
+                                                a.sup(href="#file_link_#{info.source}") [#{(info.source_index) || getFileIndex(medicalRecord.documents, info.source)}]
+
+                        if(medicalRecord.majorTrauma && medicalRecord.majorTrauma[0])
+                            .sub-head Major Trauma
+
+                            table.table
+                                tr
+                                    th Description
+                                    th Date
+                                    th Source
+                                each info in medicalRecord.majorTrauma
+                                    tr
+                                        td=info.description
+                                        td #{getLocalDate(info.date)}
+                                        td=info.source
+                                            //if(info.source)
+                                                a.sup(href="#file_link_#{info.source}") [#{(info.source_index) || getFileIndex(medicalRecord.documents, info.source)}]
+                        if(medicalRecord.otherCancer && medicalRecord.otherCancer[0])
+                            .sub-head Other Cancer
+                            table.table
+                                tr
+                                    th Cancer
+                                    th Diagnosis Date
+                                    th Treatment
+                                    th Evaluation
+                                    th Stage
+                                    th
+                                each info in medicalRecord.otherCancer
+                                    tr
+                                        td=info.cancer
+                                        td #{getLocalDate(info.date)}
+                                        td=info.treatment
+                                        td=info.evaluation
+                                        td=info.staging
+                                        td=info.source
+                                            //if(info.source)
+                                                a.sup(href="#file_link_#{info.source}") [#{(info.source_index) || getFileIndex(medicalRecord.documents, info.source)}]
+
+                        if(medicalRecord.surgicalHistory && medicalRecord.surgicalHistory[0])
+                            .sub-head
+                                | Surgical History
+                            table.table
+                                tr
+                                    th Surgery Name
+                                    th Date
+                                    th Evaluation
+                                    th Source
+                                each info in medicalRecord.surgicalHistory
+                                    tr
+                                        td=info.name
+                                        td #{getLocalDate(info.date)}
+                                        td=info.evaluation
+                                        td=info.source
+                                            //if(info.source)
+                                                a.sup(href="#file_link_#{info.source}") [#{(info.source_index) || getFileIndex(medicalRecord.documents, info.source)}]
+
+                        if(medicalRecord.familyHistoryCancer && medicalRecord.familyHistoryCancer[0])
+                            .sub-head
+                                | Family History of Cancer
+                            table.table
+                                tr
+                                    th Relationship
+                                    th Cancer
+                                    th Details
+                                    th
+                                each info in medicalRecord.familyHistoryCancer
+                                    tr
+                                        td=info.relationship
+                                        td=info.cancerType
+                                        td=info.details
+                                        td=info.source
+                                            //if(info.source)
+                                                a.sup(href="#file_link_#{info.source}") [#{(info.source_index) || getFileIndex(medicalRecord.documents, info.source)}]
+                        if(medicalRecord.familyHistoryGenetic && medicalRecord.familyHistoryGenetic[0])
+                            .sub-head
+                                | Family History of Gene Mutations
+                            table.table
+                                tr
+                                    th Gene
+                                    th Source
+                                each info in medicalRecord.familyHistoryGenetic
+                                    tr
+                                        td=info.gene
+                                        td=info.source
+                                            //if(info.source)
+                                                a.sup(href="#file_link_#{info.source}") [#{(info.source_index) || getFileIndex(medicalRecord.documents, info.source)}]
+
+                        if(medicalRecord.allergies && medicalRecord.allergies[0])
+                            .sub-head   Allergies
+                            table.table
+                                tr
+                                    th Allergic To
+                                    th Reaction And Severity
+                                    th Source
+                                each info in medicalRecord.allergies
+                                    tr
+                                        td=info.allergicTo
+                                        td=info.reactionAndSeverity
+                                        td=info.source
+                                            //if(info.source)
+                                                a.sup(href="#file_link_#{info.source}") [#{(info.source_index) || getFileIndex(medicalRecord.documents, info.source)}]
+
+                        if(medicalRecord.martialStatus && medicalRecord.martialStatus.description)
+                            .sub-head
+                                | Martial Status
+                            table.table
+                                tr
+                                    th Status
+                                    th Source
+
+
+                                tr
+                                    td=medicalRecord.martialStatus.description
+                                    td=medicalRecord.martialStatus.source
+                                        //if(medicalRecord.martialStatus.source)
+                                            a.sup(href="#file_link_#{medicalRecord.martialStatus.source}") [#{(medicalRecord.martialStatus.source_index) || getFileIndex(medicalRecord.documents, medicalRecord.martialStatus.source)}]
+
+                        if(medicalRecord.smoking && medicalRecord.smoking.description)
+                            .sub-head
+                                | Smoking History
+                            table.table
+                                tr
+                                    th Smoking History
+                                    th Source
+
+                                tr
+                                    td=medicalRecord.smoking.description
+                                    td=medicalRecord.smoking.source
+                                        //if(medicalRecord.smoking.source)
+                                            a.sup(href="#file_link_#{medicalRecord.smoking.source}") [#{(medicalRecord.smoking.source_index) || getFileIndex(medicalRecord.documents, medicalRecord.smoking.source)}]
+
+                        if(medicalRecord.drinking && medicalRecord.drinking.description)
+                            .sub-head
+                                | Drinking History
+                            table.table
+                                tr
+                                    th Drinking History
+                                    th Source
+
+                                tr
+                                    td=medicalRecord.drinking.description
+                                    td=medicalRecord.drinking.source
+                                        //if(medicalRecord.drinking.source)
+                                            a.sup(href="#file_link_#{medicalRecord.drinking.source}") [#{(medicalRecord.drinking.source_index) || getFileIndex(medicalRecord.documents, medicalRecord.drinking.source)}]
+
+                        if(medicalRecord.drugUse && medicalRecord.drugUse.description)
+                            .sub-head
+                                | Drug History
+                            table.table
+                                tr
+                                    th Drug History
+                                    th    Source
+
+                                tr
+                                    td=medicalRecord.drugUse.description
+                                    td=medicalRecord.drugUse.source
+                                        //if(medicalRecord.drugUse.source)
+                                            a.sup(href="#file_link_#{medicalRecord.drugUse.source}") [#{(medicalRecord.drugUse.source_index) || getFileIndex(medicalRecord.documents, medicalRecord.drugUse.source)}]
+
+

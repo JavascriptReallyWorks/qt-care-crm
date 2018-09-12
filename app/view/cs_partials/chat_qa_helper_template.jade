@@ -1,0 +1,25 @@
+div(ng-controller='ChatQaHelperTemplateController',  flex='',ng-init="initChatQaHelperTemplateCtrl()")
+
+    .search_tab(ng-init="initTagsCategory()")
+        div(layout='row')
+            .md-block(ng-repeat="options in tags_arr" flex-gt-sm='')
+                md-select(ng-model='select_tags[$index]', md-on-close='clearSearchTerm()', ng-change="changeTagSelect(select_tags[$index],$index)", data-md-container-class='selectdemoSelectHeader')
+                    md-select-header.demo-select-header
+                        input.demo-header-searchbox.md-text(ng-model='searchTerm', type='search', placeholder='Search' ng-keydown="onSearchChange($event)")
+                    md-optgroup
+                        md-option(ng-value='tag.options_tags',ng-repeat="tag in options | filter:searchTerm",ng-selected="select_tags[$parent.$index] == tag.options_tags") {{tag.options_tags}}
+
+        div(droppable-text etext="tags[0]")
+            tags-input(ng-model='tags', placeholder='添加关键字', replace-spaces-with-dashes='false' on-tag-added="tagChanged()"
+            on-tag-removed="tagChanged()")
+                auto-complete(source='loadTags($query)', min-length='0', load-on-focus='false', load-on-empty='false', max-results-to-show='32',select-first-match="false")
+
+            //div.related-qas(ng-if="option === 'search'" class="my-scroll-area" ng-nicescroll nice-option="{cursorcolor: '#cdd2d6',cursorwidth: '4px',cursorborder:'none'}" scroll-to-top-when="items_changed")
+        ul.search_result(ng-if="qaHits")
+            li(ng-repeat="qa in qaHits.hits")
+                a(href="javascript:void(0)"  data-toggle="tooltip" data-placement="left" title="发送链接和摘要" ng-click="getQaContent(qa._id,'link')") {{qa._source.title}}
+                a(href="javascript:void(0)" title="{{qa._source.digest}}" + "..." ng-click="getQaContent(qa._id,'text')")
+                    i.fa.fa-file-text-o
+
+
+

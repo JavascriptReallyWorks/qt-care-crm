@@ -1,0 +1,945 @@
+//
+   Created by lele on 17/7/14.
+
+doctype html
+html(lang='en')
+    head
+        meta(charset='UTF-8')
+        title 报告
+        meta(name='viewport', ,='', content='width=device-width,initial-scale=1,user-scalable=no,maximum-scale=1')
+        link(rel='stylesheet', href='https://cdn.bootcss.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css')
+        link(rel='stylesheet', href='https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css')
+        link(src="https://cdn.bootcss.com/circliful/1.2.0/css/jquery.circliful.min.css")
+        <link rel="stylesheet" href="/report_print.css">
+        <link rel="stylesheet" href="./public/report_print.css">
+        style.
+            #pageHeader-1,
+            #pageHeader-2,
+            #pageHeader-3,
+            #pageHeader {
+            }
+
+
+            #pageFooter {
+                height: 16mm;
+            }
+
+            #pageHeader-3, #pageHeader-2 {
+                height: 20mm;
+                position: relative;
+            }
+
+            .pageHeader-top-head {
+                background: #60bbc2;
+                width: 120%;
+                margin-left: -10%;
+                height: 14mm;
+                padding-top: 10px;
+                border-radius: 0 0 99% 99%;
+                border: 0;
+                text-align: center;
+                color: #fff;
+                top: 0;
+                position: absolute;
+                left: 0;
+                right: 0;
+            }
+
+            .pageHeader-default {
+                width: 100%;
+                height: 20mm;
+                border-radius: 0 0 99% 99%;
+                text-align: center;
+                color: #fff;
+            }
+
+            .pageNum {
+                float: left;
+                font-size: 6pt;
+                text-align: center;
+                border-radius: 15px;
+                color: rgb(166, 212, 152);
+            }
+
+            .pageFooter-default {
+                height: 16mm;
+                position: relative;
+            }
+
+            .footer {
+                position: absolute;
+                bottom: 0;
+                width: 100%;
+                color: rgba(0, 0, 0, 0.5);
+                height: 40px;
+                font-size: 7px;
+                padding: 0 10mm;
+            }
+
+            .footer-inner {
+                position: relative;
+                line-height: 10px;
+                padding: 6px 0;
+                color: #6b6b6b;
+            }
+
+            .footer-inner:before {
+                content: "";
+                position: absolute;
+                top: -50%;
+                bottom: -50%;
+                left: -50%;
+                right: -50%;
+                -webkit-transform: scale(0.5);
+                transform: scale(0.5);
+                border-top: 1px solid #9f9f9f;
+            }
+
+            .f-right {
+                float: right;
+                font-size: 6pt;
+            }
+
+            .page-tabs {
+                display: -webkit-flex;
+                display: flex;
+                width: 100%;
+                -webkit-flex-wrap: nowrap;
+                flex-wrap: nowrap;
+                -webkit-justify-content: space-between;
+                justify-content: space-between;
+
+            }
+
+            .page-tabs .page-tab {
+                height: 32px;
+                line-height: 32px;
+                flex-grow: 1;
+                -webkit-flex-grow: 1;
+                font-size: 10px;
+                -webkit-flex-direction: row;
+                flex-direction: row;
+                width: 100%;
+            }
+
+            .t0 {
+                background: #60bbc2;
+            }
+
+            .t20 {
+                background: #f7dd6e;
+            }
+
+            .t30 {
+                background: #d9534f;
+            }
+
+            .t40 {
+                background: #f6a460;
+            }
+
+            .t50 {
+                background: #7da6d3;
+            }
+
+            .t60 {
+                background: #d14095;
+            }
+
+            .t70 {
+                background: #eb9184;
+            }
+
+            .t80 {
+                background: #6cba78;
+            }
+
+            .t90 {
+                background: #2c65c6;
+            }
+
+            .t100 {
+                background: #8990c6;
+            }
+            .t110{
+                background: #006852;
+            }
+
+            #pageFooter-last {
+                background: #6ebcc6;
+            }
+
+            .footer-last {
+                background: #6ebcc6;
+                height: 16mm;
+                width: 100%;
+                text-align: center;
+            }
+
+    body
+        div(style="display:none;")
+            #pageHeader-1  
+            #pageHeader-2
+                .pageHeader-top-head
+                    <img style="width:100px;height: 30px;zoom:1;" src="data:image/png;base64,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">
+            #pageHeader-3
+                .pageHeader-top-head
+                    <img style="width:100px;height: 30px;zoom:1;" src="data:image/png;base64,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">
+            #pageHeader
+                div.pageHeader-default
+                    .page-tabs
+                        .page-tab.t0 病情综述
+                        if((medicalRecord.surgery_info && medicalRecord.surgery_info.length > 0) || (medicalRecord.treatment_brief && medicalRecord.treatment_brief.length > 0) ||  (medicalRecord.current_medicine_info && medicalRecord.current_medicine_info.length > 0))
+                            .page-tab.t20 治疗总结
+                        if(medicalRecord.condition_description && medicalRecord.condition_description.length > 0)
+                            .page-tab.t50 个人症状描述
+                        if(medicalRecord.image_file && medicalRecord.image_file.length > 0)
+                            .page-tab.t60 病历文件
+                        if(report.treatments && report.treatment_drug)
+                            .page-tab.t70 治疗方案分析
+                        if(report.treatments && report.treatment_drug)
+                            .page-tab.t80 方案匹配
+                        if(report.treatments && report.treatment_doctor)
+                            .page-tab.t80 就医推荐
+                        if(report.treatments && JSON.stringify(report.treatments).indexOf("go_to_doctor_help") != -1)
+                            .page-tab.t110 就医提问卡
+                        if(report.treatments && report.treatment_go_to_doctor_help)
+                            .page-tab.t90 综合判断
+
+                        if(report.comments && report.comments != "")
+                            .page-tab.t100 注释
+
+            #pageHeader-last &nbsp;  
+            #pageFooter-1
+            #pageFooter-2
+            #pageFooter-last
+                .footer-last &nbsp;
+
+            #pageFooter
+                .footer
+                    .footer-inner
+                        .pageNum {{page}}/{{pages}}
+                        .f-right
+                            <span>肿瘤知道国际医学团队 2017年版 | 上海市徐汇区永福路147弄45号 | 400-822-9993</span>
+        //| #{JSON.stringify(medicalRecord)}
+        -function getLocalDate(timestamp) {
+        -if(!timestamp){
+        -return ""
+        -}
+        -var date = new Date(timestamp);
+        -var dateKey = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate()
+        -return dateKey
+        -}
+        .pages
+            .print-pages
+                section.page(style="page-break-after: always;")
+                    .head-center
+                        br
+                        br
+                        .t-title
+                            img(src="https://www.zlzhidao.com/img/print/logo-white-2.png")
+                            br
+                            br
+                            br
+                            h3 私属抗癌指南
+                        .t-user
+                            table
+                                tr
+                                    td(align='right', width='50%')  ID No：
+                                    td(width='50%', align='left') #{report.report_number}
+                                tr
+                                    td(align='right') 姓名：
+                                    td(align='left') #{medicalRecord.patient_name.substring(0, 1)}#{(medicalRecord.patient_sex == "男" || medicalRecord.patient_sex == 1) ? "先生" : "女士"}
+                                tr
+                                    td(align='right') 性别：
+                                    td(align='left') #{medicalRecord.patient_sex}
+                section.page(style="page-break-after: always;")
+                    .second_article
+                        br
+                        br
+                        h3
+                            | 致患者
+                            br
+                            | To Patient
+                        br
+                        br
+                        div
+                            | 尊敬的 #{(medicalRecord.patient_sex == "男" || medicalRecord.patient_sex == 1) ? "先生" : "女士"}：
+                            br
+                            |                     您好！
+                            br
+                            |                     感谢您的选择和信任！
+                            br
+                            br
+                        p
+                            | 量子健康公司2016年成立，总部位于上海，在美国旧金山及纽约设有分支机构，服务团队由全球专业的医疗人
+                            | 员组成，通过国际间交流与合作将中国患者与世界顶级医疗资源相连接。公司开发的平台“肿瘤知道”⸺口袋
+                            | 中的抗癌决策顾问，应用人工+智能协同配合，7x24小时为中国肿瘤患者提供最靠谱的全球肿瘤信息资讯和一
+                            | 站式解决方案。
+                        p
+                            | 据国家癌症中心发布的中国最新癌症数据公布，全国每天约有1万人确诊癌症，相当于平均每1分钟就确诊7人。
+                            | 中国城市居民从0至85岁，累计发生患癌的风险为35%，这意味着每个人一生的癌症发生率都在三成以上！然而
+                            | 现实中，网络上铺天盖地的广告、互相背反的说法甚至虚假内容，极易传递错误信息，令人混淆延误病情；想尽
+                            | 各种办法预约到专家，无奈面诊时间有限，不能逐一详细解惑；患者大多专业知识不足，无法全盘理解疾病治疗
+                            | 的复杂性……通常情况下，往往是折腾一圈，走了冤枉路，花了冤枉钱，最终还耽误了最佳治疗时间。
+                        p
+                            | 我们肿瘤知道推出“私属抗癌指南”，是由全球专业的医疗人员，通过人工智能系统为患者建立疾病阶段模型，
+                            | 对患者的患癌类型、病史、用药情况及副作用、并发症情况、关键指标（如肿瘤大小、转移情况）等多信息作出专
+                            | 业精准的判断与分析，并可给出国际同步的治疗方案分析报告。一份“私属抗癌指南”在手，让肿瘤患者少走冤
+                            | 枉路，不花冤枉钱，事半功倍得就医，无后顾之忧治疗！
+                        p
+                            | 我们相信随着现代医学的深入发展，新的治疗方式和药物不断涌现，肿瘤可防、可控、可治的梦想正逐步成为现
+                            | 实。患者朋友，请您不要过分紧张恐乱，乐观豁达的心态和坚定积极的信念是战胜恶疾的强大力量。请您在科学
+                            | 治疗的同时，严格按照医生的建议调整生活作息、适当运动、科学饮食。亲爱的朋友，在战胜肿瘤的道路上您是
+                            | 勇敢的战士，但您并不孤单，肿瘤知道全体决策顾问将竭诚为您科学护航，真诚地祝愿您早日康复！
+                        p.text-right
+                            br
+                            br
+                            |                     肿瘤知道全体顾问致
+                section.page.s0
+                    br
+                    br
+                    .border
+                        .row
+                            .col-4
+                                table.user_table
+                                    tr
+                                        td(align='right') 姓名：
+                                        td(align='left')=medicalRecord.patient_name
+                                    tr
+                                        td(align='right') 性别：
+                                        td(align='left') #{medicalRecord.patient_sex}
+                                    tr
+                                        td(align='right') 年龄：
+                                        td(align='left') #{medicalRecord.patient_age}
+                                    tr
+                                        td(align='right') 出生日期：
+                                        td(align='left') #{getLocalDate(medicalRecord.patient_birthday)}
+                                    tr
+                                        td(align='right') 联系电话：
+                                        td(align='left') #{medicalRecord.patient_mobile}
+                                    tr
+                                        td(align='right') 地址：
+                                        td(align='left') #{medicalRecord.patient_address}
+
+                            .col-8
+                                .list-col-title
+                                    span 病情综述 &nbsp;&nbsp;
+                                    i.fa.fa-user-md
+                                .list-col
+                                    .list-col-row
+                                        .list-col-row-head
+                                            | 目前诊断
+                                        .list-col-row-body
+                                            p=medicalRecord.patient_disease
+                                    .list-col-row
+                                        .list-col-row-head
+                                            | 分期
+                                        .list-col-row-body
+                                            p=medicalRecord.disease_staging
+                                    .list-col-row
+                                        .list-col-row-head
+                                            | 首次确诊日期
+                                        .list-col-row-body
+                                            p #{getLocalDate(medicalRecord.confirmation_date)}
+
+                                    .list-col-row
+                                        .list-col-row-head
+                                            | 目前患者情况
+                                        .list-col-row-body
+                                            p=medicalRecord.patient_body_condition
+                                    .list-col-row
+                                        .list-col-row-head
+                                            | 病理报告诊断
+                                        .list-col-row-body
+                                            span=medicalRecord.patient_report
+                                    .list-col-row
+                                        .list-col-row-head
+                                            | 接受过的治疗
+                                        .list-col-row-body
+                                            span=medicalRecord.treatment_history
+                                    if(medicalRecord.gene_mutation && medicalRecord.gene_mutation.length > 0)
+                                        .list-col-row
+                                            .list-col-row-head
+                                                | 肿瘤基因突变信息
+                                            .list-col-row-body
+                                                each gen in medicalRecord.gene_mutation
+                                                    p
+                                                        span(valign='top')=gen.geneType
+                                                        span &nbsp;&nbsp;/&nbsp;&nbsp;
+                                                        span(valign='top')=gen.geneName
+                                    if(medicalRecord.allergy)
+                                        .list-col-row
+                                            .list-col-row-head
+                                                | 过敏史（有无食物 药物过敏历史）
+                                            .list-col-row-body
+                                                span=medicalRecord.allergy
+
+                section.page.s20(style="page-break-after:always")
+                    div
+                        span.head
+                            | 治疗总结 &nbsp;&nbsp;
+                            i.fa.fa-list-alt
+                    .border
+                        if(medicalRecord.surgery_info && medicalRecord.surgery_info.length > 0)
+                            .sub-head
+                                | 手术
+                            table.table
+                                tr
+                                    th 手术名称
+                                    th 手术日期
+                                    th 疗效评估
+                                each info in medicalRecord.surgery_info
+                                    tr
+                                        td=info.name
+                                        td #{getLocalDate(info.date)}
+                                        td=info.name
+                                        //each val in info
+                                            td(valign='top')=val
+
+                        if(medicalRecord.radiotherapy_info && medicalRecord.radiotherapy_info.length > 0)
+                            .sub-head
+                                | 放疗信息
+                            table.table
+                                tr
+                                    th 放疗部位
+                                    th 放疗剂量及次数
+                                    th 开始日期
+                                    th 结束日期
+                                    th 疗效评估
+                                each info in medicalRecord.radiotherapy_info
+                                    tr
+                                        td=info.position
+                                        td=info.dose
+                                        td #{getLocalDate(info.startDate)}
+                                        td #{getLocalDate(info.endDate)}
+                                        td=info.evaluation
+
+
+                        if(medicalRecord.targeted_therapy_info && medicalRecord.targeted_therapy_info.length > 0)
+                            .sub-head
+                                | 靶向治疗信息
+                            table.table
+
+                                tr
+                                    th 药物名
+                                    th 用法用量
+                                    th 开始日期
+                                    th 结束日期
+                                    th 疗效评估
+                                each info in medicalRecord.targeted_therapy_info
+                                    tr
+                                        td=info.drug
+                                        td=info.dose
+                                        td #{getLocalDate(info.startDate)}
+                                        td #{getLocalDate(info.endDate)}
+                                        td=info.evaluation
+
+
+                        if(medicalRecord.endocrinotherapy_info && medicalRecord.endocrinotherapy_info.length > 0)
+                            .sub-head
+                                | 内分泌治疗信息
+                            table.table
+                                tr
+                                    th 药物名
+                                    th 用法用量
+                                    th 开始日期
+                                    th 结束日期
+                                    th 疗效评估
+                                each info in medicalRecord.endocrinotherapy_info
+                                    tr
+                                        td=info.drug
+                                        td=info.dose
+                                        td #{getLocalDate(info.startDate)}
+                                        td #{getLocalDate(info.endDate)}
+                                        td=info.evaluation
+
+                        if(medicalRecord.immunotherapy_info && medicalRecord.immunotherapy_info.length > 0)
+                            .sub-head
+                                | 免疫治疗信息
+                            table.table
+                                tr
+                                    th 药物名
+                                    th 用法用量
+                                    th 开始日期
+                                    th 结束日期
+                                    th 疗效评估
+                                each info in medicalRecord.immunotherapy_info
+                                    tr
+                                        td=info.drug
+                                        td=info.dose
+                                        td #{getLocalDate(info.startDate)}
+                                        td #{getLocalDate(info.endDate)}
+                                        td=info.evaluation
+
+                        if(medicalRecord.chinese_therapy_info && medicalRecord.chinese_therapy_info.length > 0)
+                            .sub-head
+                                | 中药治疗信息
+                            table.table
+                                tr
+                                    th 药物名
+                                    th 用法用量
+                                    th 开始日期
+                                    th 结束日期
+
+                                each info in medicalRecord.chinese_therapy_info
+                                    tr
+                                        td=info.drug
+                                        td=info.dose
+                                        td #{getLocalDate(info.startDate)}
+                                        td #{getLocalDate(info.endDate)}
+
+                        if(medicalRecord.other_therapy_info && medicalRecord.other_therapy_info.length > 0)
+                            .sub-head
+                                | 其他治疗信息
+                            table.table
+                                tr
+                                    th 药物名
+                                    th 用法用量
+                                    th 开始日期
+                                    th 结束日期
+
+                                each info in medicalRecord.other_therapy_info
+                                    tr
+                                        td=info.drug
+                                        td=info.dose
+                                        td #{getLocalDate(info.startDate)}
+                                        td #{getLocalDate(info.endDate)}
+
+
+                        if(medicalRecord.treatment_brief && medicalRecord.treatment_brief.length > 0)
+                            .sub-head
+                                | 治疗经过
+                            .row
+                                .col-md-12
+                                    ul.timeline.timeline-inverse
+                                        each info in medicalRecord.treatment_brief
+                                            .timeline.timeline-inverse
+                                                li.time-label
+                                                    span.bg-s20.text-white
+                                                        | #{getLocalDate(info.date)}
+                                                li
+                                                    //i.fa.fa-envelope.bg-blue
+                                                    .timeline-item
+                                                        span.time
+                                                            //i.fa.fa-clock-o
+                                                            //| #{getLocalDate(info.date)}
+                                                        h3.timeline-header
+                                                            span.text-light-blue=info.event
+                                                        .timeline-body=info.description
+                        if(medicalRecord.current_medicine_info && medicalRecord.current_medicine_info.length > 0)
+                            .sub-head
+                                | 当前用药情况
+
+                            table.table
+                                tr
+                                    th 药物名
+                                    th 用法用量
+                                    th 备注
+                                each info in medicalRecord.current_medicine_info
+                                    tr
+                                        td=info.drug
+                                        td=info.dose
+                                        td=info.remark
+                if(medicalRecord.condition_description && medicalRecord.condition_description.length > 0)
+                    section.page.s50
+                        div
+                            span.head
+                                | 个人症状描述 &nbsp;&nbsp;
+                                i.fa.fa-vcard-o
+                        .border
+                            table.table
+                                tr
+                                    th 描述
+                                    th 开始时间
+                                    th 轻重程度
+                                    th 诱发及加重因素
+                                    th 缓解方式
+                                each info in medicalRecord.condition_description
+                                    tr
+                                        td=info.description
+                                        td #{getLocalDate(info.startDate)}
+                                        td=info.level
+                                        td=info.course
+                                        td=info.treatment
+                if(medicalRecord.image_file && medicalRecord.image_file.length > 0)
+                    section.page.s60
+                        div
+                            span.head
+                                | 病历文件 &nbsp;&nbsp;
+                                i.fa.fa-files-o
+                        .border
+
+                            table.table
+                                tr
+                                    th 文件类型
+                                    th 文件名
+                                    th 日期
+                                    th 文件描述
+                                    th 编号
+
+                                each info in medicalRecord.image_file
+                                    tr
+                                        //td(valign='top')
+                                            if(info.src)
+                                                img(src="#{info.src}" style="width:200px;")
+                                        //td(valign='top')=info.name
+
+                                        td(valign='top')=info.fileType
+                                        td(valign='top')
+                                            span(onclick="window.open('#{info.src}','_blank');")=info.fileName
+                                        td(valign='top') #{getLocalDate(info.date)}
+                                        td(valign='top')=info.description
+                                        td(valign='top')=info.number
+                if(report)
+                    section.page.s70
+                        div
+                            span.head
+                                | 就医需求：治疗方案分析 &nbsp;&nbsp;
+                                i.fa.fa-outdent
+                        .border
+                            div.preview_ul
+                                .preview_row
+                                    .preview_title
+                                        span NCCN指南
+                                    .preview_info
+                                        p!=report.reference.nccn
+
+                                .preview_row
+                                    .preview_title
+                                        span Uptodate
+                                    .preview_info
+                                        p!=report.reference.uptodate
+
+                                .preview_row
+                                    .preview_title
+                                        span 诊断及检查
+                                    .preview_info
+                                        p!=report.recommend.diagnosis.problem
+
+                                .preview_row
+                                    .preview_title
+                                        span 治疗
+                                    .preview_info
+                                        p!=report.recommend.treatment.problem
+
+                                .preview_row
+                                    .preview_title
+                                        span 随访及其他问题
+                                    .preview_info
+                                        p!=report.recommend.other.problem
+
+
+                if(report && report.treatments && report.treatments.length > 0)
+                    section.page.s80
+                        div
+                            if(report.treatment_drug)
+                                span.head
+                                    | 方案匹配 &nbsp;&nbsp;
+                                    <i class="fa fa-list-ul"></i>
+                            if(report.treatment_doctor)
+                                span.head
+                                    | 就医推荐 &nbsp;&nbsp;
+                                    <i class="fa fa-hospital-o"></i>
+                        .border
+                            each treatment in report.treatments
+                                if(treatment && treatment.tplName == "drug")
+                                    .treatment
+                                        .sub-head
+                                            <i class="fa fa-file-text-o"></i>&nbsp;&nbsp;
+                                            span=treatment.type + "/"
+                                            span=treatment.name
+                                        .list-col
+                                            if(treatment.description)
+                                                .list-col-row
+                                                    .list-col-row-head
+                                                        | 试验描述
+                                                    .list-col-row-body
+                                                        p=treatment.description
+                                            if(treatment.clinicalName)
+                                                .list-col-row
+                                                    .list-col-row-head
+                                                        | 试验名称
+                                                    .list-col-row-body
+                                                        p=treatment.clinicalName
+                                            if(treatment.source)
+                                                .list-col-row
+                                                    .list-col-row-head
+                                                        | 来源
+                                                    .list-col-row-body
+                                                        p=treatment.source
+
+                                            if(treatment.groupingTrial && treatment.groupingTrial.length > 0)
+                                                .list-col-row
+                                                    .list-col-row-head
+                                                        | 分组数据
+                                                    br
+                                                    each group,index in treatment.groupingTrial
+                                                        div.group
+                                                            .row
+                                                                .col-12 #{group.name ? group.name : "分组" + (index + 1)}，入组人数：#{group.patient_amount}
+
+
+                                                            if(group && (group.orr || group.cr || group.pr || group.dcr || group.ttr || group.mpfs || group.mos))
+                                                                .row
+                                                                    if(group.orr)
+                                                                        .col-3.text-center
+                                                                            .circle_chat_warp
+                                                                                .circle_chat(id="circle_chat_orr_#{index}" data-percent="#{group.orr}" data-pointSize="100" data-percentageY="80"  data-animation="0" data-animationStep="0"  data-width="10" data-fontsize="38" data-fgcolor="#6cba78" data-foregroundColor="#6cba78" data-backgroundColor="#eee" data-backgroundBorderWidth="2" data-foregroundBorderWidth="8"  data-fontColor="#6cba78" )
+                                                                                .circle_chat_name 在#{group.patient_amount}名患者中，#{(Math.round(group.patient_amount*group.orr*0.01))}名患者肿瘤明显缩小或消失
+                                                                                p ORR（客观缓解率）
+                                                                    if(group.cr)
+                                                                        .col-3.text-center
+                                                                            .circle_chat_warp
+                                                                                .circle_chat(id="circle_chat_cr_#{index}" data-percent="#{group.cr}" data-percentageY="80"  data-animation="0" data-animationStep="0"  data-width="10" data-fontsize="38" data-fgcolor="#6cba78" data-foregroundColor="#6cba78" data-backgroundColor="#eee" data-backgroundBorderWidth="2" data-foregroundBorderWidth="8"  data-fontColor="#6cba78" )
+                                                                                .circle_chat_name 在#{group.patient_amount}名患者中，#{(Math.round(group.patient_amount*group.cr*0.01))}名患者肿瘤消失
+                                                                                p CR（完全缓解率）
+                                                                    if(group.pr)
+                                                                        .col-3.text-center
+                                                                            .circle_chat_warp
+                                                                                .circle_chat(id="circle_chat_pr_#{index}" data-percent="#{group.pr}" data-percentageY="80"  data-animation="0" data-animationStep="0"  data-width="10" data-fontsize="38" data-fgcolor="#6cba78" data-foregroundColor="#6cba78" data-backgroundColor="#eee" data-backgroundBorderWidth="2" data-foregroundBorderWidth="8"  data-fontColor="#6cba78" )
+                                                                                .circle_chat_name 在#{group.patient_amount}名患者中，#{(Math.round(group.patient_amount*group.pr*0.01))}名患者肿瘤明显缩小
+                                                                                p PR（部分缓解率）
+                                                                    if(group.dcr)
+                                                                        .col-3
+                                                                            .circle_chat_warp
+                                                                                .circle_chat(id="circle_chat_dcr_#{index}" data-percent="#{group.dcr}" data-percentageY="80"  data-animation="0" data-animationStep="0"  data-width="10" data-fontsize="38" data-fgcolor="#6cba78" data-foregroundColor="#6cba78" data-backgroundColor="#eee" data-backgroundBorderWidth="2" data-foregroundBorderWidth="8"  data-fontColor="#6cba78" )
+                                                                                .circle_chat_name 在#{group.patient_amount}名患者中，#{(Math.round(group.patient_amount*group.dcr*0.01))}名患者肿瘤得到控制
+                                                                                p DCR（疾病控制率）
+
+                                                                    if(group.ttr)
+                                                                        -var item = new Array(24)
+                                                                        .col-3.text-center
+                                                                            .calendar_warp
+                                                                                .bg-icon
+                                                                                    <i class="fa fa-calendar-o" ></i>
+                                                                                .line_chat_warp
+                                                                                    each v,index in item
+                                                                                        if(24 - Math.round(group.ttr) > index)
+                                                                                            .div
+                                                                                        else
+                                                                                            .div.active
+                                                                                .line_chat_name #{group.ttr}月
+                                                                                p TTR（中位缓解时间）
+
+                                                                    if(group.mpfs)
+                                                                        -var item = new Array(24)
+                                                                        .col-3.text-center
+                                                                            .calendar_warp
+                                                                                .bg-icon
+                                                                                    <i class="fa fa-calendar-o" ></i>
+                                                                                .line_chat_warp
+                                                                                    each v,index in item
+                                                                                        if(24 - Math.round(group.mpfs) > index)
+                                                                                            .div
+                                                                                        else
+                                                                                            .div.active
+                                                                                .line_chat_name #{group.mpfs}月
+                                                                                p mPFS（中位无进展生存期）
+                                                                    if(group.mos)
+                                                                        -var item = new Array(24)
+                                                                        .col-3.text-center
+                                                                            .calendar_warp
+                                                                                .bg-icon
+                                                                                    <i class="fa fa-calendar-o" ></i>
+                                                                                .line_chat_warp
+                                                                                    each v,index in item
+                                                                                        if(24 - Math.round(group.mos) > index)
+                                                                                            .div
+                                                                                        else
+                                                                                            .div.active
+                                                                                .line_chat_name #{group.mos}月
+                                                                                p mOS（中位总体生存期）
+
+
+                                                            if(group.commonEffect)
+                                                                .row
+                                                                    .col-2 常见不良反应：
+                                                                    .col-10=group.commonEffect
+                                                            if(group.severeEffect)
+                                                                .row
+                                                                    .col-2 严重不良反应：
+                                                                    .col-10=group.severeEffect
+                                if(treatment && treatment.tplName == "doctor")
+                                    table.table
+                                        each group in treatment.groupingHospital
+                                            tr
+                                                td(valign='top' width="20%")
+                                                    if(group.doctor_head_image)
+                                                        img(src="#{group.doctor_head_image}" style="width:120px;")
+                                                    p=group.doctor_name
+                                                td(valign='top' width="20%")=group.doctor_title
+                                                td(valign='top' width="50%")!=group.doctor_intro
+                if(report && report.treatment_go_to_doctor_help)
+                    section.page.s110
+                        div
+                            if(report.treatment_go_to_doctor_help)
+                                span.head
+                                    | 就医提问卡 &nbsp;&nbsp;
+                                    <i class="fa fa-list-ul"></i>
+
+                        .border
+                            each treatment in report.treatments
+                                if(treatment && treatment.tplName == "go_to_doctor_help")
+                                    div.preview_ul
+                                        .preview_row
+                                            .preview_info
+                                                p!=treatment.content
+
+
+                if(report.treatments && report.treatments && report.treatment_drug == "drug")
+                    section.page.s90
+                        div
+                            span.head
+                                | 综合以上判断 &nbsp;&nbsp;
+                                <i class="fa fa-th"></i>
+                        .border
+                            table.table
+                                tr
+                                    th &nbsp;
+                                    th 有效性
+                                    th 安全性
+                                    th 数据质量
+                                    th 价格指数
+                                each treatment in report.treatments
+                                    tr
+                                        td=treatment.name
+                                        td=(treatment.effectRate || "无")
+                                        td=(treatment.safeRate || "无")
+                                        td=(treatment.dataRate || "无")
+                                        td=(treatment.priceRate || "无")
+                            br
+
+                            .row
+                                -var t_index = 0
+                                each treatment,index in report.treatments
+                                    if(treatment.effectRate || treatment.safeRate || treatment.dataRate || treatment.priceRate)
+                                        if(report.treatments.length > 4 && t_index == 3)
+                                            .col-6.radar_row.text-center(id="item-#{t_index++}" style="page-break-after: always;")
+                                                div.radar_chat_warp.text-center
+                                                    <div id="myChart#{index}" style="width: 300px; height: 180px;" class="radar_chat" data-name="#{treatment.name}" data-effectRate="#{treatment.effectRate}" data-safeRate="#{treatment.safeRate}" data-dataRate="#{treatment.dataRate}" data-priceRate="#{treatment.priceRate}" ></div>
+                                        else
+                                            .col-6.radar_row.text-center(id="item-#{t_index++}")
+                                                div.radar_chat_warp.text-center
+                                                    <div id="myChart#{index}" style="width: 300px; height: 180px;" class="radar_chat" data-name="#{treatment.name}" data-effectRate="#{treatment.effectRate}" data-safeRate="#{treatment.safeRate}" data-dataRate="#{treatment.dataRate}" data-priceRate="#{treatment.priceRate}"></div>
+                if(report.comments && report.comments != "")
+                    section.page.s100
+                        div
+                            span.head
+                                | 注释 &nbsp;&nbsp;
+                                <i class="fa fa-info-circle"></i>
+                        .border
+                            div.preview_ul
+                                .preview_row
+                                    .preview_info
+                                        p!=report.comments
+
+                section.s-last
+                    .back-inner
+                        br
+                        br
+                        br
+                        br
+                        br
+                        br
+                        br
+                        br
+                        img(src="https://www.zlzhidao.com/img/print/logo-cyan-.jpg")
+                        br
+                        br
+                        br
+                        img(src="https://www.zlzhidao.com/img/print/sbgb.jpg")
+                        br
+                        br
+                        br
+                        img(src="https://www.zlzhidao.com/img/print/qrcode_for_gh_1491d480bdd6_258.jpg")
+                        br
+                        br
+                        br
+                        p.strong 顾问咨询热线：400-822-9993
+                    .back-footer
+                        p 中国办公室：上海市徐汇区永福路147弄45号
+                        p 邮编：200030
+                        p 电话：+86-021-52389993
+                        p 美国办公室：310 Olson Way, Sunnyvale
+                        p 邮编：CA94086
+                        p 电话：+1-408-746-5917
+                        p 邮箱：cs@qtclinics.com
+
+
+    script(src='https://cdn.bootcss.com/jquery/2.1.4/jquery.min.js')
+    <script src="https://cdn.bootcss.com/highcharts/5.0.14/highcharts.js"></script>
+    <script src="https://cdn.bootcss.com/highcharts/5.0.14/highcharts-more.js"></script>
+    <script src="https://cdn.bootcss.com/highcharts/5.0.14/modules/exporting.js"></script>
+    script(src="https://cdn.bootcss.com/circliful/1.2.0/js/jquery.circliful.min.js")
+
+    script.
+        $(function () {
+            $("div[id^=circle_chat]").each(function () {
+                var data = $(this).attr("data");
+                $(this).circliful();
+                //$(this).find('circle').attr('r', 60);
+                //$(this).find('.border').attr('stroke-dasharray', 0);
+            });
+            $("div[id^=myChart]").each(function () {
+                var data = $(this).attr("data");
+                var effectRate = $(this).attr("data-effectRate");
+                var safeRate = $(this).attr("data-safeRate");
+                var dataRate = $(this).attr("data-dataRate");
+                var priceRate = $(this).attr("data-priceRate");
+                data = [parseInt(effectRate),parseInt(safeRate),parseInt(dataRate),parseInt(priceRate)];
+
+                Highcharts.chart($(this)[0].id, {
+                    animation: false,
+                    chart: {
+                        polar: true,
+                        type: 'line'
+                    },
+
+                    title: {
+                        text: $(this).attr("data-name")
+                    },
+
+
+                    xAxis: {
+                        categories: ["有效性", "安全性", "数据质量", "价格指数"],
+                        tickmarkPlacement: 'on',
+                        lineWidth: 0
+                    },
+
+                    yAxis: {
+                        gridLineInterpolation: 'polygon',
+                        lineWidth: 0,
+                        min: 0,
+                        max:5,
+                        tickInterval: 1
+                    },
+                    plotOptions: {
+                        series: {
+                            animation: false
+                        }
+                    },
+                    exporting: {enabled: false},
+
+                    legend: {
+                        enabled: false
+                    },
+                    menu: {
+                        enabled: false
+                    },
+
+                    series: [{
+                        data: data,
+                        pointPlacement: 'on'
+                    }],
+                    credits: {
+                        enabled: false
+                    }
+
+                });
+            });
+
+
+
+        });
+

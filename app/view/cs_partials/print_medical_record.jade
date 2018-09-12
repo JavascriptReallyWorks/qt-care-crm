@@ -1,0 +1,1045 @@
+doctype html
+html(lang='en')
+    head
+        meta(charset='UTF-8')
+        title #{reportData ? "报告" : "病历"}
+        meta(name='viewport', ,='', content='width=device-width,initial-scale=1,user-scalable=no,maximum-scale=1')
+        link(rel='stylesheet', href='https://cdn.bootcss.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css')
+        link(rel='stylesheet', href='https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css')
+        //- link(src="https://cdn.bootcss.com/circliful/1.2.0/css/jquery.circliful.min.css")
+        //- <link rel="stylesheet" href="https://driver.qtclinics.com/report_print.css">
+        <link rel="stylesheet" href="/report_print.css">
+        <link rel="stylesheet" href="./public/build/report_print.css">
+
+        style.
+            #pageHeader-1,
+            #pageHeader-2,
+            #pageHeader-3,
+            #pageHeader {
+            }
+
+
+            #pageFooter {
+                height: 16mm;
+            }
+
+            #pageHeader-3, #pageHeader-2 {
+                height: 20mm;
+                position: relative;
+            }
+
+            .pageHeader-top-head {
+                background: #60bbc2;
+                width: 120%;
+                margin-left: -10%;
+                height: 14mm;
+                padding-top: 10px;
+                border-radius: 0 0 99% 99%;
+                border: 0;
+                text-align: center;
+                color: #fff;
+                top: 0;
+                position: absolute;
+                left: 0;
+                right: 0;
+            }
+
+            .pageHeader-default {
+                width: 100%;
+                height: 20mm;
+                border-radius: 0 0 99% 99%;
+                text-align: center;
+                color: #fff;
+            }
+
+            .pageNum {
+                float: left;
+                font-size: 6pt;
+                text-align: center;
+                border-radius: 15px;
+                color: rgb(166, 212, 152);
+            }
+
+            .pageFooter-default {
+                height: 16mm;
+                position: relative;
+            }
+
+            .footer {
+                position: absolute;
+                bottom: 0;
+                width: 100%;
+                color: rgba(0, 0, 0, 0.5);
+                height: 40px;
+                font-size: 7px;
+                padding: 0 10mm;
+            }
+
+            .footer-inner {
+                position: relative;
+                line-height: 10px;
+                padding: 6px 0;
+                color: #6b6b6b;
+            }
+
+            .footer-inner:before {
+                content: "";
+                position: absolute;
+                top: -50%;
+                bottom: -50%;
+                left: -50%;
+                right: -50%;
+                -webkit-transform: scale(0.5);
+                transform: scale(0.5);
+                border-top: 1px solid #9f9f9f;
+            }
+
+            .f-right {
+                float: right;
+                font-size: 6pt;
+            }
+
+            .page-tabs {
+                display: -webkit-flex;
+                display: flex;
+                width: 100%;
+                -webkit-flex-wrap: nowrap;
+                flex-wrap: nowrap;
+                -webkit-justify-content: space-between;
+                justify-content: space-between;
+
+            }
+
+            .page-tabs .page-tab {
+                height: 32px;
+                line-height: 32px;
+                flex-grow: 1;
+                -webkit-flex-grow: 1;
+                font-size: 10px;
+                -webkit-flex-direction: row;
+                flex-direction: row;
+                width: 100%;
+            }
+
+            .t0 {
+                background: #60bbc2;
+            }
+
+            .t20 {
+                background: #f7dd6e;
+            }
+
+            .t30 {
+                background: #d9534f;
+            }
+
+            .t40 {
+                background: #f6a460;
+            }
+
+            .t50 {
+                background: #7da6d3;
+            }
+
+            .t60 {
+                background: #d14095;
+            }
+
+            .t70 {
+                background: #eb9184;
+            }
+
+            .t80 {
+                background: #6cba78;
+            }
+
+            .t90 {
+                background: #2c65c6;
+            }
+
+            .t100 {
+                background: #8990c6;
+            }
+            .t170 {
+                background: #5169b8;
+            }
+
+            #pageFooter-last {
+                background: #6ebcc6;
+            }
+
+            .footer-last {
+                background: #6ebcc6;
+                height: 16mm;
+                width: 100%;
+                text-align: center;
+            }
+    
+    body
+        div(style="display:none;")
+            //- #pageHeader-1  
+            //- #pageHeader-2
+            //-     .pageHeader-top-head
+            //-         <img style="width:100px;height: 30px;zoom:1;" src="data:image/png;base64,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">
+            //- #pageHeader-3
+            //-     .pageHeader-top-head
+            //-         <img style="width:100px;height: 30px;zoom:1;" src="data:image/png;base64,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">
+            #pageHeader
+                div.pageHeader-default
+                    .page-tabs
+                        .page-tab.t0 病情综述
+                        .page-tab.t170 医疗史
+                        .page-tab.t20 治疗经过
+                        .page-tab.t30 治疗总结
+                        .page-tab.t60 病历文件
+                        .page-tab.t70 患者提问
+                        .page-tab.t80 临床试验
+                       
+
+            //- #pageHeader-last &nbsp;  
+            //- #pageFooter-1
+            //- #pageFooter-2
+            //- #pageFooter-last
+                .footer-last &nbsp;
+
+            #pageFooter
+                .footer
+                    .footer-inner(style="color:#666;")
+                        .pageNum {{page}}/{{pages}}
+                        .f-right
+                            <span>©2017年版 | 上海市xxx | 400-xxx-xxx</span>
+        //| #{JSON.stringify(medicalRecord)}
+           
+        -function getLocalDate(timestamp) {
+        -if(!timestamp){
+        -return ""
+        -}
+        -var date = new Date(timestamp);
+        -var dateKey = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate()
+        -return dateKey
+        -}
+
+        -function showDate(date) {
+        -   var newDate = new Date(date);
+        -  return (newDate.getMonth() + 1).toString() + '/' + newDate.getDate() + '/' + newDate.getFullYear();
+        -};
+
+        -function getAge(dateString){
+            -var today = new Date();
+            -var birthDate = new Date(dateString);
+            -var age = today.getFullYear() - birthDate.getFullYear();
+            -var m = today.getMonth() - birthDate.getMonth();
+            -if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) 
+            -{
+                -age--;
+            -}
+            -return age;
+        -}
+        
+        -function getFileIndex(mdDocuments,fileName){
+            -if(!mdDocuments){
+                -return ''
+            -}
+            -if(souce_index){
+                -return souce_index;
+            -}
+            -if(fileName.match('患者报告')){
+                -return 'SR';
+            -}
+            -for(var i =0;i<mdDocuments.length;i++){
+                -var doc = mdDocuments[i];
+                -var fdate = showDate(doc.visitDate);
+                -var name = (doc.documentType ?  doc.documentType + '_' : '') + (doc.visitDate ? fdate : '');
+                -if(doc && name && fileName && fileName.match(name)){
+                    -return i+1;
+                    -break;
+                -}
+            -}
+            -return 'SR'
+        -}
+        
+
+    
+        .pages
+            .print-pages
+                section.page.s0
+                    br
+                    br
+                    .border
+                        .row
+                            .col-4
+                                table.user_table
+                                    tr
+                                        td(align='right') 姓名：
+                                        td(align='left')=medicalRecord.patientName
+                                    tr
+                                        td(align='right') 性别：
+                                        td(align='left') #{medicalRecord.patientGender}
+                                    if(medicalRecord.patientBirthday)
+                                        tr
+                                            td(align='right') 年龄：
+                                            td(align='left')  #{getAge(medicalRecord.patientBirthday)}
+                                    if(medicalRecord.patientBirthday)     
+                                        tr
+                                            td(align='right') 出生日期：
+                                            td(align='left') #{getLocalDate(medicalRecord.patientBirthday)}
+                                    if(medicalRecord.patientMobile)
+                                        tr
+                                            td(align='right') 联系电话：
+                                            td(align='left') #{medicalRecord.patientMobile}
+                                    if(medicalRecord.patientAddress)
+                                        tr
+                                            td(align='right') 地址：
+                                            td(align='left') #{medicalRecord.patientAddress}
+                           
+                            .col-8
+                                .list-col-title
+                                    span 病情综述 &nbsp;&nbsp;
+                                    i.fa.fa-user-md
+                                .list-col
+                                    if(medicalRecord.presentDiagnosis && medicalRecord.presentDiagnosis.cancerType )
+                                        .list-col-row
+                                            .list-col-row-head
+                                                | 目前诊断
+                                            .list-col-row-body
+                                                if(medicalRecord.presentDiagnosis)
+                                                    p=medicalRecord.presentDiagnosis.cancerType 
+                                                    p=medicalRecord.presentDiagnosis.source
+                                                        if(medicalRecord.presentDiagnosis.source)
+                                                            a.sup(href="#file_link_#{medicalRecord.presentDiagnosis.source}")  [#{(medicalRecord.presentDiagnosis.source_index) || getFileIndex(medicalRecord.documents,medicalRecord.presentDiagnosis.source)}]
+                                    if(medicalRecord.presentDiagnosis && medicalRecord.presentDiagnosis.stage)
+                                        .list-col-row
+                                            .list-col-row-head
+                                                | 分期
+                                            .list-col-row-body
+                                                if(medicalRecord.presentDiagnosis)
+                                                    p=medicalRecord.presentDiagnosis.stage
+                                    if(medicalRecord.presentDiagnosis && medicalRecord.presentDiagnosis.diagnosisDate)
+                                        .list-col-row
+                                            .list-col-row-head
+                                                | 首次确诊日期
+                                            .list-col-row-body
+                                                if(medicalRecord.presentDiagnosis)
+                                                    p #{getLocalDate(medicalRecord.presentDiagnosis.diagnosisDate)}
+                                    if(medicalRecord.patientWeight && medicalRecord.patientWeight[0])
+                                        .list-col-row
+                                            .list-col-row-head
+                                                | 体重
+                                            .list-col-row-body
+                                                if(medicalRecord.patientWeight)
+                                                    table
+                                                        each h in medicalRecord.patientWeight
+                                                            tr
+                                                                td(valign='top')=h.value
+                                                                td(valign='top') #{getLocalDate(h.date)}
+                                                                td(valign='top')=h.source
+                                    if(medicalRecord.patientHeight && medicalRecord.patientHeight.value)
+                                        .list-col-row
+                                            .list-col-row-head
+                                                | 身高
+                                            .list-col-row-body
+                                                if(medicalRecord.patientHeight)
+                                                    p=medicalRecord.patientHeight.value +"CM"
+                                                        if(medicalRecord.patientHeight.source)
+                                                            a.sup(href="#file_link_#{medicalRecord.patientHeight.source}")  [#{(medicalRecord.patientHeight.source_index) || getFileIndex(medicalRecord.documents,medicalRecord.patientHeight.source)}]
+                                    if(medicalRecord.proteinExpression && medicalRecord.proteinExpression.description)
+                                        .list-col-row
+                                            .list-col-row-head
+                                                | 蛋白表现
+                                            .list-col-row-body
+                                                if(medicalRecord.proteinExpression)
+                                                    p=medicalRecord.proteinExpression.description
+                                                        if(medicalRecord.proteinExpression.source)
+                                                            a.sup(href="#file_link_#{medicalRecord.proteinExpression.source}")  [#{(medicalRecord.proteinExpression.source_index) || getFileIndex(medicalRecord.documents,medicalRecord.proteinExpression.source)}]
+                                    if(medicalRecord.diseaseLocation && medicalRecord.diseaseLocation.description)
+                                        .list-col-row
+                                            .list-col-row-head
+                                                | 肿瘤位置
+                                            .list-col-row-body
+                                                if(medicalRecord.diseaseLocation)
+                                                    p=medicalRecord.diseaseLocation.description
+                                                        if(medicalRecord.diseaseLocation.source)
+                                                            a.sup(href="#file_link_#{medicalRecord.diseaseLocation.source}") [#{(medicalRecord.diseaseLocation.source_index) || getFileIndex(medicalRecord.documents,medicalRecord.diseaseLocation.source)}]
+                                     if(medicalRecord.metastases && medicalRecord.metastases.description)
+                                        .list-col-row
+                                            .list-col-row-head
+                                                | 转移部位
+                                            .list-col-row-body
+                                                if(medicalRecord.metastases)
+                                                    p=medicalRecord.metastases.description
+                                                        if(medicalRecord.metastases.source)
+                                                            a.sup(href="#file_link_#{medicalRecord.metastases.source}")  [#{(medicalRecord.metastases.source_index) || getFileIndex(medicalRecord.documents,medicalRecord.metastases.source)}]
+                                    if(medicalRecord.ecog && medicalRecord.ecog.description)
+                                        .list-col-row
+                                            .list-col-row-head
+                                                | ECOG 评分
+                                            .list-col-row-body
+                                                if(medicalRecord.ecog)
+                                                    p=medicalRecord.ecog.description
+                                                        if(medicalRecord.ecog.source)
+                                                            a.sup(href="#file_link_#{medicalRecord.ecog.source}") [#{(medicalRecord.ecog.source_index) || getFileIndex(medicalRecord.documents,medicalRecord.ecog.source)}]
+                                    if(medicalRecord.kps && medicalRecord.kps.description)
+                                        .list-col-row
+                                            .list-col-row-head
+                                                | KPS 评分
+                                            .list-col-row-body
+                                                if(medicalRecord.kps)
+                                                    p=medicalRecord.kps.description
+                                                        if(medicalRecord.kps.source)
+                                                            a.sup(href="#file_link_#{medicalRecord.kps.source}")  [#{(medicalRecord.kps.source_index) || getFileIndex(medicalRecord.documents,medicalRecord.kps.source)}]
+                                    if(medicalRecord.currentCondition && medicalRecord.currentCondition.description)
+                                        .list-col-row
+                                            .list-col-row-head
+                                                | 患者目前情况
+                                            .list-col-row-body
+                                                if(medicalRecord.currentCondition)
+                                                    p=medicalRecord.currentCondition.description
+                                                    p=medicalRecord.currentCondition.date
+                                                        if(medicalRecord.currentCondition.source)
+                                                            a.sup(href="#file_link_#{medicalRecord.currentCondition.source}") [#{(medicalRecord.currentCondition.source_index) || getFileIndex(medicalRecord.documents,medicalRecord.currentCondition.source)}]
+
+                                  
+                
+                section.page.s170(style="page-break-after:always")
+                    div
+                        span.head
+                            | 医疗史 &nbsp;&nbsp;
+                            i.fa.fa-list-alt
+                    .border
+                        if(medicalRecord.majorDisease && medicalRecord.majorDisease[0])
+                            .sub-head 重大疾病
+                            table.table
+                                tr
+                                    th 疾病名称
+                                    th 疾病描述
+                                    th 开始时间
+                                    th 结束时间
+                                    th 接受过的治疗
+                                    th 来源
+                                each info in medicalRecord.majorDisease
+                                    tr
+                                        td=info.disease
+                                        td=info.description
+                                        td #{getLocalDate(info.startDate)}
+                                        td #{getLocalDate(info.endDate)}
+                                        td=info.treatment
+                                        td
+                                            if(info.source)
+                                               a.sup(href="#file_link_#{info.source}") [#{(info.source_index) || getFileIndex(medicalRecord.documents,info.source)}]
+
+                        if(medicalRecord.majorTrauma && medicalRecord.majorTrauma[0]) 
+                            .sub-head 重大外伤
+                            
+                            table.table
+                                tr
+                                    th 外伤描述
+                                    th 时间
+                                    th 来源
+                                each info in medicalRecord.majorTrauma
+                                    tr
+                                        td=info.description
+                                        td #{getLocalDate(info.date)}
+                                        td
+                                             if(info.source)
+                                               a.sup(href="#file_link_#{info.source}") [#{(info.source_index) || getFileIndex(medicalRecord.documents,info.source)}]
+                        if(medicalRecord.otherCancer && medicalRecord.otherCancer[0])
+                            .sub-head 其他肿瘤诊断
+                            table.table
+                                tr
+                                    th 肿瘤类型
+                                    th 肿瘤诊断日期
+                                    th 治疗方法
+                                    th 疗效评估
+                                    th 分期
+                                    th 来源
+                                each info in medicalRecord.otherCancer
+                                    tr
+                                        td=info.cancer
+                                        td #{getLocalDate(info.date)}
+                                        td=info.treatment
+                                        td=info.evaluation
+                                        td=info.staging
+                                        td
+                                            if(info.source)
+                                               a.sup(href="#file_link_#{info.source}") [#{(info.source_index) || getFileIndex(medicalRecord.documents,info.source)}]
+
+                        if(medicalRecord.surgicalHistory && medicalRecord.surgicalHistory[0])
+                            .sub-head
+                                | 手术信息
+                            table.table
+                                tr
+                                    th 手术名称
+                                    th 手术日期
+                                    th 疗效评估
+                                    th 来源
+                                each info in medicalRecord.surgicalHistory
+                                    tr
+                                        td=info.name
+                                        td #{getLocalDate(info.date)}
+                                        td=info.evaluation
+                                        td
+                                            if(info.source)
+                                               a.sup(href="#file_link_#{info.source}") [#{(info.source_index) || getFileIndex(medicalRecord.documents,info.source)}]
+                        
+                        if(medicalRecord.familyHistoryCancer && medicalRecord.familyHistoryCancer[0])
+                            .sub-head
+                                | 家族患癌史
+                            table.table
+                                tr
+                                    th 亲属关系		
+                                    th 癌症类型
+                                    th 详细描述
+                                    th 来源
+                                each info in medicalRecord.familyHistoryCancer
+                                    tr
+                                        td=info.relationship
+                                        td=info.cancerType
+                                        td=info.details
+                                        td
+                                            if(info.source)
+                                               a.sup(href="#file_link_#{info.source}") [#{(info.source_index) || getFileIndex(medicalRecord.documents,info.source)}]
+                        if(medicalRecord.familyHistoryGenetic && medicalRecord.familyHistoryGenetic[0])
+                            .sub-head
+                                | 家族基因突变史
+                            table.table
+                                tr
+                                    th 基因		
+                                    th 来源
+                                each info in medicalRecord.familyHistoryGenetic
+                                    tr
+                                        td=info.gene
+                                        td
+                                            if(info.source)
+                                               a.sup(href="#file_link_#{info.source}") [#{(info.source_index) || getFileIndex(medicalRecord.documents,info.source)}]
+
+                        if(medicalRecord.allergies && medicalRecord.allergies[0])
+                            .sub-head
+                                | 过敏史
+                            table.table
+                                tr
+                                    th 过敏原	
+                                    th 反应及严重程度	
+                                    th 来源
+                                each info in medicalRecord.allergies
+                                    tr
+                                        td=info.allergicTo
+                                        td=info.reactionAndSeverity
+                                        td
+                                            if(info.source)
+                                               a.sup(href="#file_link_#{info.source}") [#{(info.source_index) || getFileIndex(medicalRecord.documents,info.source)}]
+                                     
+                        if(medicalRecord.martialStatus)
+                            .sub-head
+                                | 婚姻状态
+                            table.table
+                                tr
+                                    th 婚姻状态	
+                                    th 来源
+                            
+                                
+                                tr
+                                    td=medicalRecord.martialStatus.description
+                                    td
+                                        if(medicalRecord.martialStatus.source)
+                                               a.sup(href="#file_link_#{medicalRecord.martialStatus.source}") [#{(medicalRecord.martialStatus.source_index) || getFileIndex(medicalRecord.documents,medicalRecord.martialStatus.source)}]
+                                       
+                        if(medicalRecord.smoking)
+                            .sub-head
+                                | 吸烟史
+                            table.table
+                                tr
+                                    th 吸烟史	
+                                    th 来源
+                                
+                                tr
+                                    td=medicalRecord.smoking.description
+                                    td
+                                        
+                                        if(medicalRecord.smoking.source)
+                                               a.sup(href="#file_link_#{medicalRecord.smoking.source}") [#{(medicalRecord.smoking.source_index) || getFileIndex(medicalRecord.documents,medicalRecord.smoking.source)}]
+                                    
+                        if(medicalRecord.drinking)
+                            .sub-head
+                                | 饮酒史
+                            table.table
+                                tr
+                                    th 饮酒史	
+                                    th 来源
+                                
+                                tr
+                                    td=medicalRecord.drinking.description
+                                    td
+                                        //- a( href="#file_link_#{medicalRecord.drinking.source}")=medicalRecord.drinking.source
+
+                                        if(medicalRecord.drinking.source)
+                                               a.sup(href="#file_link_#{medicalRecord.drinking.source}") [#{(medicalRecord.drinking.source_index) || getFileIndex(medicalRecord.documents,medicalRecord.drinking.source)}]
+
+                        if(medicalRecord.drugUse)
+                            .sub-head
+                                | 精神类或阿片类(吗啡类)止痛药使用史
+                            table.table
+                                tr
+                                    th 精神类或阿片类(吗啡类)止痛药使用史	
+                                    th 来源
+                                
+                                tr
+                                    td=medicalRecord.drugUse.description
+                                    td
+                                        //- a( href="#file_link_#{medicalRecord.drugUse.source}")=medicalRecord.drugUse.source
+                                        if(medicalRecord.drugUse.source)
+                                               a.sup(href="#file_link_#{medicalRecord.drugUse.source}") [#{(medicalRecord.drugUse.source_index) || getFileIndex(medicalRecord.documents,medicalRecord.drugUse.source)}]
+
+                section.page.s20(style="page-break-after:always")
+                    div
+                        span.head
+                            | 治疗经过 &nbsp;&nbsp;
+                            i.fa.fa-list-alt
+                    .border
+                        if(medicalRecord.treatmentHistory && medicalRecord.treatmentHistory.length > 0)
+                            //.sub-head
+                                | 简述	事件	日期	来源
+
+                            table.table
+                                tr
+                                    th 简述
+                                    th 事件
+                                    th 日期
+                                    th 来源
+
+                                each info in medicalRecord.treatmentHistory
+                                    tr
+                                        td=info.description
+                                        td=info.event
+                                        td #{getLocalDate(info.date)}
+                                        td
+                                            if(info.source)
+                                                a.sup(href="#file_link_#{info.source}") [#{(info.source_index) || getFileIndex(medicalRecord.documents, info.source)}]
+
+                section.page.s30(style="page-break-after:always")
+                    div
+                        span.head
+                            | 治疗总结 &nbsp;&nbsp;
+                            i.fa.fa-list-alt
+                    .border
+                        if(medicalRecord.currentMedications && medicalRecord.currentMedications.length > 0)
+                            .sub-head
+                                | 当前用药情况
+
+                            table.table
+                                tr
+                                    th 药物名			
+                                    th 用法用量
+                                    th 用药周期
+                                    th 开始日期
+                                    th 备注
+                                    th 来源
+                                each info in medicalRecord.currentMedications
+                                    tr
+                                        td=info.drug
+                                        td=info.dose
+                                        td=info.period
+                                        td #{getLocalDate(info.startDate)}
+                                        td=info.indication
+                                        td
+                                            if(info.source)
+                                                a.sup(href="#file_link_#{info.source}") [#{(info.source_index) || getFileIndex(medicalRecord.documents,info.source)}]
+
+
+                        if(medicalRecord.chemotherapy && medicalRecord.chemotherapy.length > 0)
+                            .sub-head
+                                | 化疗信息
+                            table.table
+                                tr
+                                    th 药物											
+                                    th 药物及用法用量
+                                    th 频率
+                                    th 化疗周期
+                                    th 开始日期
+                                    th 结束日期
+                                    th 疗效评估
+                                    th 毒性
+                                    th 来源
+                                each info in medicalRecord.chemotherapy
+                                    //'position', 'doseAmount', '','','', 'endDate', '','','',''
+                                    tr
+                                        td=info.drug
+                                        td=info.dose
+                                        td=info.frequency
+                                        td=info.period
+                                        td #{getLocalDate(info.startDate)}
+                                        td #{getLocalDate(info.endDate)}
+                                        td=info.evaluation
+                                        td=info.toxicity
+                                        td
+                                            if(info.source)
+                                                a.sup(href="#file_link_#{info.source}") [#{(info.source_index) || getFileIndex(medicalRecord.documents,info.source)}]
+
+
+                        if(medicalRecord.radiotherapy && medicalRecord.radiotherapy.length > 0)
+                            .sub-head
+                                | 放疗信息
+                            table.table
+                                tr
+                                    th 放疗部位								
+                                    th 放疗剂量
+                                    th 频率
+                                    th 总剂量
+                                    th 开始日期
+                                    th 结束日期
+                                    th 放疗设置
+                                    th 疗效评估
+                                    th 毒性
+                                    th 来源
+                                each info in medicalRecord.radiotherapy
+                                    //'position', 'doseAmount', '','','', 'endDate', '','','',''
+                                    tr
+                                        td=info.position
+                                        td=info.doseAmount
+                                        td=info.frequency
+                                        td=info.totalRadiationDose
+                                        td #{getLocalDate(info.startDate)}
+                                        td #{getLocalDate(info.endDate)}
+                                        td=info.setting
+                                        td=info.evaluation
+                                        td=info.toxicity
+                                        td=info.source
+
+
+                        if(medicalRecord.targetedTherapy && medicalRecord.targetedTherapy.length > 0)
+                            .sub-head
+                                | 靶向治疗信息
+                            table.table
+
+                                tr
+                                    th 药物名
+                                    th 用法用量
+                                    th 开始日期
+                                    th 结束日期
+                                    th 疗效评估
+                                each info in medicalRecord.targetedTherapy
+                                    tr
+                                        td=info.drug
+                                        td=info.dose
+                                        td #{getLocalDate(info.startDate)}
+                                        td #{getLocalDate(info.endDate)}
+                                        td=info.evaluation
+
+
+                        if(medicalRecord.hormoneTherapy && medicalRecord.hormoneTherapy.length > 0)
+                            .sub-head
+                                | 内分泌治疗信息
+                            table.table
+                                tr
+                                    th 药物名
+                                    th 用法用量
+                                    th 频率                                    
+                                    th 开始日期
+                                    th 结束日期
+                                    th 疗效评估
+                                each info in medicalRecord.hormoneTherapy
+                                    tr
+                                        td=info.drug
+                                        td=info.dose
+                                        td=info.frequency
+                                        td #{getLocalDate(info.startDate)}
+                                        td #{getLocalDate(info.endDate)}
+                                        td=info.evaluation
+
+                        if(medicalRecord.immunotherapy && medicalRecord.immunotherapy.length > 0)
+                            .sub-head
+                                | 免疫治疗信息
+                            table.table
+                                tr
+                                    th 药物名
+                                    th 用法用量
+                                    th 频率     
+                                    th 开始日期
+                                    th 结束日期
+                                    th 疗效评估
+                                each info in medicalRecord.immunotherapy
+                                    tr
+                                        td=info.drug
+                                        td=info.dose
+                                        td=info.frequency
+                                        td #{getLocalDate(info.startDate)}
+                                        td #{getLocalDate(info.endDate)}
+                                        td=info.evaluation
+
+                        if(medicalRecord.chineseTherapy && medicalRecord.chineseTherapy.length > 0)
+                            .sub-head
+                                | 中药治疗信息
+                            table.table
+                                tr
+                                    th 药物名
+                                    th 用法用量
+                                    th 开始日期
+                                    th 结束日期
+                                    th 简述
+                                    th 适应症
+
+                                each info in medicalRecord.chineseTherapy
+                                    tr
+                                        td=info.drug
+                                        td=info.dose
+                                        td #{getLocalDate(info.startDate)}
+                                        td #{getLocalDate(info.endDate)}
+                                        td=info.comment
+                                        td=info.indication
+
+                        if(medicalRecord.otherTherapy && medicalRecord.otherTherapy.length > 0)
+                            .sub-head
+                                | 其他治疗信息
+                            table.table
+                                tr
+                                    th 药物名
+                                    th 用法用量
+                                    th 频率  
+                                    th 开始日期
+                                    th 结束日期
+
+                                each info in medicalRecord.otherTherapy
+                                    tr
+                                        td=info.drug
+                                        td=info.dose
+                                        td=info.frequency
+                                        td #{getLocalDate(info.startDate)}
+                                        td #{getLocalDate(info.endDate)}
+
+                         if(medicalRecord.imagingAndRadiology && medicalRecord.imagingAndRadiology.length > 0)
+                            .sub-head
+                                | 放射成像检查
+                            table.table
+                                tr
+                                    th 影片类型														
+                                    th 日期
+                                    th 观测值
+                                    th 结果
+                                    th 来源
+                                    
+                                each info in medicalRecord.imagingAndRadiology
+                                    
+                                    tr
+                                        td=info.imageType
+                                        td #{getLocalDate(info.reportDate)}
+                                        td=info.observations
+                                        td=info.results
+                                        td
+                                            if(info.source)
+                                                a.sup(href="#file_link_#{info.source}") [#{(info.source_index) || getFileIndex(medicalRecord.documents,info.source)}]
+                            
+                         if(medicalRecord.pathologyAndCytology && medicalRecord.pathologyAndCytology.length > 0)
+                            .sub-head
+                                | 病理学和细胞学检查
+                            table.table
+                                tr
+                                    th 日期																				
+                                    th 样本Id
+                                    th 样本部位
+                                    th 采样步骤
+                                    th 简述
+                                    th 诊断
+                                    th 蛋白质表达
+                                    th 来源
+                                    
+                                each info in medicalRecord.pathologyAndCytology
+                                    
+                                    tr
+                                        td #{getLocalDate(info.date)}
+                                        td=info.sampleId
+                                        td=info.sampleSite
+                                        td=info.procedure
+                                        td=info.grossDescription
+                                        td=info.diagnosis
+                                        td=info.proteinExpression
+                                        td
+                                            if(info.source)
+                                                a.sup(href="#file_link_#{info.source}") [#{(info.source_index) || getFileIndex(medicalRecord.documents,info.source)}]
+
+                         if(medicalRecord.molecularTests && medicalRecord.molecularTests.length > 0)
+                            .sub-head
+                                | 基因检测
+                            table.table
+                                tr
+                                    th 基因																					
+                                    th 结果
+                                 
+                                    th 来源
+                                    
+                                each info in medicalRecord.molecularTests
+                                    
+                                    tr
+                                        
+                                        td=info.gene
+                                        td=info.result
+                                     
+                                        td
+                                            if(info.source)
+                                                a.sup(href="#file_link_#{info.source}") [#{(info.source_index) || getFileIndex(medicalRecord.documents,info.source)}]
+
+                         if(medicalRecord.recentLabs && medicalRecord.recentLabs.length > 0)
+                            .sub-head
+                                |  近期化验
+                            table.table
+                                tr
+                                    th 化验名称																
+                                    th 结果
+                                    th 参考值范围
+                                    th 日期
+                                    th 来源
+                                    
+                                each info in medicalRecord.recentLabs
+                                    tr
+                                        td=info.lab
+                                        td=info.result
+                                        td=info.referenceRange
+                                        td #{getLocalDate(info.date)}
+                                    
+                                        td
+                                            if(info.source)
+                                                a.sup(href="#file_link_#{info.source}") [#{(info.source_index) || getFileIndex(medicalRecord.documents,info.source)}]
+                        //- if(medicalRecord.treatment_brief && medicalRecord.treatment_brief.length > 0)
+                            .sub-head
+                                | 治疗经过
+                            .row
+                                .col-md-12
+                                    ul.timeline.timeline-inverse
+                                        each info in medicalRecord.treatment_brief
+                                            .timeline.timeline-inverse
+                                                li.time-label
+                                                    span.bg-s20.text-white
+                                                        | #{getLocalDate(info.date)}
+                                                li
+                                                    //i.fa.fa-envelope.bg-blue
+                                                    .timeline-item
+                                                        span.time
+                                                            //i.fa.fa-clock-o
+                                                            //| #{getLocalDate(info.date)}
+                                                        h3.timeline-header
+                                                            span.text-light-blue=info.event
+                                                        .timeline-body=info.description
+
+                if(medicalRecord.documents && medicalRecord.documents.length > 0)
+                    section.page.s60
+                        div
+                            span.head
+                                | 病历文件 &nbsp;&nbsp;
+                                i.fa.fa-files-o
+                        .border
+
+                            table.table
+                                tr
+                                    th 编号
+                                    th 文件类型
+                                    //- th 文件名
+                                    th 日期
+                                    th 文件描述
+                                    th 编号
+
+                                each info,index in medicalRecord.documents
+                                    tr(id="file_link_#{(info.documentType ?  info.documentType + '_' : '') + (info.visitDate ? showDate(info.visitDate) : '')}")
+                                      
+                                        td(valign='top')=index+1
+                                        td(valign='top' onclick="window.open('#{info.url}','_blank');")=info.documentType
+                                        //- td(valign='top')
+                                            span(onclick="window.open('#{info.url}','_blank');")=info.documentName
+                                        td(valign='top') #{getLocalDate(info.visitDate)}
+                                        td(valign='top')=info.comments
+                                        td(valign='top')=info.documentId
+
+                if(medicalRecord.patientQuestions && medicalRecord.patientQuestions.length > 0)
+                    section.page.s70
+                        div
+                            span.head
+                                | 患者提问 &nbsp;&nbsp;
+                                i.fa.fa-vcard-o
+                        .border
+                            table.table
+                               
+                                each info in medicalRecord.patientQuestions
+                                    tr
+                                        td=info.question
+                                      
+                if(reportData && reportData.trialGroupsCN)
+                    section.page.s80
+                        div
+                            span.head
+                                | 临床试验 &nbsp;&nbsp;
+                                i.fa.fa-vcard-o
+                        .border
+                            each group in reportData.trialGroupsCN
+                                .treatment
+                                
+                                    .sub-head
+                                        <i class="fa fa-file-text-o"></i>&nbsp;&nbsp;
+                                        span=group.therapyType+"/"+group.name
+                                        
+                                    .list-col
+                                        if(group.additionalInformation)
+                                            .list-col-row
+                                                .list-col-row-head
+                                                    | 附加信息
+                                                .list-col-row-body
+                                                    p=group.additionalInformation
+                                        if(group.rationale)
+                                            .list-col-row
+                                                .list-col-row-head
+                                                    | 解释
+                                                .list-col-row-body
+                                                    p=group.rationale
+                                        if(group.trialsDescription)
+                                            .list-col-row
+                                                .list-col-row-head
+                                                    | Trials Description
+                                                .list-col-row-body
+                                                    p=group.描述
+                                        if(group.clinicalTrials)
+                                            .list-col-row
+                                                    .list-col-row-head
+                                                        | 临床试验
+                                                    br
+                                                    each clinicalTrial,index in group.clinicalTrials
+                                                        div.group
+                                                                .row
+                                                                    .col-12
+
+                                
+                               
+                                                                        ul
+                                                                            li
+                                                                                //- h3(style="margin-left: -20px;") Clinical Trial {{$index+1}}
+                                                                                form-group
+                                                                                    .list-col-row-head 临床试验名称
+                                                                                    p=clinicalTrial.simpleName
+                                                                                    br
+                                                                                form-group
+                                                                                    .list-col-row-head  临床试验总览
+                                                                                    p=clinicalTrial.overview
+                                                                                    br
+                                                                                form-group
+                                                                                    .list-col-row-head  临床试验药物
+                                                                                    p=clinicalTrial.drug
+                                                                                    br
+                                                                                form-group
+                                                                                    .list-col-row-head  临床试验分期
+                                                                                    p=clinicalTrial.trialPhase
+                                                                                    br
+
+                                                                                //- h3 Trial Sites
+                                                                                if(clinicalTrial.trial && clinicalTrial.trial.trialSites)
+                                                                                    each trialSite in clinicalTrial.trial.trialSites
+                                                                                        ul
+                                                                                            li
+                                                                                                .list-col-row-head 试验点
+                                                                                                form-group
+                                                                                                    .list-col-row-head  有无名额
+                                                                                                    p=trialSite.hasSlotsAvailable
+                                                                                                    br
+                                                                                                form-group
+                                                                                                    .list-col-row-head  机构名称
+                                                                                                    p=trialSite.institution.name
+                                                                                                    br
+
+
+
+
+

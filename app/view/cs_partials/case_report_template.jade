@@ -1,0 +1,150 @@
+div(ng-cloak='' ng-controller="ReportTranslateController" ng-init="initReportTranslateController()")
+    section.content(ng-class="editControl")
+
+        div.md-padding(ng-if="source === 'case_report_edit' " layout='row' layout-align="center center" ng-init="CONSTANT = getCsConst()")
+            md-button.md-raised.md-default(type='button', ng-click='saveReport(CONSTANT.CASE_REPORT.STATUS.SAVED)')
+                | 保存
+            md-button.md-raised.md-primary(type='button', ng-click='saveReport(CONSTANT.CASE_REPORT.STATUS.SUBMITTED)')
+                | 提交
+
+        div.md-padding(ng-if="source === 'report_check_edit' "  ng-init="CONSTANT = getCsConst()")
+            div(layout='row' layout-align="center center")
+                    textarea.form-control(type='text', placeholder='驳回原因' ng-model='log.content')
+                    br
+            div(layout='row' layout-align="center center")
+                    md-button.md-raised.md-default(type='button', ng-click='changeReportStatus(CONSTANT.CASE_REPORT.STATUS.REJECTED)')
+                        | 驳回
+                    md-button.md-raised.md-primary(type='button', ng-click='changeReportStatus(CONSTANT.CASE_REPORT.STATUS.CHECKED)')
+                        | 审核通过
+
+
+        div.col-sm-6
+            .box.plane-box(ng-repeat="group in trialGroupsCN" )
+                .box-header.with-border
+                    h3.box-title    临床试验分组{{$index+1}}
+                .box-body
+                    form-group
+                        label  分组名称
+                        textarea.form-control(ng-model="group.name")
+                        br
+                    form-group
+                        label  治疗类型
+                        input.form-control(ng-model="group.therapyType")
+                        br
+                    form-group
+                        label  附加信息
+                        textarea.form-control(rows=8 ng-model="group.additionalInformation")
+                        br
+                    form-group
+                        label  解释
+                        textarea.form-control(rows=8 ng-model="group.rationale")
+                        br
+                    form-group
+                        label  描述
+                        textarea.form-control(ng-model="group.trialsDescription")
+                        br
+
+                    h3 临床试验
+                    ul(style="list-style: none;" ng-repeat="clinicalTrial in group.clinicalTrials")
+                        li
+                            h3(style="margin-left: -20px;") 试验{{$index+1}}
+                            form-group
+                                label  临床试验名称
+                                textarea.form-control(rows=3 ng-model="clinicalTrial.simpleName")
+                                br
+                            form-group
+                                label  临床试验总览
+                                textarea.form-control(rows=8 ng-model="clinicalTrial.overview")
+                                br
+                            form-group
+                                label  临床试验药物
+                                input.form-control(rows=8 ng-model="clinicalTrial.drug")
+                                br
+                            form-group
+                                label  临床试验分期
+                                input.form-control(ng-model="clinicalTrial.trialPhase")
+                                br
+
+                            h3 试验点
+                            ul(ng-if="clinicalTrial.trial" style="list-style: none;" ng-repeat="trialSite in clinicalTrial.trial.trialSites")
+                                li
+                                    h3(style="margin-left: -20px;") 试验点{{$index+1}}
+                                    form-group
+                                        label  有无名额
+                                        input.form-control(readonly ng-model="trialSite.hasSlotsAvailable")
+                                        br
+                                    form-group(ng-if="trialSite.institution")
+                                        label  机构名称
+                                        input.form-control(ng-model="trialSite.institution.name")
+                                        br
+
+
+
+
+
+        div.col-sm-6
+            .box.plane-box(ng-repeat="group in trialGroups" )
+                .box-header.with-border
+                    h3.box-title    Trial Group {{$index+1}}
+                .box-body
+                    form-group
+                        label  Name
+                        textarea.form-control(readonly ng-model="group.name")
+                        br
+                    form-group
+                        label  Therapy Type
+                        input.form-control(readonly ng-model="group.therapyType")
+                        br
+                    form-group
+                        label  Additional Information
+                        textarea.form-control(readonly rows=8 ng-model="group.additionalInformation")
+                        br
+                    form-group
+                        label  Rationale
+                        textarea.form-control(readonly rows=8 ng-model="group.rationale")
+                        br
+                    form-group
+                        label  Trials Description
+                        textarea.form-control(readonly ng-model="group.trialsDescription")
+                        br
+
+                    h3 Clinical Trials
+                    ul(style="list-style: none;" ng-repeat="clinicalTrial in group.clinicalTrials")
+                        li
+                            h3(style="margin-left: -20px;") Clinical Trial {{$index+1}}
+                            form-group
+                                label  Trial Name
+                                textarea.form-control(readonly rows=3 ng-model="clinicalTrial.simpleName")
+                                br
+                            form-group
+                                label  Overview
+                                textarea.form-control(readonly rows=8 ng-model="clinicalTrial.overview")
+                                br
+                            form-group
+                                label  Drug
+                                input.form-control(readonly rows=8 ng-model="clinicalTrial.drug")
+                                br
+                            form-group
+                                label  Trial Phase
+                                input.form-control(readonly ng-model="clinicalTrial.trialPhase")
+                                br
+
+                            h3 Trial Sites
+                            ul(ng-if="clinicalTrial.trial" style="list-style: none;" ng-repeat="trialSite in clinicalTrial.trial.trialSites")
+                                li
+                                    h3(style="margin-left: -20px;") Trial Site {{$index+1}}
+                                    form-group
+                                        label  Has Slots Available
+                                        input.form-control(readonly ng-model="trialSite.hasSlotsAvailable")
+                                        br
+                                    form-group(ng-if="trialSite.institution")
+                                        label  Institution
+                                        input.form-control(readonly ng-model="trialSite.institution.name")
+                                        br
+
+
+
+
+
+
+

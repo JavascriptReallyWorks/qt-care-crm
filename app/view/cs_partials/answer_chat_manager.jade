@@ -1,0 +1,97 @@
+div(ng-cloak='' ,ng-controller="answerChatManagerCtrl",ng-init="initAnswerChatManager()" class="hfull")
+    md-content(md-theme="docs-dark" class="hfull")
+        .ui#answer_chat.answer_chat_m
+            //提问的用户列表
+            .left-menu.left-menu-m(ng-show="!fold")
+                .layout('row')
+                    .dropdown
+                        a.current-conv-type(role="button", data-toggle="dropdown", data-target="#", href="javascript:void(0)")
+                            | {{curConvTypeDisplay()}}
+                            span.caret
+                        ul.dropdown-menu.multi-level(role="menu", aria-labelledby="dropdownMenu")
+                            li(ng-repeat="option in convTypeOptions")
+                                a(href='javascript:void(0)' ng-click="changeConvType(option.value)") {{option.display}}
+                    //span.paging-label(ng-if="curConvPage") Page {{curConvPage}}/{{PAGE_COUNT}}
+
+                form.search
+                    input(placeholder='用户名', type='search', name='', id='' ng-model="clientName")
+
+                //ng-nicescroll 是一个滚动条插件
+                menu.list-friends(class="my-scroll-area" ng-nicescroll nice-option="{cursorcolor: '#696c75',cursorwidth: '4px',cursorborder:'none'}")
+                    li(ng-repeat="conv in convs | orderBy: ['-updatedAt'] track by conv._id" ng-click="joinChat(conv._id)" ng-class="{selected:conv._id === selectedId}")
+                        .info
+                            .user {{$index+1}}{{' '+ showConvTitle(conv)}}
+                            //off：红点 on：绿点
+                            .status(ng-class="conv.replierId  ?  'on' : 'off'")
+                            //用户最新的一条信息
+                            .new_message {{delHtmlTag(conv.lastMessage)}}
+                    br
+                    br
+                p.msg-tools(ng-if="loadMoreConvCtrl" style='color:white')
+                    | -
+                    a(href="javascript:void(0)" ng-click="getConversations()" style='color:white') 加载更多
+                    | -
+                //.paging(layout='row' layout-align="center center")
+                    span(type='button', class="glyphicon glyphicon-chevron-left btn-c-white" ng-click='prevPage()')
+                    span(type='button',class="glyphicon glyphicon-chevron-right btn-c-white" ng-click='nextPage()')
+            //对话view
+            .chat.chat-m
+                .top
+                    //当前对话用户
+                    .avatar
+                        img(width='50', height='50',ng-if="curConv.clientUserId", ng-src='img/user_head/{{curConv.clientUserId }}.jpeg')
+                    .info
+                        .name {{curConv ? showConvTitle(curConv) : ''}}
+                        //.count 104 消息
+                .nav-tabs-custom-chat.tabs-container(ng-show="curConv")
+                    ul.nav.nav-tabs
+                        li.active
+                            a(href='#chat_view', data-toggle='tab') 对话框
+                        li
+                            a#dLabel(role="button", data-toggle="dropdown", data-target="#", href="javascript:void(0)")
+                                | 操作
+                                span.caret
+                            ul.dropdown-menu.dropdown-menu-right.multi-level(role="menu", aria-labelledby="dropdownMenu")
+                                //li.divider
+                                li.dropdown-submenu.dropdown-menu-right(ng-repeat="role in crmUserMap")
+                                    a(tabindex="-1", href="#") {{role._id}}
+                                    ul.dropdown-menu.dropdown-menu-right-3
+                                        li(ng-repeat="u in role.users")
+                                            a(href="javascript:void(0)" ng-click='moveToOtherUser(role._id, u.userid,(u.nickname || u.name))') {{ u.nickname || u.name}}
+
+                    .tab-content(layout="column" flex="" class="_md layout-column flex")
+                        #chat_view.active.tab-pane
+                            .chat_view
+                                //消息列表 ng-nicescroll 是一个滚动条插件
+                                div.messages.messages-m()
+                                    audio(controls='controls',id="audio",style="display:none;")
+                                    p.msg-tools(ng-if="loadMoreCtrl")
+                                        |-
+                                        a(href="javascript:void(0)" ng-click="getMessages()") 加载更多
+                                        |-
+                                    ul
+                                        //friend-with-a-SVAGina 提问用户的显示样式
+                                        //i 自己的显示样式
+                                        li(ng-repeat="message in curMessages track by $index" ng-class="(message.fromUserId != curConv.clientId) ? 'i' : 'friend-with-a-SVAGina'")
+                                            .head(ng-if="(message.senderId == user._id || message.fromUserId == user._id)")
+                                                span.time {{message.createdAt | date: 'MM-dd HH:mm'}}
+                                                span.name {{(message.fromUserName || message.senderName)}}
+                                            .head(ng-if="(message.senderId != user._id && message.fromUserId != user._id)")
+                                                span.name {{(message.fromUserName || message.senderName)}}
+                                                span.time {{message.createdAt | date: 'MM-dd HH:mm'}}
+                                            .message(ng-if="message.text" ng-bind-html="message.text | unsafe" draggable-text)
+                                            .message(ng-if="message.msgType.toUpperCase() === 'TEXT'" ng-bind-html="convertContent(message.content) | unsafe" draggable-text)
+                                            .message(ng-if="message.msgType.toUpperCase() === 'OPERATION'") [转入人工]
+                                            .message(ng-if="message.msgType.toUpperCase() === 'BTNS'" ng-bind-html="convertContent(message.content) | unsafe" draggable-text)
+                                            .message(ng-if="message.msgType.toUpperCase() === 'ES'" ng-bind-html="convertTextFromEsTpl(message) | unsafe" draggable-text)
+                                            .message(ng-if="message.msgType.toUpperCase() === 'EVENT'" ng-bind="'事件' + '-'+(message.event || '')+ '-'+(message.eventKey || '')+ '-'+(message.content|| '')" draggable-text)
+
+                                            img(ng-if="message.msgType.toUpperCase() === 'IMAGE'" ng-src="/cs/picture/picture_name?url={{message.picUrl}}" ng-click="openModalImage(message.picUrl)" style="width:160px;" draggable-image)
+                                            .message(ng-if="message.msgType.toUpperCase() === 'VOICE'" title="{{message.recognition}}" ng-click="playAudio('/cs/audio/audio_name?url=' + message.voiceUrl,$event)")
+                                                .play-voice-row
+                                                    .play-voice.v_player_pause
+                                                        span
+
+
+
+

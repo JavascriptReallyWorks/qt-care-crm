@@ -1,0 +1,32 @@
+div(ng-cloak='' ng-controller="reportCheckEditCtrl",ng-init="initReportCheckEdit()")
+    section.content
+
+        div(ui-view="medical_record")
+
+        .row(ng-if="case.logs")
+            .col-md-12
+                ul.timeline.timeline-inverse
+                    .timeline.timeline-inverse(ng-repeat="log in case.logs")
+                        li.time-label
+                            span.bg-red
+                                | {{log.create_time | date: 'yyyy-MM-dd'}}
+                        li
+                            i.fa.fa-envelope.bg-blue
+                            .timeline-item
+                                span.time
+                                    i.fa.fa-clock-o
+                                    |  | {{log.create_time | date: 'HH:mm'}}
+                                h3.timeline-header
+                                    span.text-light-blue {{log.create_user}}
+                                    |  {{log.title}}
+                                .timeline-body(ng-if="log.content")
+                                    | {{log.content}}
+
+        br
+
+        div(ui-view="case_report")
+
+
+
+
+

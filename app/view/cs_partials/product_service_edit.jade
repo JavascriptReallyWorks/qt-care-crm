@@ -1,0 +1,83 @@
+
+div(ng-cloak='' ng-controller="editProductQueryCtrl",ng-init="initEditProductQueryCtrl()")
+
+    section.content
+        .row
+            .col-md-12
+                .box
+                    .box-header.with-border
+                        h3.box-title {{$scope.product ? "编辑产品" : "新增产品"}}
+                    .box-body
+                        form(role='form')
+                            .form-group
+                            .row
+                                .col-xs-8
+                                    .form-group
+                                        label 产品名称
+                                        input.form-control(type='text',ng-model="product.product_name", placeholder='请输入产品名称')
+                                .col-xs-4
+                                    .form-group
+                                        label 产品关键字
+                                        input.form-control(type='text',ng-model="product.product_tag", placeholder='请输入产品关键字，逗号分隔')
+                            .row
+                                .col-xs-4
+                                    .form-group
+                                        label 状态
+                                        select.form-control(ng-model="product.product_status")
+                                            option(ng-repeat="t in productStatus" ng-value="{{t.value}}") {{t.display}}
+
+                                .col-xs-4
+                                    .form-group
+                                        label 排序，数字越大越靠前
+                                        input.form-control(type='number',ng-model="product.top", placeholder='数字越大越靠前')
+                                .col-xs-4
+                                    .form-group
+                                        label 产品类型
+                                        select.form-control(ng-model="product.product_type")
+                                            option(ng-repeat="t in productTypes" value="{{t.value}}") {{t.display}}
+                            .row
+                                .col-xs-4
+                                    label 单价（现价）
+                                    input.form-control(type='number', placeholder='单价' ng-model="product.unit_price")
+                                    br
+                                    md-radio-group.inline-radio-group(ng-model='product.discount')
+                                        md-radio-button(value='min') 最低价
+                                        md-radio-button(value='1') 固定价格
+                                .col-xs-4
+                                    label 原价
+                                    input.form-control(type='number', placeholder='原价' ng-model="product.original_price")
+
+                            // text input
+                            .form-group
+                                label 产品简介
+                                textarea.form-control(rows='3', placeholder='请输入产品简介' ng-model="product.intro")
+                            .form-group
+                                button.btn.btn-default(ngf-select='uploadFiles($files,"title_img")' ngf-multiple="false" ngf-pattern="'image/*'"
+                                ngf-accept="'image/*'" ngf-max-size="20MB" ) 选择标题图
+                            .form-group(layout-gt-sm='row' ng-show="product.title_img")
+                                .imgbox
+                                    img(ng-show="product.title_img" ng-src="{{product.title_img}}" )
+                            .form-group
+                                button.btn.btn-default(ngf-select='uploadFiles($files,"product_images")' ngf-multiple="true" ngf-pattern="'image/*'"
+                                ngf-accept="'image/*'" ngf-max-size="20MB" ) 选择产品图片
+                            .form-group(layout-gt-sm='row' ng-show="product.product_images && product.product_images.length > 0")
+                                .imgbox(ng-repeat="url in product.product_images")
+                                    img(ng-if="url" ng-src="{{url}}" )
+                            .form-group
+                                button.btn.btn-default(ngf-select='uploadFiles($files,"subscribe_img")' ngf-multiple="false" ngf-pattern="'image/*'"
+                                ngf-accept="'image/*'" ngf-max-size="20MB" ) 选择关注二维码
+                            .form-group(layout-gt-sm='row' ng-show="product.subscribe_img")
+                                .imgbox
+                                    img(ng-show="product.subscribe_img" ng-src="{{product.subscribe_img}}" )
+                            .form-group
+                                label 备注信息的说明（对照提交订单信息时提示用户需要在备注中提供的其他信息）
+                                textarea.form-control(rows='2', placeholder='对照提交订单信息时提示用户需要在备注中提供的其他信息' ng-model="product.case_note")
+                            .form-group
+                                label 产品详细介绍
+                                //input.form-control(type='text', placeholder='产品详细介绍，超链接' ng-model="product.url")
+                                <textarea froala="froalaOptions" ng-model="product.content"></textarea>
+
+            .col-md-12.text-center
+                button.btn.btn-flat.btn-success(type='button' ng-click="saveAndUpdateProduct()")
+                    i.fa.fa-save  保 存
+

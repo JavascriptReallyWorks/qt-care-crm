@@ -1,0 +1,41 @@
+div(ng-controller="answerChatHistoryCtrl",ng-init="initAnswerChatHistory()")
+    md-content.md-padding-10
+        .ui
+            //提问的用户列表
+            .left-menu
+                form.search(action='#')
+                    input(placeholder='search...', type='search', name='', id='' ng-model="searchText")
+                //ng-nicescroll 是一个滚动条插件
+                menu.list-friends(class="my-scroll-area" ng-nicescroll nice-option="{cursorcolor: '#696c75',cursorwidth: '4px',cursorborder:'none'}")
+                    li(ng-repeat="conv in convs | filter: searchText " ng-click="joinChat(conv)")
+                        .info
+                            .user {{conv.clientName + ' (已结束)'}}
+                            //off：红点 on：绿点
+                            .status(ng-class="conv.replierId  ?  'on' : 'off'")
+                            //用户最新的一条信息
+                            .new_message {{delHtmlTag(conv.latestMessage)}}
+            //对话view
+            .chat.chat-history(ng-show="curConv")
+                .top
+                    //当前对话用户
+                    .avatar
+                        img(width='50', height='50', ng-src='{{curConv.head_url}}?nocache={{nocache}}')
+                    .info
+                        .name {{curConv.clientName }}
+                        //.count 104 消息
+
+
+                //消息列表 ng-nicescroll 是一个滚动条插件
+                div.messages.messages-history(class="my-scroll-area" ng-nicescroll nice-option="{cursorcolor: '#cdd2d6',cursorwidth: '4px',cursorborder:'none'}" scroll-to-top-when="items_changed")
+                    ul
+                        //friend-with-a-SVAGina 提问用户的显示样式
+                        //i 自己的显示样式
+                        li(ng-repeat="message in curMessages" ng-class="message.senderId == user._id ? 'i' : 'friend-with-a-SVAGina'")
+                            .head(ng-if="message.senderId == user._id")
+                                span.time {{message.createdAt | date: 'MM-dd HH:mm'}}
+                                span.name {{message.senderName}}
+                            .head(ng-if="message.senderId != user._id")
+                                span.name {{message.senderName}}
+                                span.time {{message.createdAt | date: 'MM-dd HH:mm'}}
+                            .message(ng-bind-html="message.text | unsafe")
+

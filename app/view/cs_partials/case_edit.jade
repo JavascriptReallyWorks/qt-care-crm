@@ -1,0 +1,255 @@
+doctype html
+html
+    head
+        style.
+            .demo-header-searchbox {
+                border: none;
+                outline: none;
+                height: 100%;
+                width: 100%;
+                padding: 0;
+            }
+
+            .demo-select-header {
+                box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.1), 0 0 0 0 rgba(0, 0, 0, 0.14), 0 0 0 0 rgba(0, 0, 0, 0.12);
+                padding-left: 10.667px;
+                height: 48px;
+                cursor: pointer;
+                position: relative;
+                display: flex;
+                align-items: center;
+                width: auto;
+            }
+
+            /*md-content._md {*/
+                /*max-height: 240px;*/
+            /*}*/
+
+
+
+div(ng-cloak='' ng-controller="caseEditController",ng-init="initCaseEditController()")
+
+    section.content
+        .row
+            .col-md-12
+                form(role='form' ng-submit="saveAndUpdateCase()")
+
+                    .box
+                        .box-header.with-border
+                            h3.box-title {{"QTC " + theCase.sid}}
+                            .box-tools.pull-right
+                                button.btn.btn-primary(type='submit')
+                                    i.fa.fa-save  保 存
+
+                        .box-body
+
+                            .form-group
+                            .row
+                                .col-xs-4
+                                    .form-group
+                                        label 患者
+                                        input.form-control(type='text',ng-model="theCase.patientName", placeholder='患者姓名' required)
+                                .col-xs-4
+                                    .form-group
+                                        label 联系方式
+                                        input.form-control(type='text',ng-model="theCase.patientMobile", placeholder='联系方式')
+                                .col-xs-4
+                                    .form-group
+                                        label 性别
+                                        select.form-control(ng-options="option for option in genderOptions" ng-model="theCase.patientGender")
+                                            option
+                            .row
+                                .col-xs-4
+                                    .form-group
+                                        label 出生日期
+                                        input#birthday.form-control.datepicker(name='dataRange' ng-value="theCase.patientBirthday ? theCase.patientBirthday.split('T')[0]:'' " ng-model="theCase.patientBirthday", data-date-format="yyyy-mm-dd" placeholder='出生日期')
+
+                                .col-xs-4
+                                    .form-group
+                                        label 癌症类型
+                                        input.form-control(type='text',ng-model="theCase.cancerType", placeholder='癌症类型')
+
+                                .col-xs-4
+                                    .form-group
+                                        label 分期
+                                        select.form-control(ng-options="option for option in stageOptions" ng-model="theCase.stage")
+                                            option
+
+                            .row
+                                .col-xs-4
+                                    .form-group
+                                        label 产品类型
+                                        select#product.form-control(required ng-options="product as product.product_name for product in products track by product.sid" ng-model="theCase.product" )
+                                            option
+
+                                .col-xs-4(ng-if="!new")
+                                    .form-group
+                                        label 状态
+                                        select.form-control(ng-options="status.value as status.display for status in CASE_STATUS_OPTIONS" ng-model="theCase.status")
+                                            option
+
+                                .col-xs-4(ng-if="!disableMdAssignment")
+                                    .form-group
+                                        label 关联病历
+                                        input.form-control(type='text' ng-model="dataModel.dummyMD" uib-typeahead="item.patientName as (item.patientName + '-生日:' + item.patientBirthday.split('T')[0]) for item in  queryMdPatients($viewValue)" typeahead-on-select="onSelectMD($item, $model, $label, $event,$parent.$index, $index)", placeholder='患者姓名')
+
+
+                            .row
+                                .col-xs-4
+                                    .form-group
+                                        label 指派医生
+                                        input.form-control(type='text' uib-typeahead="item as (item.firstName + ', ' + item.lastName )  for item in  queryDoctorAbstract($viewValue)" ng-model="theCase.doctor", placeholder='姓/名/邮箱')
+
+                                .col-xs-4
+                                    .form-group
+                                        label 远程会诊链接
+                                        input.form-control(type='text',ng-model="theCase.videoLink", placeholder='患者姓名')
+
+                            .form-group
+                                label 备注
+                                textarea.form-control(rows='3', placeholder='请输入产品简介' ng-model="theCase.note")
+
+
+        .box(ng-if="!new")
+            .box-header.with-border
+                div(layout='row')
+                    h3.box-title QTC客服
+            .box-body.form-group
+                .row
+                    .col-xs-6
+                        div
+                            label 创建者
+                            p {{theCase.createUser.nickname || theCase.createUser.name}} / {{theCase.createUser.email}}
+
+                    //.col-xs-6
+                        div
+                            div(layout='row')
+                                label 参与者
+                                a(style="margin-left:5px" ng-click="dataModel.showCsUserAdder = !dataModel.showCsUserAdder")
+                                    | {{dataModel.showCsUserAdder ? "取消" : "添加"}}
+                            .row
+                                .col-xs-8
+                                    input.form-control(ng-if="dataModel.showCsUserAdder" type='text' uib-typeahead="item as (item.firstName + ', ' + item.lastName )  for item in  queryDoctorAbstract($viewValue)" ng-model="dataModel.dummyAddingCsUser", placeholder='姓/名/邮箱')
+
+
+
+
+
+        .box(ng-if="!new")
+            .box-header.with-border
+                div(layout='row')
+                    h3.box-title 指派
+                    a.fa.fa-edit(href="javascript:void(0)" ng-click="dataModel.ticket.showNewTicketInput = !dataModel.ticket.showNewTicketInput" style="margin-left:10px; margin-top:5px")
+
+            .box-body
+
+                // 新的指派
+                .box(ng-if="dataModel.ticket.showNewTicketInput")
+                    .box-header.with-border
+                        .row
+                            .col-xs-6
+                                h3.box-title 新的指派
+                            .col-xs-6
+                                .box-tools.pull-right
+                                    button.btn.btn-default.btn-sm(type='button' ng-click="dataModel.ticket.showNewTicketInput = false") 取消
+
+
+                    .box-body
+                        form(role='form' ng-submit="submitNewTicket()")
+                            .form-group
+                                //label 指派人
+                                md-select(multiple ng-model="dataModel.ticket.newTicket.assignees"  md-on-close="dataModel.csUserSearchTerm = '' " placeholder='指派人')
+                                    md-select-header.demo-select-header
+                                        input.demo-header-searchbox.md-text(ng-model='dataModel.csUserSearchTerm' ng-keydown="$event.stopPropagation()" type='search', placeholder='搜索')
+                                    md-optgroup(label='指派人')
+                                        md-option(ng-repeat='option  in QT_CS_USERS | filter:dataModel.csUserSearchTerm', ng-value='option') {{(option.nickname || option.name) + " (" + option.email + ")"}}
+                            .form-group
+                                input.form-control(required type='text' placeholder="标题" ng-model="dataModel.ticket.newTicket.title")
+
+                            .form-group
+                                textarea.form-control(required rows='3', placeholder='内容' ng-model="dataModel.ticket.newTicket.content")
+
+                            .pull-right
+                                button.btn.btn-primary.btn-sm(type='submit') 提交
+
+
+                // 指派列表
+                .panel.panel-default(ng-repeat="ticket in caseTickets | orderBy: '-createdAt'")
+                    .panel-heading
+                        .row
+                            .col-xs-8
+                                b(style="font-size:16px") {{ticket.title}}
+                            .col-xs-4
+                                b.pull-right {{ticket.authorName + " - " + ticket.createdAt.split('T')[0] }}
+                        .row
+                            .col-xs-3(ng-repeat="assignee in ticket.allAssignees")
+                                b {{(assignee.nickname || assignee.name) + " (" + assignee.email + ")"}}
+                    .panel-body
+                        div(layout='row')
+                            b(ng-repeat="assignee in ticket.assignees" style="margin-right:10px" )
+                                | @{{assignee.nickname || assignee.name}}
+                        p {{ticket.content}}
+
+                    .panel-footer(style="background-color:white")
+
+                        // 新的评论
+                        form(ng-submit="newTicketComment($index, ticket._id)")
+                            .form-group(ng-if="dataModel.ticket.toComment[$index]" )
+                                md-select(multiple ng-model="dataModel.ticket.newCommentAssignees[$index]"  md-on-close="dataModel.csUserSearchTerm = '' " placeholder='增加指派人')
+                                    md-select-header.demo-select-header
+                                        input.demo-header-searchbox.md-text(ng-model='dataModel.csUserSearchTerm' ng-keydown="$event.stopPropagation()" type='search', placeholder='搜索')
+                                    md-optgroup(label='指派人')
+                                        md-option(ng-repeat='option  in QT_CS_USERS  | filter:dataModel.csUserSearchTerm', ng-value='option') {{(option.nickname || option.name) + " (" + option.email + ")"}}
+                                br
+                                textarea.form-control(required rows='3', placeholder='新评论...' ng-model="dataModel.ticket.newComment[$index]")
+                                    .pull-right(style="")
+
+
+                            .row
+                                .col-xs-6
+                                    b {{dataModel.ticket.allComments[$index] ? "所有评论":("最新评论"+" (共"+ ticket.comments.length + "条) ")}}
+                                .col-xs-6
+                                    .pull-right
+                                        a(href="javascript:void(0)" ng-click="dataModel.ticket.allComments[$index] = !dataModel.ticket.allComments[$index]" style="padding-left:10px")
+                                            | {{dataModel.ticket.allComments[$index] ? "最新评论":"所有评论"}}
+
+                                        a(href="javascript:void(0)" ng-click="dataModel.ticket.toComment[$index] = !dataModel.ticket.toComment[$index]" style="padding-left:10px")
+                                            | {{dataModel.ticket.toComment[$index] ? "收起":"写评论"}}
+
+                                        button.btn-sm.btn-primary(ng-if="dataModel.ticket.toComment[$index]" type='submit' style="margin-left:10px")
+                                            | 发送
+
+
+                        // 所有评论
+                        div(ng-if="dataModel.ticket.allComments[$index]" style="margin-top:10px; margin-bottom:-10px")
+                            .list-group
+                                .list-group-item(ng-repeat="comment in ticket.comments | orderBy: '-createdAt'")
+                                    .row
+                                        .col-xs-12
+                                            div(layout='row')
+                                                b(ng-repeat="assignee in comment.assignees" style="margin-right:10px" )
+                                                    | @{{assignee.nickname || assignee.name}}
+
+                                            p {{comment.comment}}
+                                    .row
+                                        p.pull-right(style="margin-right:20px; margin-bottom:-1px") {{comment.authorName + " - " + comment.createdAt.split('T')[0] }}
+
+
+                        // 最新评论
+                        div(ng-if="!dataModel.ticket.allComments[$index] && ticket.comments.length" style="margin-top:10px; margin-bottom:-10px")
+                            .list-group
+                                .list-group-item
+                                    .row
+                                        .col-xs-12
+                                            div(layout='row')
+                                                b(ng-repeat="assignee in ticket.comments[ticket.comments.length-1].assignees" style="margin-right:10px" )
+                                                    | @{{assignee.nickname || assignee.name}}
+                                            p {{ticket.comments[ticket.comments.length-1].comment}}
+                                    .row
+                                        p.pull-right(style="margin-right:20px; margin-bottom:-1px") {{ticket.comments[ticket.comments.length-1].authorName + " - " + ticket.comments[ticket.comments.length-1].createdAt.split('T')[0] }}
+
+
+
+
+
+

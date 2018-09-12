@@ -1,0 +1,130 @@
+doctype html
+head
+    base(href='/')
+    meta(charset='utf8')
+    meta(name="robots" content="noindex,nofollow")
+    meta(name='viewport', content='width=device-width,initial-scale=1,user-scalable=no,maximum-scale=1')
+
+    link(rel='stylesheet', href='/bower_components/angular-bootstrap/ui-bootstrap-csp.css')
+    link(rel='stylesheet', href='/bower_components/bootstrap/dist/css/bootstrap.min.css')
+    link(rel="stylesheet", href="/bower_components/angular-material/angular-material.min.css")
+    link(rel='stylesheet', href='/pubsub_example/style/multi_chat.css')
+
+
+    script(src='/bower_components/jquery/dist/jquery.min.js')
+    script(src='/bower_components/bootstrap/dist/js/bootstrap.min.js')
+    script(src='/bower_components/bootstrap/js/tooltip.js')
+    script(src='/bower_components/angular/angular.min.js')
+    script(src='/bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js')
+    script(src='/bower_components/angular-ui-router/release/angular-ui-router.min.js')
+    script(src='/bower_components/angular-animate/angular-animate.min.js')
+    script(src='/bower_components/angular-aria/angular-aria.js')
+    script(src='/bower_components/angular-material/angular-material.min.js')
+    script(src='/bower_components/angular-messages/angular-messages.min.js')
+    script(src='/bower_components/jquery.nicescroll/dist/jquery.nicescroll.min.js')
+    script(src='/bower_components/angular-nicescroll/angular-nicescroll.js')
+    script(src='/bower_components/socket.io-client/dist/socket.io.js')
+
+    script(src='/crm/socket_pubsub.js')
+    script(src='/pubsub_example/module/multi_chat_module.js')
+
+
+    //script(type='text/javascript').
+    //    var user = !{JSON.stringify(user)};
+
+html(ng-app="MultiChat", ng-controller='MultiChatCtrl', ng-init='initMultiChatCtrl()', layout="column" flex="" class="_md layout-column flex")
+    md-content(layout="column" flex="" class="_md layout-column flex")
+
+        .login.md-padding(ng-if="!user" layout='row')
+            input(type="text" ng-model="input.user" placeholder='用户名')
+            button(ng-click="login()") 登录
+
+        .main(ng-if="user")
+            .logout.md-padding(layout='row')
+                scan hello,{{user.name}}
+                a(href="/pubsub/logout" style="margin-left:20px") 退出
+
+            .ui#answer_chat
+                //提问的用户列表
+                .left-menu
+                    .layout('row')
+                        .dropdown
+                            a.current-conv-type(role="button", data-toggle="dropdown", data-target="#", href="javascript:void(0)")
+                                | {{curConvType}}
+                                span.caret
+                            ul.dropdown-menu.multi-level(role="menu", aria-labelledby="dropdownMenu")
+                                li
+                                    a(href='javascript:void(0)' ng-click="changeConvType('人工回复')") 人工回复
+                                li
+                                    a(href='javascript:void(0)' ng-click="changeConvType('自动回复')") 自动回复
+                        span.paging-label(ng-if="curPage") Page {{curPage}}
+
+                    form.search(action='#')
+                        input(placeholder='search...', type='search', name='', id='' ng-model="searchText")
+
+                    //ng-nicescroll 是一个滚动条插件
+                    menu.list-friends(class="my-scroll-area" ng-nicescroll nice-option="{cursorcolor: '#696c75',cursorwidth: '4px',cursorborder:'none'}")
+                        li(ng-repeat="conv in convs  | filter: searchText | orderBy: ['-updatedAt']" ng-click="joinChat(conv.$id)" ng-class="{selected:conv.$id === selectedId}")
+                            .info
+                                .user {{conv.clientName}}
+                                //off：红点 on：绿点
+                                .status(ng-class="conv.replierId  ?  'on' : 'off'")
+                                //用户最新的一条信息
+                                .new_message {{conv.lastUserName + ': ' + conv.lastMessage}}
+                    //.paging(ng-if="curPage" layout='row' layout-align="center center")
+                        span(type='button', class="glyphicon glyphicon-chevron-left btn-c-white" ng-click='prevPage()')
+                        span(type='button',class="glyphicon glyphicon-chevron-right btn-c-white" ng-click='nextPage()')
+                //对话view
+                .chat
+                    .top
+                        //当前对话用户
+                        .avatar
+                            img(width='50', height='50' ng-src='img/user_head/{{curConv.clientUserId }}.jpeg')
+                        .info
+                            .name {{curConv.clientName}}
+                            //.count 104 消息
+
+                        .btn-group.chat-btn-group
+                            .dropdown
+                                a#dLabel(ng-if="curConv" role="button", data-toggle="dropdown", data-target="#", href="javascript:void(0)")
+                                    | 操作
+                                    span.caret
+                                ul.dropdown-menu.dropdown-menu-right.multi-level(ng-if="curConvType === '人工回复' " role="menu", aria-labelledby="dropdownMenu")
+                                    li
+                                        a(href='javascript:void(0)' ng-click='endChat()') 结束会话
+                                    //li.divider
+                                    //li.dropdown-submenu.dropdown-menu-right
+                                        a(tabindex="-1", href="#") 转其他客服
+                                        ul.dropdown-menu.dropdown-menu-right-2
+                                            li(ng-repeat="u in csUsers" ng-if="user._id != u._id")
+                                                a(href="javascript:void(0)" ng-click='moveToOtherUser(u._id,u.nickname)') {{ u.nickname}}
+
+                                //ul.dropdown-menu.dropdown-menu-right.multi-level(ng-if="curConvType === '自动回复' " role="menu", aria-labelledby="dropdownMenu")
+                                    li
+                                        a(href='javascript:void(0)' ng-click='moveChatToManual()') 转入人工
+
+
+                    //消息列表 ng-nicescroll 是一个滚动条插件
+                    div.messages
+                        ul
+                            li(ng-repeat="message in curMessages track by $index")
+                                .head.text-left(ng-class=" {'text-right' : message.fromUserId !== message.clientId}")
+                                    span.name {{(message.fromUserName || message.senderName ) + ' '}}
+                                    span.time {{message.createdAt | date: 'MM-dd HH:mm'}}
+                                .content(style="margin-left:40px;" ng-class=" {'text-right' : message.fromUserId !== message.clientId}")
+                                    div(ng-if="!message.msgType" ng-bind-html="message.content | unsafe")
+                                    div(ng-if="message.msgType.toUpperCase() === 'TEXT'" ng-bind-html="convertContent(message.content) | unsafe")
+                                    div(ng-if="message.msgType.toUpperCase() === 'BTNS'" ng-bind-html="convertContent(message.content) | unsafe")
+                                    div(ng-if="message.msgType.toUpperCase() === 'ES'" ng-bind-html="convertTextFromEsTpl(message) | unsafe")
+                                    div(ng-if="message.msgType.toUpperCase() === 'EVENT'" ng-bind="'事件' + '-'+(message.event || '')+ '-'+(message.eventKey || '')+ '-'+(message.content|| '')")
+
+
+                                hr
+
+                    //消息输入
+                    .write-form(ng-if="curConvType === '人工回复'")
+                        <textarea class="msg_content" ng-model="input.newMessage"></textarea>
+                        div.pull-right(layout='row')
+                            md-button.md-raised.md-default(type='button', ng-click='sendMessage()')
+                                | 发送
+

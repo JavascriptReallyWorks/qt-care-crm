@@ -1,0 +1,30 @@
+doctype html
+head
+    style.
+        .modal-dialog {
+            width: 80%;
+            height: 80%;
+        }
+
+        .modalImage .image-wrapper {
+            text-align: center;
+        }
+        .modal-content .modalImage .image-wrapper img {
+            max-width: 1080px;
+            max-height: 1080px;
+        }
+        .modalImage .image-description {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+
+.modalImage
+    .modal-header
+        | {{selectedImg.header}}
+        button.close.pull-right(ng-click='$dismiss()', aria-hidden='true') ×
+        .clearfix
+    .modal-body
+        .image-wrapper
+            a(ng-href='{{ImageSrc}}', target='_blank')
+                img(ng-src="/cs/picture/picture_name?url={{ImageSrc}}")

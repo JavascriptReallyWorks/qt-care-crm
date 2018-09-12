@@ -1,0 +1,85 @@
+div(ng-cloak='' ,ng-controller="CaseReportListController",ng-init="initCaseReportListCtrl()")
+    style.
+        .dropdown-menu{
+            box-shadow: 1px 1px 13px #333;
+        }
+         .btn-group{
+             margin-left:60px;
+         }
+    md-content.md-padding._md.md-docs-dark-theme(md-theme='docs-dark')
+        .ibox.float-e-margins
+            .ibox-content
+                div(layout-gt-sm='row')
+                    span.md-padding
+                        span.type 客户姓名：
+                        span(editable-text='cond.user_name',e-name="cond.user_name",e-placeholder="请输入(部分)客户姓名") {{ cond.user_name || '客户姓名' }}
+                    span.md-padding
+                        span.type 订单号：
+                        span(editable-text='cond.order_id',e-name="cond.order_id",e-placeholder="请输入(部分)订单号") {{ cond.order_id || '订单号' }}
+                    //- span.md-padding
+                        //- span.type 订单状态：
+                        md-select.inline-block(ng-model='cond.status' style="margin:0")
+                            md-option(ng-repeat='option in statusList', ng-value='option.value' placeholder="订单状态")
+                                | {{option.display}}
+        
+            .ibox-content
+
+                table(class="table")
+                    thead
+                        tr
+                            th 
+                            th 订单号
+                            th 微信用户/患者姓名
+                            th 服务类型
+                            
+                            //- th 订单状态
+
+                    tbody
+                        tr(ng-repeat="t in list.rows")
+                            td 
+
+                                small.label.label-warning  {{getDriverStatus(t.driver_status) }}
+                            td
+                                span {{ t.order_id || '无' }}
+                            td
+                                span {{t.user_name}} / {{t.medical_record_patient_name}}
+
+                            td
+                                
+                                div(ng-if="source === 'case_report_manager'" ng-repeat="product in t.products")
+                                        a(ui-sref="cs.case_report_edit({case_id:t._id, medical_record_id:t.medical_record_id, openid:t.openid, product_id:product._id,product_name:product.product_name, status:product.status})")
+                                            i.fa.fa-edit
+                                            
+                                            |  {{product.product_name + reportStatus(product.status)}}
+                            
+                                        .btn-group
+                                            .dropdown-toggle(data-toggle='dropdown', aria-expanded='false')
+                                                | 报告 
+                                                span.caret
+                                            ul.dropdown-menu(role='menu')
+                                                li
+                                                    a(href="/cs/previewReport/{{t.medical_record_id}}/cn?case_id={{t._id}}&product_id={{product._id}}", target='_blank')
+                                                        i.fa.fa-file-o
+                                                        |  预览CN
+                                                li
+                                                    a(href="/cs/previewReport/{{t.medical_record_id}}/en?case_id={{t._id}}&product_id={{product._id}}", target='_blank')
+                                                        i.fa.fa-file-o
+                                                        |  预览EN
+                                                li
+
+                                                    a(ng-click="downloadReport('/cs/previewReport/'+t.medical_record_id+'/cn?case_id='+t._id+'&product_id='+product._id,'cn')" title="下载PDF病历报告")
+                                                        i.fa.fa-download
+                                                        |  下载CN
+                                                li
+                                                    a(ng-click="downloadReport('/cs/previewReport/'+t.medical_record_id+'/en?case_id='+t._id+'&product_id='+product._id,'en')" title="下载PDF病历报告")
+                                                        i.fa.fa-download
+                                                        |  下载EN  
+                                        
+                            
+
+
+                nav(ng-if="list.total")
+                    .pagination
+                        span.total 共{{list.total}}条记录
+                        paging(page='cond.page', page-size='cond.pageSize', total='list.total', paging-action="DoCtrlPagingAct(page, pageSize, total)")
+
