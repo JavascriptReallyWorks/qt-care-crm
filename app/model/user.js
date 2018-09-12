@@ -22,18 +22,10 @@ module.exports = app => {
         user_type:{ type: String, index:true},
         crm_role: { type: String, index:true},
         crm_admin: { type: Boolean, default: false },
-        timestamp: Number,
-        createdAt:Number,
         headimgurl: String,
         sex: Number,
-        wx_unionid:String,
-
-
-        //数据库里没有 menu，登录时要给user.menu 赋值， 不在model先声明赋值不了， strange
-        // menu:[{
-        //     name:String,
-        //     url:String
-        // }],
+    },{
+       timestamps: true,
     });
 
     return conn27017.model('User', UserSchema, 'users');

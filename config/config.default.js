@@ -207,12 +207,12 @@ const zlzdOssConfig = {
 
 
 const zlzdWechatConfig = {
-    token: '',
-    appid: '',
-    mch_id: '',
-    encodingAESKey: '',
-    payApiKey: '',
-    appSecret: '',
+    token: 'zlzhidaotest',
+    appid: 'wx68451915b0affd17',
+    mch_id: '1446561402',
+    encodingAESKey: 'EbJG23WzxpCfCq8lpTUIxXAXeS4GHRwYyZVA8oDsFih',
+    payApiKey: 'JCJSBQSXK44HF6B8XP2XQ7AHQ36H6T7G',
+    appSecret: 'ef502e162c19307b69a6f10b3a4ffdcb',
     grant_type: 'client_credential',
     accessTokenUrl: 'https://api.weixin.qq.com/cgi-bin/token', //获取token
     oauth2AccessTokenUrl: 'https://api.weixin.qq.com/sns/oauth2/access_token', //获取token
