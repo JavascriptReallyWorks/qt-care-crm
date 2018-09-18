@@ -83,8 +83,28 @@ function getMsgXML(openid, text) {
 
 var textUrl = '';
 
+function getEventKey(openid, event, enentkey) {
+    var xml = getEventKeyXML(openid, event, enentkey);
+    var encrypt = cryptor.encrypt(xml);
+    var result = '<xml> <ToUserName><![CDATA[gh_1491d480bdd6]]></ToUserName> <Encrypt><![CDATA[' + encrypt + ']]></Encrypt> </xml>';
+    var msg_sign = cryptor.getSignature("1471836867", "315820554", encrypt);
+    var signature = cryptor.getSignature("1471836867", "315820554", encrypt);
+    textUrl = '/api/wechat?signature=' + signature + '&timestamp=1471836867&nonce=315820554&openid=' + openid + '&encrypt_type=aes&msg_signature=' + msg_sign;
+    return {
+        url: textUrl,
+        encrypt: encrypt,
+        body: result
+    };
+}
+
+function getEventKeyXML(openid, event, enentkey) {
+    return '<xml><ToUserName><![CDATA[gh_1491d480bdd6]]></ToUserName>\n<FromUserName><![CDATA[' + openid + ']]></FromUserName>\n<CreateTime>1471836867</CreateTime>\n<MsgType><![CDATA[event]]></MsgType>\n<Event><![CDATA[' + event + ']]></Event>\n<EventKey><![CDATA[' + enentkey + ']]></EventKey> </xml>';
+}
+
+
+
 //发送文字最终post数据
-function getPostMsg(openid, text) {
+function getPostMsg(openid, text, source) {
     var xml = getMsgXML(openid, text);
     var encrypt = cryptor.encrypt(xml);
     var result = '<xml> <ToUserName><![CDATA[gh_02c7b9ffe0de]]></ToUserName> <Encrypt><![CDATA[' + encrypt + ']]></Encrypt> </xml>';
@@ -94,6 +114,9 @@ function getPostMsg(openid, text) {
     var signature = cryptor.getSignature("1471836867", "315820554", encrypt);
     // textUrl = '/api/wechat?signature=' + signature + '&timestamp=1471836867&nonce=315820554&openid=ojUvl5RVgau8DQfPfZ6rlp8Q-Uy8&encrypt_type=aes&msg_signature=' + msg_sign;
     textUrl = '/api/wechat?signature=' + signature + '&timestamp=1471836867&nonce=315820554&openid=123&encrypt_type=aes&msg_signature=' + msg_sign;
+    if(source === 'qtc'){
+        textUrl = '/api/wechatQTC?signature=' + signature + '&timestamp=1471836867&nonce=315820554&openid=123&encrypt_type=aes&msg_signature=' + msg_sign;
+    }
     return {
         url: textUrl,
         encrypt: encrypt,
@@ -125,4 +148,54 @@ function sendText() {
     );
 }
 
-sendText();
+function sendQtcText() {
+
+    const openid = 'ojUvl5RVgau8DQfPfZ6rlp8-0352'; // Yang
+
+    const text = process.argv[2] ||  new Date().toISOString().split('T')[0];
+
+    var postParameter = getPostMsg(openid, text, 'qtc');
+    var url = "https://127.0.0.1:7073" + postParameter.url;
+    request({
+            url: url,
+            body: postParameter.body,
+            method: "post",
+            headers: { 'Content-Type': 'text/xml' },
+            "rejectUnauthorized": false
+        },
+        function(error, response, body) {
+            console.log(response.body);
+            if (!error && response.statusCode == 200) {
+                console.log(body)
+            }
+        }
+    );
+}
+
+function sendQtcEventKey(){
+    const openid = 'ojUvl5RVgau8DQfPfZ6rlp8-0352'; // Yang
+
+    var postParameter = getEventKey(openid, "CLICK","insurance");
+
+    var url = "https://localhost:7073"+postParameter.url;
+    request(
+        {url:url,
+            body : postParameter.body,
+            method:"post",
+            headers: {'Content-Type': 'text/xml'},
+            "rejectUnauthorized": false
+        },
+        function (error, response, body) {
+            console.log(error);
+            // console.log(response);
+            // console.log(body);
+            if (!error && response.statusCode == 200) {
+                console.log(body)
+            }
+        }
+    );
+}
+
+
+sendQtcText();
+// sendQtcEventKey()
