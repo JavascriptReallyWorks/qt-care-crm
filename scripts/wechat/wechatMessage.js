@@ -8,19 +8,19 @@ var parser = require("xml2json");
 var config = {
     token: 'zlzhidaotest',
 
-    // 肿瘤知道
-    // appid: 'wx064c32c2931490aa',
-    // mch_id: '1377389402',
-    // encodingAESKey: '3iyqjJ3c2aX7fnENZG4VNBBe5fMRrUsXjcTuC6tTS4x',
-    // payApiKey: 'JCJSBQSXK44HF6B8XP2XQ7AHQ36H6T7G',
-    // appSecret: '707231ec2de2ab7d4a1b56e31b12dc1e',
+    // 小肿瘤知道
+    appid: 'wx064c32c2931490aa',
+    mch_id: '1377389402',
+    encodingAESKey: '3iyqjJ3c2aX7fnENZG4VNBBe5fMRrUsXjcTuC6tTS4x',
+    payApiKey: 'JCJSBQSXK44HF6B8XP2XQ7AHQ36H6T7G',
+    appSecret: '707231ec2de2ab7d4a1b56e31b12dc1e',
 
     // 小肿瘤知道
-    appid: 'wx68451915b0affd17',
-    mch_id: '1446561402',
-    encodingAESKey: 'EbJG23WzxpCfCq8lpTUIxXAXeS4GHRwYyZVA8oDsFih',
-    payApiKey: 'JCJSBQSXK44HF6B8XP2XQ7AHQ36H6T7G',
-    appSecret: 'ef502e162c19307b69a6f10b3a4ffdcb',
+    // appid: 'wx68451915b0affd17',
+    // mch_id: '1446561402',
+    // encodingAESKey: 'EbJG23WzxpCfCq8lpTUIxXAXeS4GHRwYyZVA8oDsFih',
+    // payApiKey: 'JCJSBQSXK44HF6B8XP2XQ7AHQ36H6T7G',
+    // appSecret: 'ef502e162c19307b69a6f10b3a4ffdcb',
 
 
     grant_type: 'client_credential',

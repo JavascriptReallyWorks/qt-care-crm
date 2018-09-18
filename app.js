@@ -3,11 +3,13 @@ const fs = require('fs');
 const path = require("path");
 const crypto = require('crypto');
 const env = process.env.EGG_SERVER_ENV;
+const Config = require('./config/config.json');
+
 
 const kafka = require('kafka-node'),
     Producer = kafka.Producer,
     client = new kafka.KafkaClient({
-        kafkaHost: "localhost:9092",
+        kafkaHost: Config.kafka.kafkaHost,
         connectRetryOptions:{
             retries: 10,
             factor: 2,
@@ -22,90 +24,118 @@ const producer = new Producer(client);
 
 module.exports = app => {
     app.beforeStart(async () => {
-        // 应用会等待这个函数执行完成才启动	+        // Load seed
-        app.logger.info('加载初始化数据...');
-        app.loader.loadFile(path.join(app.config.baseDir, 'app/seed.js'));
+        try{
+            // 初始化数据
+            app.loader.loadFile(path.join(app.config.baseDir, 'app/seed.js'));
+        }
+        catch (err){
+            app.logger.error(`
+                ================== app beforeStart err  ===================
+                Error: ${err}
+            `);
+        }
     });
 
-    // from agent
-    app.messenger.on('csListener', data => {
+    app.ready(()=>{
         const ctx = app.createAnonymousContext();
-        ctx.runInBackground(async () => {
-            await ctx.service.pubsubService.newPublication(data);
-        });
+        try {
+
+            // init kafka producer and consumerGroup
+            app.producer = producer;
+            ctx.service.pubsubService.initKafkaListener();
+
+            // fs
+            let resourcePath = app.config.resourcePath;
+            if (!fs.existsSync(resourcePath.mp3Path)) {
+                fs.mkdirSync(resourcePath.mp3Path);
+            }
+            if (!fs.existsSync(resourcePath.voicePath)) {
+                fs.mkdirSync(resourcePath.voicePath);
+            }
+            if (!fs.existsSync(resourcePath.userFilePath)) {
+                fs.mkdirSync(resourcePath.userFilePath);
+            }
+            if (!fs.existsSync(resourcePath.download)) {
+                fs.mkdirSync(resourcePath.download);
+            }
+
+            // 禁用, by Yang
+            //ctx.service.migrationService.migrateMedicalRecord();
+        }
+        catch (err){
+            ctx.logger.error(`
+                ================== app.ready error ===================
+                Error: ${err}
+            `);
+        }
     });
 
-    app.messenger.on('initService', async data => {
-        const ctx = app.createAnonymousContext();
-        app.producer = producer;
 
-        ctx.service.driverService.watchDriverServer();
+    // initial clean task for a random worker from agent
+    app.messenger.on('initialClean', async () => {
+        const ctx = app.createAnonymousContext();
         ctx.service.socketService.removePreviousSocket();   //删除启动前 redis 剩余的socket记录
-        let resourcePath = app.config.resourcePath;
-        if (!fs.existsSync(resourcePath.mp3Path)) {
-            fs.mkdirSync(resourcePath.mp3Path);
-        }
-        if (!fs.existsSync(resourcePath.voicePath)) {
-            fs.mkdirSync(resourcePath.voicePath);
-        }
-        if (!fs.existsSync(resourcePath.userFilePath)) {
-            fs.mkdirSync(resourcePath.userFilePath);
-        }
-        if (!fs.existsSync(resourcePath.download)) {
-            fs.mkdirSync(resourcePath.download);
-        }
-
-        // 禁用
-        //ctx.service.migrationService.migrateMedicalRecord();
     });
 
-    app.messenger.on('refreshWechatService', token => {
+    // 定时更新 微信公众 token
+    app.messenger.on('newWechatToken', token => {
         const ctx = app.createAnonymousContext();
-        ctx.service.wechatService.newWechatAPI(token);
+        try {
+            ctx.service.wechatService.newWechatAPI(token);
+        }
+        catch (err){
+            ctx.logger.error(`
+                ================== app.messenger.on("refreshWechatService") error ===================
+                Error: ${err}
+            `);
+        }
     });
 
 
 
-        // triggered by passport plugin
+    // login strategy, triggered by passport plugin
     app.passport.verify(function*(ctx, user) {
+        try {
+            let captchaInput = ctx.request.body.captcha;
+            if (env === 'prod') {
+                if (captchaInput.toUpperCase() !== ctx.session.captcha.toUpperCase())
+                    return null;
+            }
 
-        //ucsf环境暂时disable验证码
-        let captchaInput = ctx.request.body.captcha;
-        if (env === 'prod') {
-            if (captchaInput.toUpperCase() !== ctx.session.captcha.toUpperCase())
-                return null;
+            if (user.password) {
+                let hash = crypto.createHash("sha1");
+                hash.update(user.password);
+                user.password = hash.digest('hex');
+            }
+
+            let loginUser = yield ctx.model.User.findOne({
+                name: user.username,
+                pass: user.password,
+                crm_role: {$exists: true}
+            }, {pass: 0}).lean();
+            if (!loginUser) return null;
+            let userWithMenu = {...loginUser};
+            userWithMenu.role = yield ctx.model.CrmRole.findOne({name: userWithMenu.crm_role});
+            if (userWithMenu.crm_admin) {
+                userWithMenu.role.menu.push({
+                    "name": "在线问答管理",
+                    "url": ".answer_chat_manager"
+                }, {
+                    "name": "用户管理",
+                    "url": ".user_manager"
+                }, {
+                    "name": "服务管理",
+                    "url": ".product_service"
+                });
+            }
+            return userWithMenu; //赋值 ctx.passport.user && ctx.user
         }
-
-        if (user.password) {
-            let hash = crypto.createHash("sha1");
-            hash.update(user.password);
-            user.password = hash.digest('hex');
+        catch (err){
+            ctx.logger.error(`
+                ================== app.passport.verify error ===================
+                Error: ${err}
+            `);
         }
-
-        let loginUser = yield ctx.model.User.findOne({
-            name: user.username,
-            pass: user.password,
-            crm_role: {$exists: true}
-        }, {pass: 0}).lean();
-        if (!loginUser) return null;
-        let userWithMenu = {...loginUser}; // 防止直接给mongoose model赋值
-        let crmRole = yield ctx.model.CrmRole.findOne({ name: userWithMenu.crm_role });
-        userWithMenu.role = crmRole;
-        if (userWithMenu.crm_admin) {
-            userWithMenu.role.menu.push({
-                "name": "在线问答管理",
-                "url": ".answer_chat_manager"
-            }, {
-                "name": "用户管理",
-                "url": ".user_manager"
-            }, {
-                "name":"服务管理",
-                "url":".product_service"
-            });
-        };
-        console.log('---loginUser--')
-        console.log(loginUser)
-        return userWithMenu; //赋值 ctx.passport.user && ctx.user
     });
 
 

@@ -28,7 +28,7 @@
         "babel-runtime": "^6.6.1",
         "bootstrap-datepicker": "^1.8.0",
         "bower": "*",
-        "canvas": "^1.6.9",
+        "canvas": "1.6.10",
         "ccap": "^0.6.10",
         "chai": "^3.5.0",
         "child_process": "*",

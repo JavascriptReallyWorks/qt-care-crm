@@ -9,18 +9,70 @@ module.exports = app => {
         //redis启动成功后监听
         async newMessage(message) {
             const { ctx, service } = this;
+            if (message && (message.fromUserId !== message.clientId)) { // 非客户发出的消息
 
-            let msg = "from wechat user message";
-            if (message.fromUserId !== message.clientId) { // 非客户发出的消息
                 // 传给 wechatAPI
-                msg = "to wechat user message";
-                sendMessage(ctx, message);
+                let uid = message.clientId;
+
+                if (typeof message === 'string') {
+                    app.wechatAPI.sendText(uid, message, function (err,result) {
+                        if (err) {
+                            ctx.logger.error(`
+                                ================== app.wechatAPI.sendText error ===================
+                                Message: ${message} 
+                                Error: ${err}
+                            `);
+                        }
+                    });
+                }
+
+                if (message !== null && typeof message === 'object') {
+                    let content = "";
+                    let msgType = (message.msgType || "").toUpperCase();
+                    switch (msgType) {
+                        case "TEXT":
+                            content = message.content || "";
+                            content = ctx.helper.getWechatHtmlContent(content);
+                            //TODO 上传html中的图片
+                            if (content.trim() !== "")
+                                app.wechatAPI.sendText(uid, content, function (err,result) {
+                                    if (err) {
+                                        if (err) {
+                                            ctx.logger.error(`
+                                                ================== app.wechatAPI.sendText error ===================
+                                                Message: ${message} 
+                                                Error: ${err}
+                                            `);
+                                        }
+                                    }
+                                });
+                            break;
+
+                        case "IMAGE":
+                            if (message.mediaId) {
+                                app.wechatAPI.sendImage(uid, message.mediaId, function (err,result) {
+                                    if (err) {
+                                        ctx.logger.error(`
+                                            ================== app.wechatAPI.sendImage error ===================
+                                            Message: ${message} 
+                                            Error: ${err}
+                                        `);
+                                    }
+                                });
+                            }
+                            else{
+                                ctx.logger.error(`
+                                    ================== app.wechatAPI.sendImage NO message.mediaId ===================
+                                    Message: ${message} 
+                                `);
+                            }
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
             }
-            ctx.service.driverService.sendDataToClient(JSON.stringify({
-                code: 1,
-                msg: msg,
-                data: message
-            }))
         };
 
         async createConversation(user, message) {
@@ -148,6 +200,7 @@ let createNewMessage = function(ctx, user, message) {
     });
 };
 
+/* deprecated
 let sendMessage = function(ctx, message) {
 
     let wechatService = ctx.service.wechatService;
@@ -183,6 +236,7 @@ let sendMessage = function(ctx, message) {
         }
     }
 };
+*/
 
 
 let downloadImg = function(ctx, newMsg, callback) {

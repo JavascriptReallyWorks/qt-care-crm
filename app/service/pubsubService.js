@@ -1,15 +1,36 @@
 'use strict';
 
-const admin = {
-    id: '582562fba4b24ff2038e6978',
-    name: '肿瘤知道小助手'
-};
-
-let subCallbackMap = {};
+const kafka = require('kafka-node');
+const ConsumerGroup = kafka.ConsumerGroup;
 
 module.exports = app => {
     class Pubsub extends app.Service {
-        // called from app.js, redis收到的所有publish导入这里
+        initKafkaListener() {
+            try {
+                const consumerGroupOption = app.CONSTANT.KAFKA.CONSUMER_GROUP_BASIC_OPTION;
+                const that = this;
+
+                const chatGroupId = app.CONSTANT.KAFKA.CONSUMER_GROUP_IDS.CHAT_GROUP;
+                const chatTopic = app.CONSTANT.KAFKA.TOPIC.CHAT;
+                const chatGroup = new ConsumerGroup(
+                    {
+                        ...consumerGroupOption,
+                        groupId: chatGroupId,
+                    },
+                    [chatTopic]
+                );
+                chatGroup.on('message', async message => {
+                    await that.newPublication(JSON.parse(message.value));
+                });
+            }
+            catch (err){
+                this.ctx.logger.error(`
+                    ================== pubsubService initKafkaListener error ===================
+                    Error: ${err}
+                `);
+            }
+        };
+
         async newPublication(data) {
             const {ctx, service} = this;
             let pack = JSON.parse(data);
@@ -18,109 +39,87 @@ module.exports = app => {
                 const option = (operation.method + '_' + operation.table).toUpperCase();
                 switch(option){
                     case 'POST_ONE_CONVERSATION':
-                        try {
-                            await service.chatService.POST_ONE_CONVERSATION(pack);
-                        } catch (err){
-                            throw err;
-                        }
+                        await service.chatService.POST_ONE_CONVERSATION(pack);
                         break;
 
-
                     case 'PUT_ONE_CONVERSATION':
-                        try {
-                            await service.chatService.PUT_ONE_CONVERSATION(pack);
-                        } catch (err){
-                            throw err;
-                        }
+                        await service.chatService.PUT_ONE_CONVERSATION(pack);
                         break;
 
                     case 'POST_ONE_MESSAGE':
-                        try {
-                            await service.chatService.POST_ONE_MESSAGE(pack);
-                        } catch (err){
-                            throw err;
+                        await service.chatService.POST_ONE_MESSAGE(pack);
+                        if(process.env.EGG_SERVER_ENV === 'prod') {
+                            await service.conversationService.newMessage(payload);
                         }
                         break;
                 }
 
             } catch (err){
-                throw err;
+                ctx.logger.error(`
+                    ================== pubsubService newPublication error ===================
+                    Error: ${err}
+                `);
             }
         }
 
 
         publish (topic, pack) {
             const {ctx} = this;
-            if(typeof(pack) === 'object'){
+            try {
                 app.producer.send([
                     {
                         topic,
-                        messages:JSON.stringify(pack)
+                        messages: JSON.stringify(pack)
                     }
                 ], function (err, data) {
-                    if(err) {
-                        ctx.logger.error(`
-                            =============== pubsubService publish err  ===============
-                            err: ${err}
-                            pack: ${pack}
-                        `);
-                    }
-                });
 
-            }else{
-                throw 'Error: Option must be an object';
+                });
             }
+            catch (err){
+                ctx.logger.error(`
+                    ================== pubsubService publish error ===================
+                    Error: ${err}
+                `);
+            }
+
         };
 
         async get(pack) {
-            if(typeof(pack) === 'object'){
-                const {ctx, service} = this;
-                try {
-                    const {operation, payload} = pack;
-                    const option = (operation.method + '_' + operation.table).toUpperCase();
-                    let data;
-                    switch(option){
-                        case 'GET_ONE_CONVERSATION':
-                            try {
-                                data = await service.chatService.GET_ONE_CONVERSATION(payload);
-                                return data;
-                            } catch (err){
-                                throw err;
-                            }
-                            break;
+            const {ctx, service} = this;
+            try {
+                const {operation, payload} = pack;
+                const option = (operation.method + '_' + operation.table).toUpperCase();
+                let data;
+                switch(option){
+                    case 'GET_ONE_CONVERSATION':
+                        data = await service.chatService.GET_ONE_CONVERSATION(payload);
+                        return data;
+                        break;
 
 
-                        case 'GET_MULTI_MESSAGE':
-                            try {
-                                data = await service.chatService.GET_MULTI_MESSAGE(payload.condition, payload.paging);
-                                return data;
-                            } catch (err){
-                                throw err;
-                            }
-                            break;
+                    case 'GET_MULTI_MESSAGE':
+                        data = await service.chatService.GET_MULTI_MESSAGE(payload.condition, payload.paging);
+                        return data;
+                        break;
 
-                        case 'GET_MULTI_CONVERSATION':
-                            try {
-                                data = await service.chatService.GET_MULTI_CONVERSATION(payload.condition, payload.paging);
-                                return data;
-                            } catch (err){
-                                throw err;
-                            }
-                            break;
+                    case 'GET_MULTI_CONVERSATION':
+                        data = await service.chatService.GET_MULTI_CONVERSATION(payload.condition, payload.paging);
+                        return data;
+                        break;
 
-                        default:
-                            return null;
-                            break;
+                    default:
+                        return null;
+                        break;
 
-                    }
-
-                } catch (err){
-                    throw err;
                 }
+
+            } catch (err){
+                ctx.logger.error(`
+                    ================== pubsubService get error ===================
+                    Error: ${err}
+                `);
             }
-            else{
-                throw 'Error: Option must be an object';
-            }
+
         };
     }
     return Pubsub;
