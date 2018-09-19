@@ -18,16 +18,15 @@ module.exports = app => {
         let getUserP = new Promise((resolve, reject) => {
             ctx.service.userService.queryOneUserByOpenId(openid, function(user) {
                 if (user) {
-                    user.uid = user.openid || message.FromUserName;
-                    user.objectId = user._id.toString();
                     resolve(user);
                 } else {
                     if(process.env.EGG_SERVER_ENV === 'prod') {
                         let wechatAPI = app.wechatAPI;
                         wechatAPI.getUser(openid, function (err, result) {
-                            user = result || {};
-                            user.uid = openid;
-                            user.objectId = openid;
+                            let userData = {
+                                ...result,
+                                user_type:'wechat',
+                            };
 
                             let newUser = new ctx.model.User(user);
                             newUser.save(function (err) {
@@ -41,8 +40,7 @@ module.exports = app => {
                         let user = {
                             nickname:'新用户:' + Date.now().toString().substr(-4),
                             openid,
-                            uid:openid,
-                            objectId:openid,
+                            user_type:'wechat',
                         };
                         let newUser = new ctx.model.User(user);
                         newUser.save(function (err) {
@@ -57,9 +55,8 @@ module.exports = app => {
 
         getUserP.then(async (user) => {
             let wcUser = {
-                objectId: user.objectId || message.FromUserName,
-                fromUserId: user.uid,
-                fromUserName: user ? (user.nickname || user.user_name || ('新用户:' + Date.now().toString().substr(-4))) : ('新用户:' + Date.now().toString().substr(-4))
+                fromUserId: user.openid,
+                fromUserName: user ? (user.nickname || user.user_name || ('用户:' + Date.now().toString().substr(-6))) : ('用户:' + Date.now().toString().substr(-6))
             };
 
             // 查询单个对话

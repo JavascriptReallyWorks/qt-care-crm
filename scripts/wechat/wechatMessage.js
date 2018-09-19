@@ -114,9 +114,6 @@ function getPostMsg(openid, text, source) {
     var signature = cryptor.getSignature("1471836867", "315820554", encrypt);
     // textUrl = '/api/wechat?signature=' + signature + '&timestamp=1471836867&nonce=315820554&openid=ojUvl5RVgau8DQfPfZ6rlp8Q-Uy8&encrypt_type=aes&msg_signature=' + msg_sign;
     textUrl = '/api/wechat?signature=' + signature + '&timestamp=1471836867&nonce=315820554&openid=123&encrypt_type=aes&msg_signature=' + msg_sign;
-    if(source === 'qtc'){
-        textUrl = '/api/wechatQTC?signature=' + signature + '&timestamp=1471836867&nonce=315820554&openid=123&encrypt_type=aes&msg_signature=' + msg_sign;
-    }
     return {
         url: textUrl,
         encrypt: encrypt,
@@ -154,7 +151,7 @@ function sendQtcText() {
 
     const text = process.argv[2] ||  new Date().toISOString().split('T')[0];
 
-    var postParameter = getPostMsg(openid, text, 'qtc');
+    var postParameter = getPostMsg(openid, text);
     var url = "https://127.0.0.1:7073" + postParameter.url;
     request({
             url: url,

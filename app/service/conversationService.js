@@ -81,7 +81,7 @@ module.exports = app => {
                 clientId: user.fromUserId,
                 clientName: user.fromUserName,
                 firstConv: true,
-                replyType: app.config.CONSTANT.CONVER.REPLY_TYPE.QT_CS,
+                replyType: app.config.CONSTANT.CONVER.REPLY_TYPE.LZJ,
                 createdAt: (new Date()).getTime(),
                 updatedAt: (new Date()).getTime(),
             };
@@ -103,7 +103,7 @@ module.exports = app => {
         pushMessage(user, message) {
             const { ctx, service } = this;
             createNewMessage(ctx, user, message).then(async function(newMsg) {
-                newMsg.clientId = user.fromUserId || message.fromUserId;
+                newMsg.clientId = user.fromUserId || message.FromUserName;
                 //  发送新消息
                 let pack = {
                     operation:{

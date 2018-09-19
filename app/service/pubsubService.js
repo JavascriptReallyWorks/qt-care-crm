@@ -20,7 +20,7 @@ module.exports = app => {
                     [chatTopic]
                 );
                 chatGroup.on('message', async message => {
-                    await that.newPublication(JSON.parse(message.value));
+                    await that.newPublication(message.value);
                 });
             }
             catch (err){

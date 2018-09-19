@@ -5,7 +5,7 @@ module.exports = {
         const constant = {
             KAFKA: {
                 TOPIC: {
-                    CHAT: 'chat_topic',
+                    CHAT: 'chat',
                 },
                 CONSUMER_GROUP_BASIC_OPTION: {
                     kafkaHost: Config.kafka.kafkaHost,
