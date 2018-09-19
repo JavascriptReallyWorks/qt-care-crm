@@ -1,0 +1,37 @@
+{
+  "kafka": {
+    "zookeeperHost": "localhost:2181",
+    "kafkaHost":"localhost:9092"
+  },
+  "redis": {
+    "client": {
+      "host": "127.0.0.1",
+      "port": 6379,
+      "password": "",
+      "db": 0
+    },
+    "agent": true
+  },
+  "mongodb": {
+    "url": "mongodb://127.0.0.1:27017/gateway",
+    "options": {
+      "autoIndex": false,
+      "server": {
+        "poolSize": 40,
+        "socketOptions": {
+          "socketTimeoutMS": 60000,
+          "connectTimeoutMS": 60000,
+          "keepAlive": 60000
+        }
+      },
+      "replset": {
+        "poolSize": 40,
+        "socketOptions": {
+          "socketTimeoutMS": 60000,
+          "connectTimeoutMS": 60000,
+          "keepAlive": 60000
+        }
+      }
+    }
+  }
+}

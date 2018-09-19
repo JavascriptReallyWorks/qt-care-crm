@@ -5,8 +5,6 @@ app/public/build/asset
 app/public/build/tmp
 import
 
-config/config.json
-
 logs/*
 !.gitkeep
 node_modules/
