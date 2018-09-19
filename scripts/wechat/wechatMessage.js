@@ -6,16 +6,22 @@ var parser = require("xml2json");
 
 
 var config = {
-    token: 'zlzhidaotest',
 
-    // 小肿瘤知道
-    appid: 'wx064c32c2931490aa',
-    mch_id: '1377389402',
+    // 米茶健康
+    token: 'michahealth',
+    appid: 'wx79eaf33ec41ba6a8',
     encodingAESKey: '3iyqjJ3c2aX7fnENZG4VNBBe5fMRrUsXjcTuC6tTS4x',
-    payApiKey: 'JCJSBQSXK44HF6B8XP2XQ7AHQ36H6T7G',
-    appSecret: '707231ec2de2ab7d4a1b56e31b12dc1e',
+    appSecret: 'cf0a83a9d0a5a17afc004217e9cdbace',
 
     // 小肿瘤知道
+    // token: 'zlzhidaotest',
+    // appid: 'wx064c32c2931490aa',
+    // mch_id: '1377389402',
+    // encodingAESKey: '3iyqjJ3c2aX7fnENZG4VNBBe5fMRrUsXjcTuC6tTS4x',
+    // payApiKey: 'JCJSBQSXK44HF6B8XP2XQ7AHQ36H6T7G',
+    // appSecret: '707231ec2de2ab7d4a1b56e31b12dc1e',
+
+    // 某公众号
     // appid: 'wx68451915b0affd17',
     // mch_id: '1446561402',
     // encodingAESKey: 'EbJG23WzxpCfCq8lpTUIxXAXeS4GHRwYyZVA8oDsFih',
