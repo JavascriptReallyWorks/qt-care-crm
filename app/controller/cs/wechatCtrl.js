@@ -23,20 +23,25 @@ module.exports = app => {
                     if(process.env.EGG_SERVER_ENV === 'prod') {
                         let wechatAPI = app.wechatAPI;
                         wechatAPI.getUser(openid, function (err, result) {
+                            ctx.logger.error(`
+                                ================== wechatAPI.getUser  ===================
+                                userDate: ${result} 
+                            `);
+
                             let userData = {
                                 ...result,
                                 user_type:'wechat',
                             };
 
-                            let newUser = new ctx.model.User(user);
+                            let newUser = new ctx.model.User(userData);
                             newUser.save(function (err) {
                                 if(!err)
-                                    resolve(user);
+                                    resolve(userData);
                             });
 
                         });
                     }
-                    else{
+                    else{   // 测试环境
                         let user = {
                             nickname:'新用户:' + Date.now().toString().substr(-4),
                             openid,
