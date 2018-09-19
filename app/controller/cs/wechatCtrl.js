@@ -3,9 +3,13 @@ const fs = require('fs');
 
 module.exports = app => {
     class wechatCtrl extends app.Controller {
+        async wechat() {
+            this.ctx.body = this.ctx.query.echostr;
+        }
 
     }
 
+    /*
     wechatCtrl.prototype.wechat = wechat(app.config.ZLZD_WECHAT_CONFIG).middleware(async(message, ctx) => {
 
         let openid = message.FromUserName;
@@ -82,6 +86,7 @@ module.exports = app => {
         fs.appendFile("./messages.txt", JSON.stringify(message) + "\n");
         return '';
     });
+    */
 
 
     return wechatCtrl;
