@@ -207,14 +207,20 @@ const zlzdOssConfig = {
 
 
 const zlzdWechatConfig = {
-    token: 'zlzhidaotest',
+
+    // 米茶健康
+    token: 'michahealth',
+    appid: 'wx79eaf33ec41ba6a8',
+    encodingAESKey: '3iyqjJ3c2aX7fnENZG4VNBBe5fMRrUsXjcTuC6tTS4x',
+    appSecret: 'cf0a83a9d0a5a17afc004217e9cdbace',
 
     // 小肿瘤知道
-    appid: 'wx064c32c2931490aa',
-    mch_id: '1377389402',
-    encodingAESKey: '3iyqjJ3c2aX7fnENZG4VNBBe5fMRrUsXjcTuC6tTS4x',
-    payApiKey: 'JCJSBQSXK44HF6B8XP2XQ7AHQ36H6T7G',
-    appSecret: '707231ec2de2ab7d4a1b56e31b12dc1e',
+    // token: 'zlzhidaotest',
+    // appid: 'wx064c32c2931490aa',
+    // mch_id: '1377389402',
+    // encodingAESKey: '3iyqjJ3c2aX7fnENZG4VNBBe5fMRrUsXjcTuC6tTS4x',
+    // payApiKey: 'JCJSBQSXK44HF6B8XP2XQ7AHQ36H6T7G',
+    // appSecret: '707231ec2de2ab7d4a1b56e31b12dc1e',
 
     // appid: 'wx68451915b0affd17',
     // mch_id: '1446561402',
