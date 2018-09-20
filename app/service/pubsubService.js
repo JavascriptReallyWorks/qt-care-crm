@@ -69,7 +69,8 @@ module.exports = app => {
                 app.producer.send([
                     {
                         topic,
-                        messages: JSON.stringify(pack)
+                        messages: JSON.stringify(pack),
+                        partition: 0
                     }
                 ], function (err, data) {
 
