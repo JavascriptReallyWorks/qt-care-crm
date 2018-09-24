@@ -44,20 +44,6 @@ module.exports = app => {
             app.producer = producer;
             ctx.service.pubsubService.initKafkaListener();
 
-            // fs
-            let resourcePath = app.config.resourcePath;
-            if (!fs.existsSync(resourcePath.mp3Path)) {
-                fs.mkdirSync(resourcePath.mp3Path);
-            }
-            if (!fs.existsSync(resourcePath.voicePath)) {
-                fs.mkdirSync(resourcePath.voicePath);
-            }
-            if (!fs.existsSync(resourcePath.userFilePath)) {
-                fs.mkdirSync(resourcePath.userFilePath);
-            }
-            if (!fs.existsSync(resourcePath.download)) {
-                fs.mkdirSync(resourcePath.download);
-            }
 
             // 禁用, by Yang
             //ctx.service.migrationService.migrateMedicalRecord();

@@ -8,7 +8,7 @@ module.exports = {
     schedule: {
         type: 'worker', // 指定所有的 worker 都需要执行
         immediate: true,
-        interval: '100m', // 100 分钟间隔
+        interval: '10m', // 10 分钟间隔
         disable: process.env.EGG_SERVER_ENV === 'local', // 本地开发环境不执行
     },
     // task 是真正定时任务执行时被运行的函数，第一个参数是一个匿名的 Context 实例
@@ -36,5 +36,10 @@ module.exports = {
             console.log(new Date().toLocaleTimeString(), ":create wechatAPI", wechatConfig.appid, wechatConfig.appSecret);
             ctx.app.messenger.sendToApp('newWechatToken',token);
         }
+
+        // menu
+        api.createMenu(ctx.app.CONSTANT.QTC_WECHAT.MENU, function (err) {
+            throw err;
+        })
     }
 };
