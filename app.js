@@ -172,6 +172,23 @@ module.exports = app => {
             this.ctx.body = res;
         }
 
+        // 从gateway上迁移的api返回格式
+        httpSuccess(data) {
+          const res = { success: true };
+          if (data) {
+              res.data = data;
+          }
+          this.ctx.body = res;
+        }
+
+        // 从gateway上迁移的api返回格式
+        httpFail(message) {
+            this.ctx.body = {
+                message,
+                success: false,
+            };
+        }
+
         json(data) {
             this.ctx.body = data;
         }

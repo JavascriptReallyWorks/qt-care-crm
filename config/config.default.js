@@ -101,6 +101,17 @@ module.exports = appInfo => {
         }
     };
 
+    config.jwt = {
+      secret: 'BCh$g5r6C25W4pj$aUcxJy37',
+    };
+
+    config.sms = {
+      client: {
+          accessKeyId: 'LTAI6AQl1R4ChuI1',
+          secretAccessKey: 'DzDALtBNCCqic7my63aM3VCqrlEtOJ',
+      },
+    };
+
     config.resourcePath = {
         voicePath: "app/public/resource/voice/",
         mp3Path: "app/public/resource/mp3/",

@@ -35,7 +35,7 @@ module.exports = app => {
             const {ctx, service} = this;
             let pack = JSON.parse(data);
             try {
-                const {operation, payload} = pack;
+                const {operation, payload} = packa
                 const option = (operation.method + '_' + operation.table).toUpperCase();
                 switch(option){
                     case 'POST_ONE_CONVERSATION':

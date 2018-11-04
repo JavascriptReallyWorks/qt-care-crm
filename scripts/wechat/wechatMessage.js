@@ -201,4 +201,4 @@ function sendQtcEventKey(){
 
 
 sendQtcText();
-// sendQtcEventKey()
+// sendQtcEventKey();

@@ -8,4 +8,6 @@ module.exports = app => {
     require('./router/driverRouter')(app);
     require('./router/externalRouter')(app);
     require('./router/wechatRouter')(app);
+    require('./router/qtc')(app);
+    require('./router/insurance')(app);
 };

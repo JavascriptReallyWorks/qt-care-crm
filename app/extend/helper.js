@@ -96,6 +96,17 @@ module.exports = {
         return str;
     },
 
+    randomNumber(len) {
+      len = len || 32;
+      const CHARS = '12345678';
+      const maxPos = CHARS.length;
+      let str = '';
+      for (let i = 0; i < len; i++) {
+          str += CHARS.charAt(Math.floor(Math.random() * maxPos));
+      }
+      return str;
+    },
+
     async getNextSid(collectionName){
         let serialDoc = await this.ctx.model.Counter.findOneAndUpdate(
             {collectionName},

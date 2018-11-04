@@ -53,3 +53,13 @@ exports.oss = {
     enable: true,
     package: 'egg-oss',
 };
+
+exports.sms = {
+  enable: true,
+  package: 'egg-sms',
+};
+
+exports.jwt = {
+  enable: true,
+  package: 'egg-jwt',
+};
