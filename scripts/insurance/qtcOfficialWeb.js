@@ -1,11 +1,11 @@
 const Request = require('supertest');
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
 
-const TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBsaWNhbnRQaG9uZSI6IjE4Mjk2ODYxNjE2IiwiaWF0IjoxNTQxMzczNzQ2fQ.5ZwY5UcCcu5gnU8YZLryFtpci8nF-PSAeW4VDhtsN_8' 
-
+const TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBsaWNhbnRQaG9uZSI6IjE4Mjk2ODYxNjE2IiwiaWF0IjoxNTQxMzc0ODEyfQ.WgHEkDv9rkFdy_JKWugYOJy-iIzSJ9sZen2cbgd0MoQ'
 
 const sendCode = () => {
-  let request = Request('http://127.0.0.1:7073');
+  let request = Request('https://crm-care.qtclinics.com');
+  // let request = Request('http://127.0.0.1:7073');
   request
     .get('/api/qtcWeb/sendCode/18296861616')
     .expect(200)
@@ -18,12 +18,13 @@ const sendCode = () => {
 
 
 const qtcWebLogin = () => {
-  let request = Request('http://127.0.0.1:7073');
+  let request = Request('https://crm-care.qtclinics.com');
+  // let request = Request('http://127.0.0.1:7073');
   request
     .post('/api/qtcWeb/login')
     .send({
       phone:'18296861616',
-      code:'3563',
+      code:'3473',
     })
     .expect(200)
     .expect('Content-Type', /json/)
@@ -35,7 +36,8 @@ const qtcWebLogin = () => {
 
 // 保险会员会员登录
 const getOrder = () => {    
-  let request = Request('http://127.0.0.1:7073');
+  let request = Request('https://crm-care.qtclinics.com');
+  // let request = Request('http://127.0.0.1:7073');
   request
     .get(encodeURI('/api/insurance/getOrder?IDType=身份证&IDNumber=360702198903250019&mobile=18296861616&verifyCode=6628'))
     .expect(200)
@@ -47,7 +49,8 @@ const getOrder = () => {
 }
 
 const getUserOrders = () => {
-  let request = Request('http://127.0.0.1:7073');
+  let request = Request('https://crm-care.qtclinics.com');
+  // let request = Request('http://127.0.0.1:7073');
   request
     .get('/api/insurance/getUserOrders')
     .set('Authorization', `Bearer ${TOKEN}`)
@@ -60,7 +63,8 @@ const getUserOrders = () => {
 }
 
 const getOrderById= () => { 
-  let request = Request('http://127.0.0.1:7073');
+  let request = Request('https://crm-care.qtclinics.com');
+  // let request = Request('http://127.0.0.1:7073');
   request
     .get('/api/insurance/getOrderById/v789789789')
     .set('Authorization', `Bearer ${TOKEN}`)
@@ -73,8 +77,8 @@ const getOrderById= () => {
     });
 }
 
-// sendCode();
+sendCode();
 // qtcWebLogin();
 // getOrder();
 // getUserOrders();
-getOrderById()
+// getOrderById()

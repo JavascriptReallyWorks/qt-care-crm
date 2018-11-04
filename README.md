@@ -1,28 +1,82 @@
-获取请求参数
-```
-this.ctx.query
-this.ctx.params
-this.ctx.request.body
+QTC-Care 官网登录API
 
+
+1.发送验证码
+
+```js
+let request = Request('https://crm-care.qtclinics.com');
+request
+  .get('/api/qtcWeb/sendCode/18296861616')
+  .expect(200)
+  .expect('Content-Type', /json/)
+  .end(function (err, res) {
+      console.log(err);
+  });
 ```
 
-设置 Header
-```
-通过 ctx.set(key, value) 方法可以设置一个响应头，ctx.set(headers) 设置多个 Header
+
+2.QTC会员登录 / 保险会员登录,  保留token
+
+QTC会员登录
+
+```js
+let request = Request('https://crm-care.qtclinics.com');
+request
+  .post('/api/qtcWeb/login')
+  .send({
+    phone:'18296861616',
+    code:'3473',
+  })
+  .expect(200)
+  .expect('Content-Type', /json/)
+  .end(function (err, res) {
+      console.log(err);
+      console.log(res.body);
+  });
 ```
 
-angular 线上webpack环境 => 本地非打包测试环境
-```
-// config.defaults.js
-config.static = {
-    prefix: '',
-    // dir: path.join(appInfo.baseDir, 'app/public/build')  //线上webpack环境
-    dir: path.join(appInfo.baseDir, 'app/public')   //本地非打包测试环境
-};
+保险会员登录
 
-// csCtrl.js
-async cs() {
-    // await  this.ctx.render('cs.jade', { user: this.ctx.user });  //线上webpack环境
-    await  this.ctx.render('cs_test.jade', { user: this.ctx.user });     //本地非打包测试环境
-}
+```js
+let request = Request('https://crm-care.qtclinics.com');
+request
+  .get(encodeURI('/api/insurance/getOrder?IDType=身份证&IDNumber=360702198903250019&mobile=18296861616&verifyCode=6628'))
+  .expect(200)
+  .expect('Content-Type', /json/)
+  .end(function (err, res) {
+      console.log(err);
+      console.log(res.body);
+  });
+```
+
+
+3.登录获得token以后， 调取用户所有的order id，
+
+```js
+let request = Request('https://crm-care.qtclinics.com');
+request
+  .get('/api/insurance/getUserOrders')
+  .set('Authorization', `Bearer ${TOKEN}`)
+  .expect(200)
+  .expect('Content-Type', /json/)
+  .end(function (err, res) {
+      console.log(err);
+      console.log(res.body);
+  });
+```
+
+4.获得id以后，获取order详细信息
+
+```js
+let request = Request('https://crm-care.qtclinics.com');
+request
+  .get('/api/insurance/getOrderById/v789789789')
+  .set('Authorization', `Bearer ${TOKEN}`)
+  .expect(200)
+  .expect('Content-Type', /json/)
+  .end(function (err, res) {
+      console.log(err);
+      console.log(res.body);
+      console.log(res.body.data.payload);
+  });
 ```
