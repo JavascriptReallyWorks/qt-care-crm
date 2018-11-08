@@ -56,6 +56,7 @@ module.exports = app => {
             const {applicantPhone} = ctx.state.token;
             let orders = await ctx.model.Order.find({applicantPhone},{_id:0,orderId:1}).lean()
             this.httpSuccess(orders.map(order => ({
+              type:'FUXING',
               id:order.orderId,   //member.html 跳转页面
               number:order.orderId, //member.html 显示 NO.
             })));
