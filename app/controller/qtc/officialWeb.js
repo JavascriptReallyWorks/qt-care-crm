@@ -16,7 +16,6 @@ module.exports = app => {
             if (result.success) {
               const cond= {
                 applicantPhone:phone,
-                orderFrom:'qtc',
               } 
               const order = await ctx.model.Order.findOne(cond).lean();
               if(order){

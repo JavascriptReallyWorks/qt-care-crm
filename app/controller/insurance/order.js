@@ -18,7 +18,6 @@ module.exports = app => {
                   applicantIdType:IDType,
                   applicantIdNumber:IDNumber,
                   applicantPhone:mobile,
-                  orderFrom:'xlx',
                 } 
                 const order = await ctx.model.Order.findOne(cond).lean();
                 if(order){
@@ -54,9 +53,14 @@ module.exports = app => {
           const {ctx} = this;
           try{
             const {applicantPhone} = ctx.state.token;
-            let orders = await ctx.model.Order.find({applicantPhone},{_id:0,orderId:1}).lean()
+            let orders = await ctx.model.Order.find({applicantPhone},{
+              _id:0,
+              orderId:1, 
+              type:1
+            }).lean();
+
             this.httpSuccess(orders.map(order => ({
-              type:'FUXING',
+              type:order.type,
               id:order.orderId,   //member.html 跳转页面
               number:order.orderId, //member.html 显示 NO.
             })));
@@ -82,7 +86,7 @@ module.exports = app => {
                   id:order.orderId,
                   orderId:order.orderId,
                   number:order.orderId,
-                  type:'FUXING',
+                  type:order.type,
                   orderStatus:order.orderStatus,
                   payload: [
                     {display:'投保人', value:order.applicantName},

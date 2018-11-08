@@ -4,8 +4,9 @@ module.exports = app => {
   const conn27017 = app.mongooseDB.get('db27017');
   const OrderSchema = new mongoose.Schema({
     orderId:{ type: String, required:true, unique:true}, // 保单号
+    type:{ type: String, required:true},  // "FUXING"
     orderStatus:Number, // 状态，是否有效， 1-有效, 4-失效, 其他
-    orderFrom:{ type: String, required:true},  // "qtc" or "xlx" 鑫联星
+    importDate:String,  // 导入日期 e.g. '2018-11-08'
 
     insuranceName:String, //险种名称
     insuranceApplyDate:Date, //投保日期
