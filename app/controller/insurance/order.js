@@ -82,6 +82,7 @@ module.exports = app => {
                   id:order.orderId,
                   orderId:order.orderId,
                   number:order.orderId,
+                  type:'FUXING',
                   orderStatus:order.orderStatus,
                   payload: [
                     {display:'投保人', value:order.applicantName},
