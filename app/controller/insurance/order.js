@@ -11,7 +11,11 @@ module.exports = app => {
             }, ctx.query);
 
             try{
-              const {IDType, IDNumber, mobile, verifyCode} = ctx.query;
+              const idTypeMap = {
+                "1":"身份证"
+              }              
+              let {IDType, IDNumber, mobile, verifyCode} = ctx.query;
+              IDType = idTypeMap[IDType] || '';
               const result = await this.ctx.service.sms.verify(mobile, verifyCode);
               if (result.success) {
                 const cond= {
