@@ -27,6 +27,7 @@ module.exports = app => {
                 if(order){
                   this.httpSuccess({
                     token: app.jwt.sign({ applicantPhone: order.applicantPhone }, app.config.jwt.secret),
+                    applicantName:order.applicantName,
                   });
                 }
                 else{
