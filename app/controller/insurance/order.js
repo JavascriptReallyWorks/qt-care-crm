@@ -19,15 +19,15 @@ module.exports = app => {
               const result = await this.ctx.service.sms.verify(mobile, verifyCode);
               if (result.success) {
                 const cond= {
-                  applicantIdType:IDType,
-                  applicantIdNumber:IDNumber,
-                  applicantPhone:mobile,
+                  insuredIdType:IDType,
+                  insuredIdNumber:IDNumber,
+                  insuredPhone:mobile,
                 } 
                 const order = await ctx.model.Order.findOne(cond).lean();
                 if(order){
                   this.httpSuccess({
-                    token: app.jwt.sign({ applicantPhone: order.applicantPhone }, app.config.jwt.secret),
-                    applicantName:order.applicantName,
+                    token: app.jwt.sign({ insuredPhone: order.insuredPhone }, app.config.jwt.secret),
+                    insuredName:order.insuredName,
                   });
                 }
                 else{
@@ -57,17 +57,32 @@ module.exports = app => {
         async getUserOrders(){
           const {ctx} = this;
           try{
-            const {applicantPhone} = ctx.state.token;
-            let orders = await ctx.model.Order.find({applicantPhone},{
+            const {insuredPhone} = ctx.state.token;
+            let orders = await ctx.model.Order.find({insuredPhone},{
               _id:0,
               orderId:1, 
-              type:1
+              type:1,
+              insuredName:1,
+              insuredSex:1,
+              insuredPhone:1,
+              insuredIdNumber:1,
+              insuredBirth:1,
+              insuredEmail:1
             }).lean();
 
             this.httpSuccess(orders.map(order => ({
               type:order.type,
               id:order.orderId,   //member.html 跳转页面
               number:order.orderId, //member.html 显示 NO.
+              payload:[
+                {display:'被保险人', value: order.insuredName},
+                {display:'被保人性别', value: order.insuredSex === 0 ? "男":(order.insuredSex === 1 ? "女" : "")},
+                {display:'被保人手机号', value:order.insuredPhone},
+
+                {display:'证件号码', value:order.insuredIdNumber},
+                {display:'被保人出生日期', value:order.insuredBirth ? order.insuredBirth.toISOString().split('T')[0]:''},
+                {display:'被保人邮箱', value:order.insuredEmail},
+              ],
             })));
           }
           catch(e){
@@ -84,8 +99,8 @@ module.exports = app => {
 
             try{
               const {id} = ctx.params;
-              const {applicantPhone} = ctx.state.token;
-              const order = await ctx.model.Order.findOne({applicantPhone, orderId:id}).lean();
+              const {insuredPhone} = ctx.state.token;
+              const order = await ctx.model.Order.findOne({insuredPhone, orderId:id}).lean();
               if(order){
                 const data = {
                   id:order.orderId,
