@@ -68,6 +68,12 @@ module.exports = app => {
           }
         }
 
+        async jdyTest(){
+          const {ctx} = this;
+          ctx.error('jdyTest data: ', JSON.stringify(this.body, null, 4));
+          ctx.body = 'success';
+        }
+
     }
     return QtcOfficialWeb;
 };
