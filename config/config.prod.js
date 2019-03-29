@@ -24,9 +24,11 @@ module.exports = appInfo => {
 
     config.security = {
         csrf: {
-            enable: false
+            enable: false,
+            ignore: '/api/',
         },
-        domainWhiteList: ['http://localhost:7001']
+        domainWhiteList: ['http://localhost:7001'],
+        ignore: '/api/',
     };
 
     config.middleware = ['isCRM'];

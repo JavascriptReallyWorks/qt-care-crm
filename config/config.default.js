@@ -44,14 +44,11 @@ module.exports = appInfo => {
     config.security = {
         csrf: {
             enable: false,
-            ignore: '/doc/api/',
-        },
-        ctoken: {
-            ignore: '/doc/api/',
+            ignore: '/api/',
         },
         domainWhiteList: ['http://localhost:7001'],
-        ignore: '/doc/api/'
-    };
+        ignore: '/api/',
+      };
 
     config.middleware = ['isCRM','doctorAuth'];
 
