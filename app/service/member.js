@@ -19,7 +19,7 @@ module.exports = app => {
             birth: birth ? birth.split('T')[0] : '',
             orders: orders.map(order => ({
               ...order,
-              order_status: order.order_status === '承保' ? 1 : 4,
+              order_status: order.order_status === '终止' ? 4 : 1,
               insurance_start_date: order.insurance_start_date ? order.insurance_start_date.split('T')[0] : '',
               insurance_end_date: order.insurance_end_date ? order.insurance_end_date.split('T')[0] : '',
             })),
