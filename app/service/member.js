@@ -11,8 +11,7 @@ module.exports = app => {
             gender,  // to change
             orders,  // to change 
             birth_date,  // to change
-            ...remain, // to keep the same
-          } = data; 
+            ...remain} = data; 
 
           const updates = {
             ...remain,
