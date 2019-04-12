@@ -32,7 +32,7 @@ module.exports = app => {
     },
     id_type:String,
     id_number:{type:String,index:true},
-    birth_date:String,
+    birth:String,
     age:Number,
     phone:{type:String,index:true},
     email:String,

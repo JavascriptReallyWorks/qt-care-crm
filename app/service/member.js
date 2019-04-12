@@ -10,18 +10,18 @@ module.exports = app => {
             member_id,  // db query
             gender,  // to change
             orders,  // to change 
-            birth_date,  // to change
+            birth,  // to change
             ...remain} = data; 
 
           const updates = {
             ...remain,
             gender: gender === '男' ? 0 : 1,
-            birth_date: birth_date ? birth_date.split('T')[0] : '',
+            birth: birth ? birth.split('T')[0] : '',
             orders: orders.map(order => ({
               ...orders,
               order_status: order.order_status === '承保' ? 1 : 4,
-              insurance_start_date: order.insurance_start_date ? insurance_start_date.split('T')[0] : '',
-              insurance_end_date: order.insurance_end_date ? insurance_end_date.split('T')[0] : '',
+              insurance_start_date: order.insurance_start_date ? order.insurance_start_date.split('T')[0] : '',
+              insurance_end_date: order.insurance_end_date ? order.insurance_end_date.split('T')[0] : '',
             })),
           }
           await this.ctx.model.Member.findOneAndUpdate({ member_id }, { $set: updates }, { upsert: true});
