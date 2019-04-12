@@ -127,7 +127,7 @@
         "dev": "egg-bin dev --sticky",
         "prod": "EGG_SERVER_ENV=prod egg-scripts start --sticky   --port=7073 --workers=1   --daemon",
         "start": "egg-scripts start --sticky   --port=7073 --workers=1",
-        "debug-local": "EGG_AGENT_DEBUG_PORT=5810 EGG_SERVER_ENV=local egg-bin dev --sticky $NODE_DEBUG_OPTION  --port=7073  --workers=1 --https.key zlzhidao.key --https.cert e784e62935dc1624.crt",
+        "debug-local": "EGG_AGENT_DEBUG_PORT=5810 EGG_SERVER_ENV=local egg-bin dev --sticky $NODE_DEBUG_OPTION  --port=7073  --workers=1",
         "test": "egg-bin test",
         "test-local": "EGG_SERVER_ENV=local npm test",
         "cov": "egg-bin cov",

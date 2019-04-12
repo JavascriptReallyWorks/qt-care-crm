@@ -1,6 +1,7 @@
 
 module.exports = app => {
     class InsuranceOrder extends app.Controller {
+        /*
         async show() {
             const {ctx} = this;
             ctx.validate({
@@ -52,7 +53,7 @@ module.exports = app => {
               ctx.error('InsuranceOrder show error', err);
             }
         }
-
+        */
 
         async getUserOrders(){
           const {ctx} = this;

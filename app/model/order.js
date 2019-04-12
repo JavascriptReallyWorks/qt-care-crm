@@ -3,10 +3,16 @@ module.exports = app => {
   const mongoose = app.mongoose;
   const conn27017 = app.mongooseDB.get('db27017');
   const OrderSchema = new mongoose.Schema({
-    orderId:{ type: String, required:true, unique:true}, // 保单号
+    orderId:{ type: String, index:true, required:true, unique:true}, // 保单号
     type:{ type: String, required:true},  // "FUXING"
-    orderStatus:Number, // 状态，是否有效， 1-有效, 4-失效, 其他
+    orderStatus:{
+      type:Number,
+      enum:[1,4],
+    }, // 状态，是否有效， 1-有效, 4-失效, 其他
     importDate:String,  // 导入日期 e.g. '2018-11-08'
+    spentTotal:{type:Number, default:0},  //总花费
+    remainTotal:{type:Number, default:6000000},   //余额
+    submitter:String, //提交人
 
     insuranceName:String, //险种名称
     insuranceApplyDate:Date, //投保日期
@@ -26,7 +32,10 @@ module.exports = app => {
     applicantEmail:String, //投保人EMAIL
     applicantIdType:String, //投保人证件类型
     applicantIdNumber:String, // 投保人证件号码
-    applicantSex:Number,  //投保人性别, 0-男, 1-女
+    applicantSex:{  //投保人性别, 0-男, 1-女
+      type:Number,
+      enum:[0,1],
+    },
     applicantBirth:Date,  //投保人出生日期
     applicantHeight:String, //投保人身高
     applicantWeight:String, //投保人体重
@@ -39,7 +48,10 @@ module.exports = app => {
     insuredEmail:String, //受保人EMAIL
     insuredIdType:String, //受保人证件类型
     insuredIdNumber:String, // 受保人证件号码
-    insuredSex:Number,  //受保人性别, 0-男, 1-女
+    insuredSex:{  //受保人性别, 0-男, 1-女
+      type:Number,
+      enum:[0,1],
+    },
     insuredBirth:Date,  //受保人出生日期
     insuredHeight:String, //受保人身高
     insuredWeight:String, //受保人体重
@@ -89,5 +101,14 @@ module.exports = app => {
     timestamps: true,
   });
 
-  return conn27017.model('Order', OrderSchema, 'orders');
+  const OrderModel = conn27017.model('Order', OrderSchema, 'orders');
+  OrderModel.on("index", function(error) {
+    if (error) {
+      app.error(
+        "model.Order indexing error",
+        JSON.stringify(error, null, 4)
+      );
+    }
+  });
+  return OrderModel;
 }

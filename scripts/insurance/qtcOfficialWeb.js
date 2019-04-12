@@ -1,5 +1,5 @@
 const Request = require('supertest');
-process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
+// process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
 
 const TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBsaWNhbnRQaG9uZSI6IjE4Mjk2ODYxNjE2IiwiaWF0IjoxNTQxNzA3NDIwfQ.FwgNMIjVRxsvfvP1_tzjQw-y9_kQu29o0ALwTUQllWY'
 
@@ -77,8 +77,25 @@ const getOrderById= () => {
     });
 }
 
+const jdyTest= () => { 
+  let request = Request('https://crm-care.qtclinics.com');
+  // let request = Request('http://127.0.0.1:7073');
+  request
+    .post('/api/qtcWeb/jdyTest')
+    .send({
+      hello:'world'
+    })
+    .expect(200)
+    .expect('Content-Type', /json/)
+    .end(function (err, res) {
+        console.log(err);
+        console.log(JSON.stringify(res, null, 4));
+    });
+}
+
 // sendCode();
 // qtcWebLogin();
 // getOrder();
 // getUserOrders();
-getOrderById()
+// getOrderById()
+jdyTest();

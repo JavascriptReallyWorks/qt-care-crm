@@ -1,6 +1,14 @@
 const Config = require('../../config/config.json');
 
 module.exports = {
+    error(banner, err) {
+      // app.logger.error()
+      this.logger.error(`
+        ================== ${banner} ===================
+        Error: ${err}
+      `);
+    },
+
     get CONSTANT() {
         const constant = {
             KAFKA: {
@@ -23,6 +31,18 @@ module.exports = {
                 CONSUMER_GROUP_IDS: {
                     CHAT_GROUP: 'chat_group',
                 },
+            },
+            JDY:{
+              APP:{
+                CUSROMER_SERVICE_MANAGE:{     // 客户服务管理
+                  APP_ID:"5c455cacdbe315787481e978"
+                }
+              },
+              ENTRY:{
+                MEMBERSHIP:{  // 客户会员卡建档
+                  ENTRY_ID:"5c414ce9df64be7e838090e5", 
+                }
+              },
             },
             QTC_WECHAT:{
                 MENU:{

@@ -1,7 +1,7 @@
 {
   "kafka": {
     "zookeeperHost": "localhost:2181",
-    "kafkaHost":"localhost:9092"
+    "kafkaHost":"localhost:9094"
   },
   "redis": {
     "client": {
