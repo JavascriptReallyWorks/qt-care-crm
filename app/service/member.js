@@ -5,7 +5,15 @@ module.exports = app => {
       try{
         const {data, op} = body;
         if(['data_create', 'data_update'].includes(op)){    // all : ['data_create', 'data_update', 'data_remove']
-          const {member_id, gender, orders, birth_date, ...remain} = data; 
+          const {
+            _id, // to ignore
+            member_id,  // db query
+            gender,  // to change
+            orders,  // to change 
+            birth_date,  // to change
+            ...remain, // to keep the same
+          } = data; 
+
           const updates = {
             ...remain,
             gender: gender === '男' ? 0 : 1,
