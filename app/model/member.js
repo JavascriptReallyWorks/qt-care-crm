@@ -27,8 +27,8 @@ module.exports = app => {
     code:Number, //编码
     name:String,
     gender:{  //性别, 0-男, 1-女
-      type:Number,
-      enum:[0,1],
+      type:String,
+      enum:['男','女'],
     },
     id_type:String,
     id_number:{type:String,index:true},

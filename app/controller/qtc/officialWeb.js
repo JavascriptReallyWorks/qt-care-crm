@@ -92,6 +92,10 @@ module.exports = app => {
                     await service.member.jdyNotif(this.body);
                     break;
 
+                  case ENTRY.ORDER.ENTRY_ID:
+                    await service.order.jdyNotif(this.body);
+                    break;
+
                 }
                 break;
             }

@@ -38,7 +38,7 @@ def main():
       'code':int(currRow[7].value),
 
       'name':currRow[8].value,
-      'sex':0 if currRow[9].value == '男' else 1,
+      'gender':currRow[9].value,
       'id_type':currRow[10].value,
       'id_number':currRow[11].value,
       'birth':fiveDigitsToDate(currRow[12].value) if currRow[12].value else '',  

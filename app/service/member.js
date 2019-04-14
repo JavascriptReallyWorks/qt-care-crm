@@ -8,14 +8,12 @@ module.exports = app => {
           const {
             _id, // to ignore
             member_id,  // db query
-            gender,  // to change
             orders,  // to change 
             birth,  // to change
             ...remain} = data; 
 
           const updates = {
             ...remain,
-            gender: gender === '男' ? 0 : 1,
             birth: birth ? birth.split('T')[0] : '',
             orders: orders.map(order => ({
               ...order,

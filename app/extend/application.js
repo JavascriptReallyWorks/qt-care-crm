@@ -41,7 +41,10 @@ module.exports = {
               ENTRY:{
                 MEMBERSHIP:{  // 客户会员卡建档
                   ENTRY_ID:"5c414ce9df64be7e838090e5", 
-                }
+                },
+                ORDER:{  // 保险客户名单及花费情况
+                  ENTRY_ID:"5c470cb6e916e2671947b1a4", 
+                },
               },
             },
             QTC_WECHAT:{
