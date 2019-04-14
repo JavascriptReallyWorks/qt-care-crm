@@ -10,11 +10,13 @@ module.exports = app => {
             member_id,  // db query
             orders,  // to change 
             birth,  // to change
+            id_number,  // to change
             ...remain} = data; 
 
           const updates = {
             ...remain,
             birth: birth ? birth.split('T')[0] : '',
+            id_number: id_number.toUpperCase(),
             orders: orders.map(order => ({
               ...order,
               order_status: order.order_status === '终止' ? 4 : 1,

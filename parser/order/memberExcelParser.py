@@ -40,7 +40,7 @@ def main():
       'name':currRow[8].value,
       'gender':currRow[9].value,
       'id_type':currRow[10].value,
-      'id_number':currRow[11].value,
+      'id_number':currRow[11].value.upper(),
       'birth':fiveDigitsToDate(currRow[12].value) if currRow[12].value else '',  
       'age':int(currRow[13].value),
       'phone':currRow[14].value,

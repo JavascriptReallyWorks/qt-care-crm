@@ -9,7 +9,9 @@ module.exports = app => {
             _id, // to ignore
             order_id,  // db query
             order_status,  // to change 
+            applicant_id_number,  // to change
             applicant_birth,  // to change
+            insured_id_number,  // to change
             insured_birth,  // to change
             insurance_apply_date,  // to change
             insurance_start_date,  // to change
@@ -21,7 +23,9 @@ module.exports = app => {
           const updates = {
             ...remain,
             order_status: order_status === '终止' ? 4 : 1,
+            applicant_id_number: applicant_id_number.toUpperCase(), 
             applicant_birth: applicant_birth ? applicant_birth.split('T')[0] : '',
+            insured_id_number: insured_id_number.toUpperCase(), 
             insured_birth: insured_birth ? insured_birth.split('T')[0] : '',
             insurance_apply_date: insurance_apply_date ? insurance_apply_date.split('T')[0] : '',
             insurance_start_date: insurance_start_date ? insurance_start_date.split('T')[0] : '',

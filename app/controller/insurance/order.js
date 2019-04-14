@@ -58,32 +58,18 @@ module.exports = app => {
         async getUserOrders(){
           const {ctx} = this;
           try{
-            const {insuredPhone} = ctx.state.token;
-            let orders = await ctx.model.Order.find({insuredPhone},{
-              _id:0,
-              orderId:1, 
-              type:1,
-              insuredName:1,
-              insuredSex:1,
-              insuredPhone:1,
-              insuredIdNumber:1,
-              insuredBirth:1,
-              insuredEmail:1
-            }).lean();
+            const {member_id} = ctx.state.token;
+            const member = await ctx.model.Member.findOne({member_id}).lean();
+            const include = {
+              order_id:1,
+            };
+            const orders = await Promise.all(member.orders.map(order => ctx.model.Order.findOne({order_id:order.order_id}, include).lean()));
 
             this.httpSuccess(orders.map(order => ({
-              type:order.type,
-              id:order.orderId,   //member.html 跳转页面
-              number:order.orderId, //member.html 显示 NO.
-              payload:[
-                {display:'被保险人', value: order.insuredName},
-                {display:'被保人性别', value: order.insuredSex === 0 ? "男":(order.insuredSex === 1 ? "女" : "")},
-                {display:'被保人手机号', value:order.insuredPhone},
-
-                {display:'证件号码', value:order.insuredIdNumber},
-                {display:'被保人出生日期', value:order.insuredBirth ? order.insuredBirth.toISOString().split('T')[0]:''},
-                {display:'被保人邮箱', value:order.insuredEmail},
-              ],
+              ...order,
+              type:'FUXING',  //为了拼接成文件名找到卡片图片
+              id:order.order_id,   //member.html 跳转页面
+              number:order.order_id, //member.html 显示 NO.
             })));
           }
           catch(e){
@@ -100,29 +86,27 @@ module.exports = app => {
 
             try{
               const {id} = ctx.params;
-              const {insuredPhone} = ctx.state.token;
-              const order = await ctx.model.Order.findOne({insuredPhone, orderId:id}).lean();
+              const order = await ctx.model.Order.findOne({order_id:id}).lean();
               if(order){
                 const data = {
-                  id:order.orderId,
-                  orderId:order.orderId,
-                  number:order.orderId,
-                  type:order.type,
-                  orderStatus:order.orderStatus,
+                  ...order,
+                  id:order.order_id,
+                  // number:order.orderId,
+                  type:'FUXING',
                   payload: [
-                    {display:'投保人', value:order.applicantName},
-                    {display:'被保险人', value: order.insuredName},
-                    {display:'被保人证件类型', value:order.insuredIdType},
-                    {display:'证件号码', value:order.insuredIdNumber},
-                    {display:'被保人性别', value: order.insuredSex === 0 ? "男":(order.insuredSex === 1 ? "女" : "")},
-                    {display:'被保人出生日期', value:order.insuredBirth ? order.insuredBirth.toISOString().split('T')[0]:''},
-                    {display:'被保人手机号', value:order.insuredPhone},
-                    {display:'保险额度', value:`¥${order.insuranceAmount}`},
-                    {display:'保险期间', value:order.insurancePeriod},
-                    {display:'缴费年限', value:order.paymentPeriod},
-                    {display:'投保日期', value:order.insuranceApplyDate ? order.insuranceApplyDate.toISOString().split('T')[0]:''},
-                    {display:'保单生效日期', value:order.insuranceStartDate ? order.insuranceStartDate.toISOString().split('T')[0]:''},
-                    {display:'保单有效日期', value:order.insuranceEndDate ? order.insuranceEndDate.toISOString().split('T')[0]:''},
+                    {display:'投保人', value:order.applicant_name},
+                    {display:'被保险人', value: order.insured_name},
+                    {display:'被保人证件类型', value:order.insured_id_type},
+                    {display:'证件号码', value:order.insured_id_number},
+                    {display:'被保人性别', value: order.insured_gender},
+                    {display:'被保人出生日期', value:order.insured_birth},
+                    {display:'被保人手机号', value:order.insured_phone},
+                    {display:'保险额度', value:`¥${order.insurance_amount}`},
+                    {display:'保险期间', value:order.insurance_period},
+                    {display:'缴费年限', value:order.payment_period},
+                    {display:'投保日期', value:order.insurance_apply_date},
+                    {display:'保单生效日期', value:order.insurance_start_date},
+                    {display:'保单有效日期', value:order.insurance_end_date},
                     {display:'保险热线', value:'4008629999'},
                   ],
                 }

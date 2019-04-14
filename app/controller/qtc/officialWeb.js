@@ -18,20 +18,20 @@ module.exports = app => {
                 "csz":"出生证",
                 "hkb":"户口本",
               }              
-              const {idType, idNumber, phone, code} = this.body;
-              IDType = idTypeMap[idType] || "身份证";
+              let {idType, idNumber, phone, code} = this.body;
+              idType = idTypeMap[idType] || "身份证";
               const result = await service.sms.verify(phone, code);
               if (result.success) {
                 const cond= {
-                  idType,
-                  idNumber,
+                  id_type:idType,
+                  id_number:idNumber,
                   phone
                 }; 
                 const member = await ctx.model.Member.findOne(cond).lean();
                 if(member){
                   this.httpSuccess({
                     member,
-                    token: app.jwt.sign({ memberId: member.memberId }, app.config.jwt.secret),
+                    token: app.jwt.sign({ member_id: member.member_id }, app.config.jwt.secret),
                   });
                 }
                 else{
@@ -48,7 +48,7 @@ module.exports = app => {
                 });
               }
             }
-            catch(e){
+            catch(err){
               ctx.error('InsuranceOrder show error', err);
               this.httpFail({
                 errCode: 10,
