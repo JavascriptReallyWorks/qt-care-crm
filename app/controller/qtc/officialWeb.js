@@ -2,7 +2,11 @@ const Config = require('../../../config/config.json');
 
 module.exports = app => {
     class QtcOfficialWeb extends app.Controller {
-
+        
+        /*
+        * @idType: ["sfz", "hz", "csz", "hkb"] 中之一， 分别对应 身份证，护照，出生证，户口本
+        * @phone: 保险会员的话，既可以是受保人电话(Member.phone), 也可以是投保人电话(Member.phone_contact_1)
+        */
         async login() {
           const {ctx, service} = this;
             ctx.validate({
@@ -25,7 +29,10 @@ module.exports = app => {
                 const cond= {
                   id_type:idType,
                   id_number:idNumber,
-                  phone
+                  $or:[
+                    {phone},
+                    {phone_contact_1:phone}
+                  ]
                 }; 
                 const member = await ctx.model.Member.findOne(cond).lean();
                 if(member){

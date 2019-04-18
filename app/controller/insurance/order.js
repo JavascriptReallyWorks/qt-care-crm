@@ -96,18 +96,18 @@ module.exports = app => {
                   payload: [
                     {display:'投保人', value:order.applicant_name},
                     {display:'被保险人', value: order.insured_name},
-                    {display:'被保人证件类型', value:order.insured_id_type},
+                    {display:'被保险人证件类型', value:order.insured_id_type},
                     {display:'证件号码', value:order.insured_id_number},
-                    {display:'被保人性别', value: order.insured_gender},
-                    {display:'被保人出生日期', value:order.insured_birth},
-                    {display:'被保人手机号', value:order.insured_phone},
+                    {display:'被保险人性别', value: order.insured_gender},
+                    {display:'被保险人出生日期', value:order.insured_birth},
+                    {display:'被保险人手机号', value:order.insured_phone},
                     {display:'保险额度', value:`¥${order.insurance_amount}`},
                     {display:'保险期间', value:order.insurance_period},
                     {display:'缴费年限', value:order.payment_period},
                     {display:'投保日期', value:order.insurance_apply_date},
                     {display:'保单生效日期', value:order.insurance_start_date},
                     {display:'保单有效日期', value:order.insurance_end_date},
-                    {display:'保险热线', value:'4008629999'},
+                    // {display:'服务热线', value:'4008629999'},
                   ],
                 }
                 this.httpSuccess(data);
