@@ -94,7 +94,7 @@ module.exports = app => {
             switch(data.appId){
               case APP.CUSROMER_SERVICE_MANAGE.APP_ID:
                 if(ENTRY.SERVICE_ORDER.ENTRY_IDS.includes(data.entryId)){  // 服务下单及流程工单
-                  
+                  await service.serviceOrder.jdyNotif(this.body);
                 }
                 else{
                   switch(data.entryId){
