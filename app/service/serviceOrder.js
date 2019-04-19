@@ -25,7 +25,7 @@ module.exports = app => {
             order_id,
             mr_id,
             service_events: service_events.map(event => ({
-              ...order,
+              ...event,
               event_date: event.event_date ? event.event_date.split('T')[0] : '',
             })),
           }
@@ -33,7 +33,7 @@ module.exports = app => {
         } 
       }
       catch(err){
-        ctx.error('service.member.jdyNotif error', err);
+        ctx.error('service.serviceOrder.jdyNotif error', err);
       }
     }
   }
