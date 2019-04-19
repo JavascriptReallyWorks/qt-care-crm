@@ -3,13 +3,13 @@ module.exports = app => {
   const mongoose = app.mongoose;
   const conn27017 = app.mongooseDB.get('db27017');
   const ServiceOrderSchema = new mongoose.Schema({
-    service_number:{ type: Number, index:true, required:true},  //服务订单号码
-    service_name: { type: Number, index:true, required:true},   //服务名
+    service_number:{ type: String, index:true, required:true},  //服务订单号码
+    service_name: { type: String, index:true, required:true},   //服务名
 
     appId:String,
     entryId:String,
 
-    member_id: String, //客户会员号
+    member_id: Number, //客户会员号
     order_id: String, //保单号
     mr_id: String, //病历号
 
