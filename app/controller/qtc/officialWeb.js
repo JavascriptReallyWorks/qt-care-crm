@@ -92,17 +92,21 @@ module.exports = app => {
             const {data, op} = this.body;
             const {APP, ENTRY} = app.CONSTANT.JDY;
             switch(data.appId){
-              case APP.CUSROMER_SERVICE_MANAGE.APP_ID:  
+              case APP.CUSROMER_SERVICE_MANAGE.APP_ID:
+                if(ENTRY.SERVICE_ORDER.ENTRY_IDS.includes(data.entryId)){  // 服务下单及流程工单
+                  
+                }
+                else{
+                  switch(data.entryId){
+                    case ENTRY.MEMBERSHIP.ENTRY_ID: 
+                      await service.member.jdyNotif(this.body);
+                      break;
 
-                switch(data.entryId){
-                  case ENTRY.MEMBERSHIP.ENTRY_ID: 
-                    await service.member.jdyNotif(this.body);
-                    break;
+                    case ENTRY.ORDER.ENTRY_ID:
+                      await service.order.jdyNotif(this.body);
+                      break;
 
-                  case ENTRY.ORDER.ENTRY_ID:
-                    await service.order.jdyNotif(this.body);
-                    break;
-
+                  }
                 }
                 break;
             }

@@ -36,7 +36,7 @@ module.exports = {
               APP:{
                 CUSROMER_SERVICE_MANAGE:{     // 客户服务管理
                   APP_ID:"5c455cacdbe315787481e978"
-                }
+                },
               },
               ENTRY:{
                 MEMBERSHIP:{  // 客户会员卡建档
@@ -44,6 +44,18 @@ module.exports = {
                 },
                 ORDER:{  // 保险客户名单及花费情况
                   ENTRY_ID:"5c470cb6e916e2671947b1a4", 
+                },
+                SERVICE_ORDER:{  // 服务下单及流程工单
+                  ENTRY_IDS:[
+                    "5c418708768aaf72f8f3d7a1", // P4a：国内门诊绿色通道服务程序
+                    "5caef3bbe6f482635d1921b4", // P4a1：国内住院绿色通道服务程序
+                    "5c4e3fdd94df4b230dc130b5", // P4b：国内专家书面会诊工作
+                    "5c4bdd3d6c67e52f28a32a69", // P4c：美国专家视频会诊工作
+                    "5c4d07fd94df4b230dbec58b", // P4d：美国专家书面会诊工作
+                    "5c6236212c86f30da682a01f", // P4e：赴美就医工作
+                    "5c6e44cb50e5ad3f6b89e5a1", // P4f：归国随访及购药安排
+                    "5c6fa28698de013f53357167", // P4g：日本专家书面会诊工作
+                  ], 
                 },
               },
             },
