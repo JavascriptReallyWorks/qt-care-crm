@@ -88,7 +88,7 @@ module.exports = app => {
               const {id} = ctx.params;
               const order = await ctx.model.Order.findOne({order_id:id}).lean();
               if(order){
-                const data = {
+                let data = {
                   ...order,
                   id:order.order_id,
                   // number:order.orderId,
@@ -109,7 +109,26 @@ module.exports = app => {
                     {display:'保单有效日期', value:order.insurance_end_date},
                     // {display:'服务热线', value:'4008629999'},
                   ],
+                };
+                const {INSURANCE_SERVICE} = app.CONSTANT.JDY;
+                if(order.insurance_name && INSURANCE_SERVICE[order.insurance_name]){
+                  let serviceInfo = [...INSURANCE_SERVICE[order.insurance_name]];
+                  let serviceOrders = await ctx.model.ServiceOrder.find({order_id:order.order_id}).lean();
+                  serviceOrders.forEach(serviceOrder => {
+                    const {service_name} = serviceOrder
+                    if(service_name){
+                      const idx = serviceInfo.findIndex(service => service.SERVICE_NAME === service_name);
+                      if(idx >= 0){
+                        if(!serviceInfo[idx].serviceOrders){
+                          serviceInfo[idx].serviceOrders = [];
+                        } 
+                        serviceInfo[idx].serviceOrders.push(serviceOrder);
+                      }
+                    }
+                  });
+                  data.serviceInfo = serviceInfo
                 }
+
                 this.httpSuccess(data);
               }
               else{

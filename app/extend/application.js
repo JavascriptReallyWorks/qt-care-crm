@@ -58,6 +58,30 @@ module.exports = {
                   ], 
                 },
               },
+              INSURANCE_SERVICE:{
+                "复星联合鑫联星癌症海外医疗保险":[
+                  {
+                    SERVICE_NAME:"归国后随访及配药",
+                    IMG:"gui_guo_sui_fang.png",
+                  },
+                  {
+                    SERVICE_NAME:"赴美就医",
+                    IMG:"fu_mei_jiu_yi.png",
+                  },
+                  {
+                    SERVICE_NAME:"美国专家视频第二诊疗意见",
+                    IMG:"mei_guo_shi_pin.png",
+                  },
+                  {
+                    SERVICE_NAME:"美国专家书面第二诊疗意见",
+                    IMG:"mei_guo_shu_mian.png",
+                  },
+                  {
+                    SERVICE_NAME:"国内门诊绿色通道",
+                    IMG:"guo_nei_lv_se.png",
+                  },
+                ],
+              }
             },
             QTC_WECHAT:{
                 MENU:{
