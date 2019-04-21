@@ -81,6 +81,56 @@ module.exports = {
                     IMG:"guo_nei_men_zhen.png",
                   },
                 ],
+                "中信保诚-保诚传家险":[
+                  {
+                    SERVICE_NAME:"专属健康管家服务",
+                    IMG:"zhuan_shu_jian_kang.png",
+                  },
+                  {
+                    SERVICE_NAME:"健康教练个性化管理计划",
+                    IMG:"jian_kang_jiao_lian.png",
+                  },
+                  {
+                    SERVICE_NAME:"家庭医生电话咨询",
+                    IMG:"jia_ting_dian_hua.png",
+                  },
+                  {
+                    SERVICE_NAME:"专科医生电话咨询",
+                    IMG:"zhuan_ke_dian_hua.png",
+                  },
+                  {
+                    SERVICE_NAME:"瑞士Klinik Hirslanden体检",
+                    IMG:"Klinik_Hirslanden.png",
+                  },
+                  {
+                    SERVICE_NAME:"美国高科技长寿体检",
+                    IMG:"gao_ke_ji_chang_shou.png",
+                  },
+                  {
+                    SERVICE_NAME:"日本早癌筛查体检",
+                    IMG:"ri_ben_shai_cha.png",
+                  },
+                  {
+                    SERVICE_NAME:"国内专家书面第二诊疗意见",
+                    IMG:"guo_nei_shu_mian.png",
+                  },
+                  {
+                    SERVICE_NAME:"国内手术住院绿色通道",
+                    IMG:"guo_nei_zhu_yuan.png",
+                  },
+                  {
+                    SERVICE_NAME:"国内门诊绿色通道",
+                    IMG:"guo_nei_men_zhen.png",
+                  },
+                  {
+                    SERVICE_NAME:"赴美就医",
+                    IMG:"fu_mei_jiu_yi.png",
+                  },
+                  {
+                    SERVICE_NAME:"美国专家视频第二诊疗意见",
+                    IMG:"mei_guo_shi_pin.png",
+                  },
+                ],
               }
             },
             QTC_WECHAT:{
