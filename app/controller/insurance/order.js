@@ -122,9 +122,16 @@ module.exports = app => {
                         if(!serviceInfo[idx].serviceOrders){
                           serviceInfo[idx].serviceOrders = [];
                         } 
-                        serviceInfo[idx].serviceOrders.push(serviceOrder);
+                        serviceInfo[idx].serviceOrders.push({
+                          ...serviceOrder,
+                          last_event_status:(serviceOrder.service_events && serviceOrder.service_events.length) ? serviceOrder.service_events[serviceOrder.service_events.length - 1].event_status : undefined, 
+                        });
                       }
                     }
+                    serviceInfo = serviceInfo.map(service => ({
+                      ...service,
+                      serviceName:`${service.SERVICE_NAME}${service.serviceOrders ? (' [' + service.serviceOrders.length + ']') :''}`
+                    }));
                   });
                   data.serviceInfo = serviceInfo
                 }

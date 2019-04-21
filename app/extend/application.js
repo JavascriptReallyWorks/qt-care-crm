@@ -78,7 +78,7 @@ module.exports = {
                   },
                   {
                     SERVICE_NAME:"国内门诊绿色通道",
-                    IMG:"guo_nei_lv_se.png",
+                    IMG:"guo_nei_men_zhen.png",
                   },
                 ],
               }
