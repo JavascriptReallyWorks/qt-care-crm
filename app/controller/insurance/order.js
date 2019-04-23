@@ -128,11 +128,11 @@ module.exports = app => {
                         });
                       }
                     }
-                    serviceInfo = serviceInfo.map(service => ({
-                      ...service,
-                      serviceName:`${service.SERVICE_NAME}${service.serviceOrders ? (' [' + service.serviceOrders.length + ']') :''}`
-                    }));
                   });
+                  serviceInfo = serviceInfo.map(service => ({
+                    ...service,
+                    SERVICE_NAME:`${service.SERVICE_NAME}${service.serviceOrders ? (' [' + service.serviceOrders.length + ']') :''}`
+                  }));
                   data.serviceInfo = serviceInfo
                 }
 
