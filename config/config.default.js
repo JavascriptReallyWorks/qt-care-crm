@@ -107,8 +107,8 @@ module.exports = appInfo => {
 
     config.sms = {
       client: {
-          accessKeyId: 'LTAI6AQl1R4ChuI1',
-          secretAccessKey: 'DzDALtBNCCqic7my63aM3VCqrlEtOJ',
+          accessKeyId: 'LTAIkydzUCTPsHRd',
+          secretAccessKey: '8wDCfNxpPvwxbNC5un0JuIzmiMFmX9',
       },
     };
 
