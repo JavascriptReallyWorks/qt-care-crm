@@ -1,3 +1,4 @@
+const ONE_DAY = 24*60*60*1000;
 
 module.exports = app => {
     class InsuranceOrder extends app.Controller {
@@ -62,14 +63,17 @@ module.exports = app => {
             const member = await ctx.model.Member.findOne({member_id}).lean();
             const include = {
               order_id:1,
+              insurance_amount:1,
+              insurance_name:1,
+              insurance_start_date:1,
             };
             const orders = await Promise.all(member.orders.map(order => ctx.model.Order.findOne({order_id:order.order_id}, include).lean()));
 
             this.httpSuccess(orders.map(order => ({
               ...order,
-              type:'FUXING',  //为了拼接成文件名找到卡片图片
               id:order.order_id,   //member.html 跳转页面
               number:order.order_id, //member.html 显示 NO.
+              insurance_convered_dates: Math.round(Math.abs(((new Date()).getTime() - (new Date(order.insurance_start_date || "2019-01-01")).getTime())/(ONE_DAY)))
             })));
           }
           catch(e){
@@ -129,11 +133,24 @@ module.exports = app => {
                       }
                     }
                   });
-                  serviceInfo = serviceInfo.map(service => ({
-                    ...service,
-                    SERVICE_NAME:`${service.SERVICE_NAME}${service.serviceOrders ? (' [' + service.serviceOrders.length + ']') :''}`
-                  }));
+                  // serviceInfo = serviceInfo.map(service => ({
+                  //   ...service,
+                  //   SERVICE_NAME:`${service.SERVICE_NAME}${service.serviceOrders ? (' [' + service.serviceOrders.length + ']') :''}`
+                  // }));
+                  for(let i=0; i<serviceInfo.length; i++){
+                    let service = serviceInfo[i];
+                    if(service.serviceOrders){
+                      service.firstHasOrders = true;
+                      break;
+                    }
+                  }
                   data.serviceInfo = serviceInfo
+                  // if(data.payments){
+                  //   data.payment_total = data.payments.reduce((accumulator, currentValue) => (accumulator + (currentValue.payment_amount || 0)), 0);
+                  // }
+                  // else{
+                  //   data.payment_total = 0;
+                  // }
                 }
 
                 this.httpSuccess(data);
